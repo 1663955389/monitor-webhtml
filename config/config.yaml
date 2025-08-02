@@ -1,0 +1,74 @@
+# Website monitoring configuration
+monitoring:
+  # Default check interval in seconds
+  check_interval: 300
+  # Request timeout in seconds
+  request_timeout: 30
+  # Maximum concurrent monitors
+  max_concurrent: 10
+  # Screenshot settings
+  screenshot:
+    enabled: true
+    width: 1920
+    height: 1080
+    quality: 85
+
+# Authentication settings
+authentication:
+  # Session timeout in seconds
+  session_timeout: 3600
+  # Auto re-login on session expiry
+  auto_relogin: true
+  # Encryption key for storing credentials
+  encryption_key: "default_key_change_me"
+
+# Report generation settings
+reports:
+  # Output directory
+  output_dir: "data/reports"
+  # Default template
+  default_template: "default"
+  # Available formats
+  formats:
+    - html
+    - docx
+
+# Notification settings
+notifications:
+  email:
+    enabled: false
+    smtp_server: "smtp.gmail.com"
+    smtp_port: 587
+    use_tls: true
+    sender_email: ""
+    sender_password: ""
+  webhook:
+    enabled: false
+    url: ""
+    timeout: 10
+
+# Scheduling settings
+scheduling:
+  enabled: false
+  # Default schedule (cron-like)
+  default_schedule: "0 */6 * * *"  # Every 6 hours
+
+# Logging settings
+logging:
+  level: "INFO"
+  max_file_size: "10MB"
+  backup_count: 5
+  auto_cleanup_days: 30
+
+# File download settings
+downloads:
+  output_dir: "data/downloads"
+  max_file_size: "100MB"
+  timeout: 60
+
+# Data directories
+directories:
+  screenshots: "data/screenshots"
+  downloads: "data/downloads"
+  reports: "data/reports"
+  logs: "data/logs"
