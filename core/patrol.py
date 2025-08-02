@@ -23,6 +23,7 @@ from config.settings import config_manager
 class PatrolFrequency(Enum):
     """Patrol frequency options"""
     DAILY = "daily"
+    MULTIPLE_DAILY = "multiple_daily"  # Multiple times per day
     WEEKLY = "weekly"
     MONTHLY = "monthly"
     CUSTOM = "custom"
@@ -61,6 +62,7 @@ class PatrolTask:
     frequency: PatrolFrequency = PatrolFrequency.DAILY
     custom_schedule: Optional[str] = None  # Cron expression for custom frequency
     start_time: str = "09:00"  # Start time for daily/weekly patrols
+    multiple_times: List[str] = field(default_factory=list)  # Multiple daily execution times ["09:00", "14:00", "18:00"]
     
     # Authentication and access
     auth_config: Optional[Dict[str, Any]] = None
@@ -218,12 +220,17 @@ class PatrolEngine:
             cookies = {}
             
             if task.auth_config:
-                auth_session = await self.auth_manager.authenticate(
-                    website_url, task.auth_config
-                )
-                if auth_session:
-                    headers.update(auth_session.get('headers', {}))
-                    cookies.update(auth_session.get('cookies', {}))
+                auth_type = task.auth_config.get('type', 'none')
+                if auth_type != 'none':
+                    authenticated_session = await self.auth_manager.get_authenticated_session(
+                        auth_type, task.auth_config
+                    )
+                    # Extract headers and cookies from the authenticated session
+                    if hasattr(authenticated_session, '_default_headers'):
+                        headers.update(dict(authenticated_session._default_headers))
+                    if hasattr(authenticated_session, '_cookie_jar'):
+                        for cookie in authenticated_session._cookie_jar:
+                            cookies[cookie.key] = cookie.value
             
             # Make HTTP request
             async with self.session.get(
@@ -247,7 +254,7 @@ class PatrolEngine:
                 for check in task.checks:
                     if check.enabled:
                         check_result = await self._execute_patrol_check(
-                            check, website_url, content, response
+                            check, website_url, content, response, headers, cookies
                         )
                         result.check_results[check.name] = check_result
                         
@@ -255,13 +262,14 @@ class PatrolEngine:
                         if not check_result.get('success', True):
                             result.success = False
                 
-                # Take screenshot if configured
-                if any(check.type == PatrolType.VISUAL_CHECK for check in task.checks):
+                # Take screenshot if configured or if visual checks are needed
+                if any(check.type == PatrolType.VISUAL_CHECK for check in task.checks) or task.generate_report:
                     try:
                         screenshot_path = await self.screenshot_capture.capture_screenshot(
                             website_url, headers, cookies
                         )
                         result.screenshot_path = screenshot_path
+                        self.logger.info(f"Screenshot captured: {screenshot_path}")
                     except Exception as e:
                         self.logger.warning(f"Failed to capture screenshot: {e}")
                 
@@ -276,44 +284,100 @@ class PatrolEngine:
         return result
     
     async def _execute_patrol_check(self, check: PatrolCheck, url: str, 
-                                  content: str, response: aiohttp.ClientResponse) -> Dict[str, Any]:
+                                  content: str, response: aiohttp.ClientResponse,
+                                  headers: dict = None, cookies: dict = None) -> Dict[str, Any]:
         """Execute a specific patrol check"""
         check_result = {
             'name': check.name,
             'type': check.type.value,
             'success': False,
             'value': None,
+            'extracted_value': None,
             'message': ''
         }
         
         try:
             if check.type == PatrolType.CONTENT_CHECK:
-                # Text content check
+                # Enhanced content check with XPath and CSS selector support
                 if check.expected_value:
+                    # Simple text content check
                     found = check.expected_value in content
                     check_result['success'] = found
                     check_result['value'] = found
                     check_result['message'] = f"内容检查: {'找到' if found else '未找到'} '{check.expected_value}'"
                 else:
-                    # XPath or CSS selector check
+                    # XPath or CSS selector check with value extraction
                     from bs4 import BeautifulSoup
                     soup = BeautifulSoup(content, 'html.parser')
                     
                     if check.target.startswith('//') or check.target.startswith('/'):
-                        # XPath - would need lxml for full XPath support
-                        check_result['message'] = "XPath 检查需要额外配置"
+                        # XPath support using lxml
+                        try:
+                            from lxml import html, etree
+                            tree = html.fromstring(content)
+                            elements = tree.xpath(check.target)
+                            
+                            if elements:
+                                check_result['success'] = True
+                                check_result['value'] = len(elements)
+                                
+                                # Extract text content from first element
+                                if hasattr(elements[0], 'text'):
+                                    extracted_text = elements[0].text
+                                elif isinstance(elements[0], str):
+                                    extracted_text = elements[0]
+                                else:
+                                    extracted_text = str(elements[0])
+                                
+                                check_result['extracted_value'] = extracted_text
+                                check_result['message'] = f"XPath找到 {len(elements)} 个元素，提取值: {extracted_text[:100]}"
+                            else:
+                                check_result['message'] = "XPath未找到匹配元素"
+                                
+                        except ImportError:
+                            check_result['message'] = "XPath支持需要安装lxml库: pip install lxml"
+                        except Exception as e:
+                            check_result['message'] = f"XPath执行错误: {str(e)}"
                     else:
-                        # CSS selector
+                        # CSS selector with value extraction
                         elements = soup.select(check.target)
-                        check_result['success'] = len(elements) > 0
-                        check_result['value'] = len(elements)
-                        check_result['message'] = f"找到 {len(elements)} 个匹配元素"
+                        if elements:
+                            check_result['success'] = True
+                            check_result['value'] = len(elements)
+                            
+                            # Extract text content from first element
+                            extracted_text = elements[0].get_text(strip=True)
+                            check_result['extracted_value'] = extracted_text
+                            check_result['message'] = f"CSS选择器找到 {len(elements)} 个元素，提取值: {extracted_text[:100]}"
+                        else:
+                            check_result['message'] = f"CSS选择器未找到匹配元素: {check.target}"
             
             elif check.type == PatrolType.API_CHECK:
                 # API response check
                 check_result['success'] = response.status == 200
                 check_result['value'] = response.status
                 check_result['message'] = f"API状态码: {response.status}"
+                
+                # Try to extract JSON response value if target is specified
+                if check.target and response.content_type and 'json' in response.content_type:
+                    try:
+                        import json
+                        json_data = json.loads(content)
+                        
+                        # Simple key extraction
+                        if '.' in check.target:
+                            # Support nested keys like "data.user.name"
+                            keys = check.target.split('.')
+                            value = json_data
+                            for key in keys:
+                                value = value[key]
+                        else:
+                            value = json_data.get(check.target)
+                        
+                        check_result['extracted_value'] = str(value)
+                        check_result['message'] += f", 提取值: {str(value)[:100]}"
+                    except Exception as e:
+                        check_result['message'] += f", JSON提取失败: {str(e)}"
             
             elif check.type == PatrolType.VISUAL_CHECK:
                 # Visual check would require screenshot comparison
@@ -353,6 +417,33 @@ class PatrolEngine:
             # If time has passed today, schedule for tomorrow
             if next_run <= now:
                 next_run += timedelta(days=1)
+                
+        elif task.frequency == PatrolFrequency.MULTIPLE_DAILY:
+            # Find next execution time from multiple daily times
+            if not task.multiple_times:
+                # Fallback to single daily execution
+                hour, minute = map(int, task.start_time.split(':'))
+                next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+                if next_run <= now:
+                    next_run += timedelta(days=1)
+            else:
+                # Find the next scheduled time today or tomorrow
+                next_run = None
+                today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+                
+                for time_str in sorted(task.multiple_times):
+                    hour, minute = map(int, time_str.split(':'))
+                    scheduled_time = today.replace(hour=hour, minute=minute)
+                    
+                    if scheduled_time > now:
+                        next_run = scheduled_time
+                        break
+                
+                # If no time found today, use first time tomorrow
+                if next_run is None:
+                    hour, minute = map(int, sorted(task.multiple_times)[0].split(':'))
+                    next_run = today + timedelta(days=1)
+                    next_run = next_run.replace(hour=hour, minute=minute)
                 
         elif task.frequency == PatrolFrequency.WEEKLY:
             # Schedule for next Monday at start time

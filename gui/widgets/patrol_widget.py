@@ -320,6 +320,7 @@ class PatrolTaskWidget(QWidget):
             # Frequency
             freq_map = {
                 PatrolFrequency.DAILY: "每日",
+                PatrolFrequency.MULTIPLE_DAILY: "每日多次",
                 PatrolFrequency.WEEKLY: "每周",
                 PatrolFrequency.MONTHLY: "每月",
                 PatrolFrequency.CUSTOM: "自定义"

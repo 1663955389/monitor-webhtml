@@ -462,8 +462,208 @@ class ReportGenerator:
             self.logger.error(f"Failed to generate email content: {e}")
             raise
     
-    def generate_word_report(self, results: List[MonitorResult], template_name: str = "default",
-                           variables: Optional[Dict[str, Any]] = None) -> str:
+    def generate_patrol_word_report(self, patrol_results: List, task_name: str = "巡检任务", 
+                                  template_name: str = "default") -> str:
+        """Generate Word document report from patrol results with screenshots and extracted values"""
+        try:
+            # Import PatrolResult if needed
+            from core.patrol import PatrolResult
+            
+            # Create a new document
+            doc = Document()
+            
+            # Set document title
+            title = doc.add_heading('网站巡检报告', 0)
+            title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+            # Add report generation time
+            report_time = doc.add_paragraph(f'报告生成时间: {datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')
+            report_time.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+            # Add task name
+            task_para = doc.add_paragraph(f'巡检任务: {task_name}')
+            task_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+            # Calculate summary from patrol results
+            summary = self._calculate_patrol_summary(patrol_results)
+            
+            # Add summary section
+            doc.add_heading('巡检概要', level=1)
+            summary_table = doc.add_table(rows=7, cols=2)
+            summary_table.style = 'Table Grid'
+            summary_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+            
+            # Populate summary table
+            summary_data = [
+                ('总计巡检网站', str(summary['total_websites'])),
+                ('成功网站数', str(summary['successful_websites'])),
+                ('失败网站数', str(summary['failed_websites'])),
+                ('成功率', f"{summary['success_rate']:.1f}%"),
+                ('平均响应时间', f"{summary['average_response_time']:.2f}秒"),
+                ('总执行检查数', str(summary['total_checks'])),
+                ('提取数据项', str(summary['extracted_values']))
+            ]
+            
+            for i, (label, value) in enumerate(summary_data):
+                row = summary_table.rows[i]
+                row.cells[0].text = label
+                row.cells[1].text = value
+                # Make header cells bold
+                for cell in row.cells:
+                    for paragraph in cell.paragraphs:
+                        for run in paragraph.runs:
+                            if cell == row.cells[0]:  # Header column
+                                run.bold = True
+            
+            # Add detailed results section
+            doc.add_heading('详细巡检结果', level=1)
+            
+            for result in patrol_results:
+                # Add website section
+                doc.add_heading(f'{result.task_name} - {result.website_url}', level=2)
+                
+                # Basic info table
+                info_table = doc.add_table(rows=4, cols=2)
+                info_table.style = 'Table Grid'
+                
+                info_data = [
+                    ('网址', result.website_url),
+                    ('检查时间', result.timestamp.strftime("%Y年%m月%d日 %H:%M:%S")),
+                    ('状态', "成功" if result.success else "失败"),
+                    ('响应时间', f"{result.response_time:.2f}秒" if result.response_time else "未知")
+                ]
+                
+                if result.status_code:
+                    info_data.append(('状态码', str(result.status_code)))
+                
+                for i, (label, value) in enumerate(info_data):
+                    if i < len(info_table.rows):
+                        row = info_table.rows[i]
+                        row.cells[0].text = label
+                        row.cells[1].text = str(value)
+                        # Make label bold
+                        for paragraph in row.cells[0].paragraphs:
+                            for run in paragraph.runs:
+                                run.bold = True
+                
+                # Add screenshot if available
+                if result.screenshot_path and Path(result.screenshot_path).exists():
+                    doc.add_paragraph("页面截图:")
+                    try:
+                        screenshot_paragraph = doc.add_paragraph()
+                        run = screenshot_paragraph.runs[0] if screenshot_paragraph.runs else screenshot_paragraph.add_run()
+                        run.add_picture(result.screenshot_path, width=Inches(5.0))
+                    except Exception as e:
+                        doc.add_paragraph(f"截图加载失败: {e}")
+                
+                # Add check results if available
+                if result.check_results:
+                    doc.add_heading('检查结果', level=3)
+                    
+                    check_table = doc.add_table(rows=1, cols=4)
+                    check_table.style = 'Table Grid'
+                    
+                    # Header row
+                    header_cells = check_table.rows[0].cells
+                    headers = ['检查项', '结果', '提取值', '说明']
+                    for i, header in enumerate(headers):
+                        header_cells[i].text = header
+                        for paragraph in header_cells[i].paragraphs:
+                            for run in paragraph.runs:
+                                run.bold = True
+                    
+                    # Add check data
+                    for check_name, check_result in result.check_results.items():
+                        row_cells = check_table.add_row().cells
+                        row_cells[0].text = check_name
+                        row_cells[1].text = "✓" if check_result.get('success') else "✗"
+                        row_cells[2].text = str(check_result.get('extracted_value', '')) if check_result.get('extracted_value') else '无'
+                        row_cells[3].text = check_result.get('message', '')
+                
+                # Add error details if failed
+                if not result.success and result.error_message:
+                    doc.add_heading('错误详情', level=3)
+                    doc.add_paragraph(result.error_message)
+                
+                # Add extracted data if available
+                if result.extracted_data:
+                    doc.add_heading('提取数据', level=3)
+                    for key, value in result.extracted_data.items():
+                        data_para = doc.add_paragraph()
+                        data_para.add_run(f"{key}: ").bold = True
+                        data_para.add_run(str(value))
+                
+                # Add separator
+                doc.add_paragraph()
+            
+            # Add failed results summary if any
+            failed_results = [r for r in patrol_results if not r.success]
+            if failed_results:
+                doc.add_heading('失败汇总', level=1)
+                for result in failed_results:
+                    failure_para = doc.add_paragraph()
+                    failure_para.add_run(f"• {result.website_url}: ").bold = True
+                    failure_para.add_run(result.error_message or '未知错误')
+            
+            # Generate filename and save document
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            safe_task_name = "".join(c for c in task_name if c.isalnum() or c in (' ', '-', '_')).rstrip()
+            filename = f"patrol_report_{safe_task_name}_{timestamp}.docx"
+            report_path = self.reports_dir / filename
+            
+            doc.save(str(report_path))
+            
+            self.logger.info(f"Generated patrol Word report: {report_path}")
+            return str(report_path)
+            
+        except Exception as e:
+            self.logger.error(f"Failed to generate patrol Word report: {e}")
+            raise
+    
+    def _calculate_patrol_summary(self, patrol_results: List) -> Dict[str, Any]:
+        """Calculate summary statistics from patrol results"""
+        if not patrol_results:
+            return {
+                'total_websites': 0,
+                'successful_websites': 0,
+                'failed_websites': 0,
+                'success_rate': 0.0,
+                'average_response_time': 0.0,
+                'total_checks': 0,
+                'extracted_values': 0
+            }
+        
+        total_websites = len(patrol_results)
+        successful_websites = sum(1 for r in patrol_results if r.success)
+        failed_websites = total_websites - successful_websites
+        success_rate = (successful_websites / total_websites) * 100
+        
+        # Calculate average response time
+        response_times = [r.response_time for r in patrol_results if r.response_time is not None]
+        average_response_time = sum(response_times) / len(response_times) if response_times else 0
+        
+        # Count total checks performed
+        total_checks = sum(len(r.check_results) for r in patrol_results if r.check_results)
+        
+        # Count extracted values
+        extracted_values = 0
+        for result in patrol_results:
+            if result.check_results:
+                for check_result in result.check_results.values():
+                    if check_result.get('extracted_value'):
+                        extracted_values += 1
+            if result.extracted_data:
+                extracted_values += len(result.extracted_data)
+        
+        return {
+            'total_websites': total_websites,
+            'successful_websites': successful_websites,
+            'failed_websites': failed_websites,
+            'success_rate': success_rate,
+            'average_response_time': average_response_time,
+            'total_checks': total_checks,
+            'extracted_values': extracted_values
+        }
         """Generate Word document report from monitoring results"""
         try:
             # Create a new document

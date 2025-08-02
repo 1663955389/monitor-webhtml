@@ -5,6 +5,7 @@ Main window for the Website Monitoring and Reporting System
 import logging
 import asyncio
 from typing import Optional
+from datetime import datetime
 
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
@@ -14,50 +15,12 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import QTimer, pyqtSignal, QThread, pyqtSlot
 from PyQt5.QtGui import QFont, QIcon
 
-from core.monitor import WebsiteMonitor, MonitorResult
 from core.auth import AuthenticationManager
 from core.variables import VariableManager
-from gui.widgets.monitoring_widget import MonitoringWidget
+from core.patrol import PatrolEngine
 from gui.widgets.patrol_widget import PatrolTaskWidget
-from gui.dialogs.website_config import WebsiteConfigDialog
 from gui.dialogs.notification_config import NotificationConfigDialog
 from config.settings import config_manager
-
-
-class MonitoringThread(QThread):
-    """Thread for running the monitoring loop"""
-    result_signal = pyqtSignal(object)  # MonitorResult
-    
-    def __init__(self, monitor: WebsiteMonitor):
-        super().__init__()
-        self.monitor = monitor
-        self.loop = None
-    
-    def run(self):
-        """Run the monitoring loop in a separate thread"""
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
-        
-        # Add result callback
-        self.monitor.add_result_callback(self.on_result)
-        
-        try:
-            self.loop.run_until_complete(self.monitor.start_monitoring())
-        except Exception as e:
-            logging.error(f"Error in monitoring thread: {e}")
-        finally:
-            if self.loop:
-                self.loop.close()
-    
-    def on_result(self, result: MonitorResult):
-        """Handle monitoring result"""
-        self.result_signal.emit(result)
-    
-    def stop_monitoring(self):
-        """Stop the monitoring loop"""
-        if self.loop:
-            asyncio.run_coroutine_threadsafe(self.monitor.stop_monitoring(), self.loop)
-            self.loop.call_soon_threadsafe(self.loop.stop)
 
 
 class MainWindow(QMainWindow):
@@ -68,15 +31,9 @@ class MainWindow(QMainWindow):
         self.logger = logging.getLogger(__name__)
         
         # Core components
-        self.monitor = WebsiteMonitor()
+        self.patrol_engine = PatrolEngine()
         self.auth_manager = AuthenticationManager()
         self.variable_manager = VariableManager()
-        
-        # Threading
-        self.monitoring_thread: Optional[MonitoringThread] = None
-        
-        # UI state
-        self.is_monitoring = False
         
         self.init_ui()
         self.setup_connections()
@@ -111,7 +68,6 @@ class MainWindow(QMainWindow):
         
         # Create tabs
         self.create_patrol_tab()
-        self.create_monitoring_tab()
         self.create_results_tab()
         self.create_variables_tab()
         self.create_reports_tab()
@@ -129,11 +85,6 @@ class MainWindow(QMainWindow):
         
         # File menu
         file_menu = menubar.addMenu('文件')
-        
-        new_website_action = QAction('添加网站', self)
-        new_website_action.setShortcut('Ctrl+N')
-        new_website_action.triggered.connect(self.add_website)
-        file_menu.addAction(new_website_action)
         
         new_patrol_action = QAction('添加巡检任务', self)
         new_patrol_action.setShortcut('Ctrl+P')
@@ -155,16 +106,6 @@ class MainWindow(QMainWindow):
         execute_patrol_action.triggered.connect(self.execute_selected_patrol)
         patrol_menu.addAction(execute_patrol_action)
         
-        start_action = QAction('开始监控', self)
-        start_action.setShortcut('F6')
-        start_action.triggered.connect(self.start_monitoring)
-        patrol_menu.addAction(start_action)
-        
-        stop_action = QAction('停止监控', self)
-        stop_action.setShortcut('F7')
-        stop_action.triggered.connect(self.stop_monitoring)
-        patrol_menu.addAction(stop_action)
-        
         # Tools menu
         tools_menu = menubar.addMenu('工具')
         
@@ -183,56 +124,6 @@ class MainWindow(QMainWindow):
         """Create the toolbar"""
         toolbar = self.addToolBar('主要')
         
-        # Start monitoring button
-        self.start_btn = QPushButton('开始监控')
-        self.start_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #45a049;
-            }
-            QPushButton:disabled {
-                background-color: #cccccc;
-            }
-        """)
-        self.start_btn.clicked.connect(self.start_monitoring)
-        toolbar.addWidget(self.start_btn)
-        
-        # Stop monitoring button
-        self.stop_btn = QPushButton('停止监控')
-        self.stop_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #f44336;
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #da190b;
-            }
-            QPushButton:disabled {
-                background-color: #cccccc;
-            }
-        """)
-        self.stop_btn.clicked.connect(self.stop_monitoring)
-        self.stop_btn.setEnabled(False)
-        toolbar.addWidget(self.stop_btn)
-        
-        toolbar.addSeparator()
-        
-        # Add website button
-        add_website_btn = QPushButton('添加网站')
-        add_website_btn.clicked.connect(self.add_website)
-        toolbar.addWidget(add_website_btn)
-        
         # Add patrol task button
         add_patrol_btn = QPushButton('添加巡检任务')
         add_patrol_btn.setStyleSheet("""
@@ -250,19 +141,32 @@ class MainWindow(QMainWindow):
         """)
         add_patrol_btn.clicked.connect(self.add_patrol_task)
         toolbar.addWidget(add_patrol_btn)
+        
+        # Execute patrol button
+        execute_patrol_btn = QPushButton('执行巡检')
+        execute_patrol_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+        """)
+        execute_patrol_btn.clicked.connect(self.execute_selected_patrol)
+        toolbar.addWidget(execute_patrol_btn)
     
     def create_patrol_tab(self):
         """Create the patrol management tab"""
         self.patrol_widget = PatrolTaskWidget()
         self.tab_widget.addTab(self.patrol_widget, "巡检任务")
     
-    def create_monitoring_tab(self):
-        """Create the monitoring tab"""
-        self.monitoring_widget = MonitoringWidget(self.monitor)
-        self.tab_widget.addTab(self.monitoring_widget, "监控")
-    
     def create_results_tab(self):
-        """Create the results tab"""
+        """Create the patrol results tab"""
         results_widget = QWidget()
         layout = QVBoxLayout(results_widget)
         
@@ -270,7 +174,7 @@ class MainWindow(QMainWindow):
         self.results_text = QTextEdit()
         self.results_text.setReadOnly(True)
         self.results_text.setFont(QFont("Consolas", 10))
-        layout.addWidget(QLabel("监控结果:"))
+        layout.addWidget(QLabel("巡检结果:"))
         layout.addWidget(self.results_text)
         
         self.tab_widget.addTab(results_widget, "结果")
@@ -303,6 +207,10 @@ class MainWindow(QMainWindow):
         generate_btn.clicked.connect(self.generate_report)
         layout.addWidget(generate_btn)
         
+        edit_report_btn = QPushButton("编辑Word报告")
+        edit_report_btn.clicked.connect(self.edit_word_report)
+        layout.addWidget(edit_report_btn)
+        
         # Reports display
         self.reports_text = QTextEdit()
         self.reports_text.setReadOnly(True)
@@ -334,12 +242,12 @@ class MainWindow(QMainWindow):
         
         # Status labels
         self.status_label = QLabel("就绪")
-        self.monitoring_status_label = QLabel("监控: 已停止")
-        self.websites_count_label = QLabel("网站: 0")
+        self.patrol_status_label = QLabel("巡检: 就绪")
+        self.tasks_count_label = QLabel("巡检任务: 0")
         
         self.status_bar.addWidget(self.status_label)
-        self.status_bar.addPermanentWidget(self.websites_count_label)
-        self.status_bar.addPermanentWidget(self.monitoring_status_label)
+        self.status_bar.addPermanentWidget(self.tasks_count_label)
+        self.status_bar.addPermanentWidget(self.patrol_status_label)
     
     def apply_styling(self):
         """Apply custom styling to the interface"""
@@ -382,8 +290,8 @@ class MainWindow(QMainWindow):
     
     def setup_connections(self):
         """Setup signal/slot connections"""
-        # Monitor result callback
-        self.monitor.add_result_callback(self.on_monitoring_result)
+        # Patrol result callback
+        self.patrol_engine.add_result_callback(self.on_patrol_result)
     
     def setup_timer(self):
         """Setup update timer"""
@@ -391,73 +299,26 @@ class MainWindow(QMainWindow):
         self.update_timer.timeout.connect(self.update_status)
         self.update_timer.start(1000)  # Update every second
     
-    @pyqtSlot()
-    def start_monitoring(self):
-        """Start monitoring websites"""
-        if self.is_monitoring:
-            return
-        
-        if not self.monitor.websites:
-            QMessageBox.warning(self, "警告", "没有配置需要监控的网站!")
-            return
-        
-        try:
-            self.monitoring_thread = MonitoringThread(self.monitor)
-            self.monitoring_thread.result_signal.connect(self.on_monitoring_result_signal)
-            self.monitoring_thread.start()
-            
-            self.is_monitoring = True
-            self.start_btn.setEnabled(False)
-            self.stop_btn.setEnabled(True)
-            
-            self.status_label.setText("正在启动监控...")
-            self.logger.info("Monitoring started")
-            
-        except Exception as e:
-            QMessageBox.critical(self, "错误", f"启动监控失败: {e}")
-            self.logger.error(f"Failed to start monitoring: {e}")
-    
-    @pyqtSlot()
-    def stop_monitoring(self):
-        """Stop monitoring websites"""
-        if not self.is_monitoring:
-            return
-        
-        try:
-            if self.monitoring_thread:
-                self.monitoring_thread.stop_monitoring()
-                self.monitoring_thread.wait(5000)  # Wait up to 5 seconds
-                
-            self.is_monitoring = False
-            self.start_btn.setEnabled(True)
-            self.stop_btn.setEnabled(False)
-            
-            self.status_label.setText("监控已停止")
-            self.logger.info("Monitoring stopped")
-            
-        except Exception as e:
-            QMessageBox.critical(self, "错误", f"停止监控失败: {e}")
-            self.logger.error(f"Failed to stop monitoring: {e}")
-    
-    @pyqtSlot(object)
-    def on_monitoring_result_signal(self, result: MonitorResult):
-        """Handle monitoring result from signal"""
-        self.on_monitoring_result(result)
-    
-    def on_monitoring_result(self, result: MonitorResult):
-        """Handle monitoring result"""
+    def on_patrol_result(self, result):
+        """Handle patrol result"""
         # Update results display
         status = "成功" if result.success else "失败"
         result_text = (
             f"[{result.timestamp.strftime('%H:%M:%S')}] "
-            f"{result.website_name} - {status}\n"
-            f"  网址: {result.url}\n"
+            f"{result.task_name} - {status}\n"
+            f"  网址: {result.website_url}\n"
             f"  状态: {result.status_code}\n"
             f"  响应时间: {result.response_time:.2f}秒\n"
         )
         
         if result.error_message:
             result_text += f"  错误: {result.error_message}\n"
+        
+        if result.check_results:
+            result_text += "  检查结果:\n"
+            for check_name, check_result in result.check_results.items():
+                check_status = "✓" if check_result.get('success') else "✗"
+                result_text += f"    {check_status} {check_name}: {check_result.get('message', '')}\n"
         
         result_text += "\n"
         
@@ -467,16 +328,6 @@ class MainWindow(QMainWindow):
         cursor = self.results_text.textCursor()
         cursor.movePosition(cursor.End)
         self.results_text.setTextCursor(cursor)
-    
-    @pyqtSlot()
-    def add_website(self):
-        """Add a new website for monitoring"""
-        dialog = WebsiteConfigDialog(self)
-        if dialog.exec_() == dialog.Accepted:
-            website_config = dialog.get_config()
-            self.monitor.add_website(website_config)
-            self.monitoring_widget.refresh_websites()
-            self.update_status()
     
     @pyqtSlot()
     def add_patrol_task(self):
@@ -506,9 +357,28 @@ class MainWindow(QMainWindow):
     
     @pyqtSlot()
     def generate_report(self):
-        """Generate monitoring report"""
-        # Placeholder for report generation
-        self.reports_text.append(f"Report generation triggered at {QApplication.instance().property('timestamp')}\n")
+        """Generate patrol report"""
+        # Get recent patrol results
+        # This is a placeholder - in a real implementation, you'd get actual results
+        self.reports_text.append(f"巡检报告生成已触发 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+    
+    @pyqtSlot()
+    def edit_word_report(self):
+        """Open Word report editor"""
+        try:
+            from gui.dialogs.word_editor import WordReportEditor
+            
+            editor = WordReportEditor(self)
+            editor.report_saved.connect(self.on_report_saved)
+            editor.exec_()
+            
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"无法打开Word报告编辑器:\n{str(e)}")
+            self.logger.error(f"Failed to open Word report editor: {e}")
+    
+    def on_report_saved(self, report_path: str):
+        """Handle when a report is saved"""
+        self.reports_text.append(f"报告已保存: {report_path}\n")
     
     @pyqtSlot()
     def refresh_variables(self):
@@ -536,13 +406,12 @@ class MainWindow(QMainWindow):
     
     def update_status(self):
         """Update status bar information"""
-        # Update website count
-        website_count = len(self.monitor.websites)
-        self.websites_count_label.setText(f"网站: {website_count}")
+        # Update patrol task count
+        task_count = len(self.patrol_engine.tasks)
+        self.tasks_count_label.setText(f"巡检任务: {task_count}")
         
-        # Update monitoring status
-        status = "运行中" if self.is_monitoring else "已停止"
-        self.monitoring_status_label.setText(f"监控: {status}")
+        # Update patrol status
+        self.patrol_status_label.setText("巡检: 就绪")
         
         # Update variables tab if it's visible
         if self.tab_widget.currentIndex() == 2:  # Variables tab
@@ -561,21 +430,5 @@ class MainWindow(QMainWindow):
     
     def closeEvent(self, event):
         """Handle application close event"""
-        if self.is_monitoring:
-            reply = QMessageBox.question(
-                self,
-                "确认退出",
-                "监控仍在运行中。您确定要退出吗？",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No
-            )
-            
-            if reply == QMessageBox.Yes:
-                self.stop_monitoring()
-                event.accept()
-            else:
-                event.ignore()
-        else:
-            event.accept()
-        
+        event.accept()
         self.logger.info("Application closing")
