@@ -27,7 +27,7 @@ class WebsiteConfigDialog(QDialog):
     
     def init_ui(self):
         """Initialize the user interface"""
-        self.setWindowTitle("Website Configuration")
+        self.setWindowTitle("网站配置")
         self.setModal(True)
         self.resize(600, 500)
         
@@ -59,42 +59,42 @@ class WebsiteConfigDialog(QDialog):
         
         # Basic settings
         self.name_edit = QLineEdit()
-        self.name_edit.setPlaceholderText("Unique name for this website")
-        layout.addRow("Name:", self.name_edit)
+        self.name_edit.setPlaceholderText("此网站的唯一名称")
+        layout.addRow("名称:", self.name_edit)
         
         self.url_edit = QLineEdit()
         self.url_edit.setPlaceholderText("https://example.com")
-        layout.addRow("URL:", self.url_edit)
+        layout.addRow("网址:", self.url_edit)
         
         self.enabled_checkbox = QCheckBox()
         self.enabled_checkbox.setChecked(True)
-        layout.addRow("Enabled:", self.enabled_checkbox)
+        layout.addRow("启用:", self.enabled_checkbox)
         
         self.interval_spin = QSpinBox()
         self.interval_spin.setRange(10, 86400)  # 10 seconds to 1 day
         self.interval_spin.setValue(300)  # 5 minutes default
-        self.interval_spin.setSuffix(" seconds")
-        layout.addRow("Check Interval:", self.interval_spin)
+        self.interval_spin.setSuffix(" 秒")
+        layout.addRow("检查间隔:", self.interval_spin)
         
         self.timeout_spin = QSpinBox()
         self.timeout_spin.setRange(5, 300)  # 5 seconds to 5 minutes
         self.timeout_spin.setValue(30)
-        self.timeout_spin.setSuffix(" seconds")
-        layout.addRow("Timeout:", self.timeout_spin)
+        self.timeout_spin.setSuffix(" 秒")
+        layout.addRow("超时时间:", self.timeout_spin)
         
         # Expected status codes
         self.status_codes_edit = QLineEdit()
         self.status_codes_edit.setText("200")
         self.status_codes_edit.setPlaceholderText("200,301,302")
-        layout.addRow("Expected Status Codes:", self.status_codes_edit)
+        layout.addRow("预期状态码:", self.status_codes_edit)
         
         # Content checks
         self.content_checks_edit = QTextEdit()
         self.content_checks_edit.setMaximumHeight(100)
-        self.content_checks_edit.setPlaceholderText("Enter text that should be present on the page (one per line)")
-        layout.addRow("Content Checks:", self.content_checks_edit)
+        self.content_checks_edit.setPlaceholderText("输入页面上应该存在的文本（每行一个）")
+        layout.addRow("内容检查:", self.content_checks_edit)
         
-        self.tab_widget.addTab(basic_widget, "Basic")
+        self.tab_widget.addTab(basic_widget, "基本")
     
     def create_auth_tab(self):
         """Create authentication configuration tab"""
@@ -104,9 +104,9 @@ class WebsiteConfigDialog(QDialog):
         # Authentication type
         auth_type_layout = QFormLayout()
         self.auth_type_combo = QComboBox()
-        self.auth_type_combo.addItems(["None", "HTTP Basic", "Bearer Token", "Form Login"])
+        self.auth_type_combo.addItems(["无", "HTTP 基本认证", "Bearer 令牌", "表单登录"])
         self.auth_type_combo.currentTextChanged.connect(self.on_auth_type_changed)
-        auth_type_layout.addRow("Authentication Type:", self.auth_type_combo)
+        auth_type_layout.addRow("身份验证类型:", self.auth_type_combo)
         layout.addLayout(auth_type_layout)
         
         # Authentication details (will be shown/hidden based on type)
@@ -134,24 +134,24 @@ class WebsiteConfigDialog(QDialog):
         # Initially hide auth details
         self.auth_details_widget.hide()
         
-        self.tab_widget.addTab(auth_widget, "Authentication")
+        self.tab_widget.addTab(auth_widget, "身份验证")
     
     def create_checks_tab(self):
         """Create custom checks configuration tab"""
         checks_widget = QWidget()
         layout = QVBoxLayout(checks_widget)
         
-        layout.addWidget(QLabel("Custom Checks (Advanced):"))
+        layout.addWidget(QLabel("自定义检查（高级）:"))
         
         # Custom checks text area (placeholder for advanced functionality)
         self.custom_checks_edit = QTextEdit()
         self.custom_checks_edit.setPlaceholderText(
-            "Advanced custom checks configuration will be implemented here.\n"
-            "This will allow XPath, CSS selectors, and custom validation rules."
+            "高级自定义检查配置将在此处实现。\n"
+            "这将允许 XPath、CSS 选择器和自定义验证规则。"
         )
         layout.addWidget(self.custom_checks_edit)
         
-        self.tab_widget.addTab(checks_widget, "Custom Checks")
+        self.tab_widget.addTab(checks_widget, "自定义检查")
     
     def create_features_tab(self):
         """Create features configuration tab"""
@@ -159,20 +159,20 @@ class WebsiteConfigDialog(QDialog):
         layout = QVBoxLayout(features_widget)
         
         # Screenshots
-        screenshot_group = QGroupBox("Screenshots")
+        screenshot_group = QGroupBox("截图")
         screenshot_layout = QVBoxLayout(screenshot_group)
         
-        self.screenshot_checkbox = QCheckBox("Take screenshots during checks")
+        self.screenshot_checkbox = QCheckBox("检查时截取屏幕快照")
         self.screenshot_checkbox.setChecked(True)
         screenshot_layout.addWidget(self.screenshot_checkbox)
         
         layout.addWidget(screenshot_group)
         
         # File downloads
-        download_group = QGroupBox("File Downloads")
+        download_group = QGroupBox("文件下载")
         download_layout = QVBoxLayout(download_group)
         
-        download_layout.addWidget(QLabel("URLs to download (one per line):"))
+        download_layout.addWidget(QLabel("要下载的网址（每行一个）:"))
         self.download_urls_edit = QTextEdit()
         self.download_urls_edit.setMaximumHeight(100)
         download_layout.addWidget(self.download_urls_edit)
@@ -180,10 +180,10 @@ class WebsiteConfigDialog(QDialog):
         layout.addWidget(download_group)
         
         # Custom headers
-        headers_group = QGroupBox("Custom Headers")
+        headers_group = QGroupBox("自定义请求头")
         headers_layout = QVBoxLayout(headers_group)
         
-        headers_layout.addWidget(QLabel("Custom HTTP headers (key:value, one per line):"))
+        headers_layout.addWidget(QLabel("自定义 HTTP 请求头（键:值，每行一个）:"))
         self.headers_edit = QTextEdit()
         self.headers_edit.setMaximumHeight(100)
         self.headers_edit.setPlaceholderText("User-Agent: Custom Bot 1.0\nX-Custom-Header: value")
@@ -191,7 +191,7 @@ class WebsiteConfigDialog(QDialog):
         
         layout.addWidget(headers_group)
         
-        self.tab_widget.addTab(features_widget, "Features")
+        self.tab_widget.addTab(features_widget, "功能")
     
     def on_auth_type_changed(self, auth_type):
         """Handle authentication type change"""
@@ -199,27 +199,27 @@ class WebsiteConfigDialog(QDialog):
         for i in reversed(range(self.auth_details_layout.count())):
             self.auth_details_layout.itemAt(i).widget().hide()
         
-        if auth_type == "None":
+        if auth_type == "无":
             self.auth_details_widget.hide()
         else:
             self.auth_details_widget.show()
             
-            if auth_type == "HTTP Basic":
-                self.auth_details_layout.addRow("Username:", self.username_edit)
-                self.auth_details_layout.addRow("Password:", self.password_edit)
+            if auth_type == "HTTP 基本认证":
+                self.auth_details_layout.addRow("用户名:", self.username_edit)
+                self.auth_details_layout.addRow("密码:", self.password_edit)
                 self.username_edit.show()
                 self.password_edit.show()
                 
-            elif auth_type == "Bearer Token":
-                self.auth_details_layout.addRow("Token:", self.token_edit)
+            elif auth_type == "Bearer 令牌":
+                self.auth_details_layout.addRow("令牌:", self.token_edit)
                 self.token_edit.show()
                 
-            elif auth_type == "Form Login":
-                self.auth_details_layout.addRow("Login URL:", self.login_url_edit)
-                self.auth_details_layout.addRow("Username:", self.username_edit)
-                self.auth_details_layout.addRow("Password:", self.password_edit)
-                self.auth_details_layout.addRow("Username Field Name:", self.username_field_edit)
-                self.auth_details_layout.addRow("Password Field Name:", self.password_field_edit)
+            elif auth_type == "表单登录":
+                self.auth_details_layout.addRow("登录网址:", self.login_url_edit)
+                self.auth_details_layout.addRow("用户名:", self.username_edit)
+                self.auth_details_layout.addRow("密码:", self.password_edit)
+                self.auth_details_layout.addRow("用户名字段名:", self.username_field_edit)
+                self.auth_details_layout.addRow("密码字段名:", self.password_field_edit)
                 self.login_url_edit.show()
                 self.username_edit.show()
                 self.password_edit.show()
@@ -245,11 +245,11 @@ class WebsiteConfigDialog(QDialog):
         # Authentication
         if config.auth_type:
             auth_type_map = {
-                'basic': 'HTTP Basic',
-                'bearer': 'Bearer Token',
-                'form': 'Form Login'
+                'basic': 'HTTP 基本认证',
+                'bearer': 'Bearer 令牌',
+                'form': '表单登录'
             }
-            auth_type = auth_type_map.get(config.auth_type, 'None')
+            auth_type = auth_type_map.get(config.auth_type, '无')
             self.auth_type_combo.setCurrentText(auth_type)
             
             if config.auth_config:
@@ -272,13 +272,13 @@ class WebsiteConfigDialog(QDialog):
         """Get configuration from the dialog"""
         # Validate inputs
         if not self.name_edit.text().strip():
-            raise ValueError("Website name is required")
+            raise ValueError("网站名称是必需的")
         
         if not self.url_edit.text().strip():
-            raise ValueError("URL is required")
+            raise ValueError("网址是必需的")
         
         if not is_url_valid(self.url_edit.text().strip()):
-            raise ValueError("Invalid URL format")
+            raise ValueError("无效的网址格式")
         
         # Parse status codes
         try:
@@ -286,7 +286,7 @@ class WebsiteConfigDialog(QDialog):
             if not status_codes:
                 status_codes = [200]
         except ValueError:
-            raise ValueError("Invalid status codes format")
+            raise ValueError("状态码格式无效")
         
         # Parse content checks
         content_checks = [line.strip() for line in self.content_checks_edit.toPlainText().split('\n') if line.strip()]
@@ -296,11 +296,11 @@ class WebsiteConfigDialog(QDialog):
         auth_config = None
         
         auth_type_text = self.auth_type_combo.currentText()
-        if auth_type_text != "None":
+        if auth_type_text != "无":
             auth_type_map = {
-                'HTTP Basic': 'basic',
-                'Bearer Token': 'bearer',
-                'Form Login': 'form'
+                'HTTP 基本认证': 'basic',
+                'Bearer 令牌': 'bearer',
+                '表单登录': 'form'
             }
             auth_type = auth_type_map[auth_type_text]
             
@@ -355,4 +355,4 @@ class WebsiteConfigDialog(QDialog):
             self.get_config()  # Validate configuration
             super().accept()
         except ValueError as e:
-            QMessageBox.warning(self, "Validation Error", str(e))
+            QMessageBox.warning(self, "验证错误", str(e))

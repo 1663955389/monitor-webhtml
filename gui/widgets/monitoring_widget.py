@@ -27,13 +27,13 @@ class MonitoringWidget(QWidget):
         
         # Header
         header_layout = QHBoxLayout()
-        header_label = QLabel("Configured Websites")
+        header_label = QLabel("已配置的网站")
         header_label.setStyleSheet("font-size: 14px; font-weight: bold; margin: 10px 0;")
         header_layout.addWidget(header_label)
         header_layout.addStretch()
         
         # Refresh button
-        refresh_btn = QPushButton("Refresh")
+        refresh_btn = QPushButton("刷新")
         refresh_btn.clicked.connect(self.refresh_websites)
         header_layout.addWidget(refresh_btn)
         
@@ -43,7 +43,7 @@ class MonitoringWidget(QWidget):
         self.websites_table = QTableWidget()
         self.websites_table.setColumnCount(7)
         self.websites_table.setHorizontalHeaderLabels([
-            "Name", "URL", "Status", "Interval (s)", "Last Check", "Response Time", "Actions"
+            "名称", "网址", "状态", "间隔(秒)", "最近检查", "响应时间", "操作"
         ])
         
         # Configure table
@@ -64,11 +64,11 @@ class MonitoringWidget(QWidget):
         # Bottom controls
         controls_layout = QHBoxLayout()
         
-        self.check_now_btn = QPushButton("Check Selected Now")
+        self.check_now_btn = QPushButton("立即检查选中项")
         self.check_now_btn.clicked.connect(self.check_selected_website)
         controls_layout.addWidget(self.check_now_btn)
         
-        self.remove_btn = QPushButton("Remove Selected")
+        self.remove_btn = QPushButton("删除选中项")
         self.remove_btn.clicked.connect(self.remove_selected_website)
         controls_layout.addWidget(self.remove_btn)
         
@@ -91,7 +91,7 @@ class MonitoringWidget(QWidget):
             self.websites_table.setItem(row, 1, url_item)
             
             # Status (enabled/disabled)
-            status = "Enabled" if config.enabled else "Disabled"
+            status = "启用" if config.enabled else "禁用"
             status_item = QTableWidgetItem(status)
             if config.enabled:
                 status_item.setBackground(Qt.green)
@@ -103,13 +103,13 @@ class MonitoringWidget(QWidget):
             self.websites_table.setItem(row, 3, QTableWidgetItem(str(config.check_interval)))
             
             # Last check time (placeholder for now)
-            self.websites_table.setItem(row, 4, QTableWidgetItem("Never"))
+            self.websites_table.setItem(row, 4, QTableWidgetItem("从未"))
             
             # Response time (placeholder for now)
             self.websites_table.setItem(row, 5, QTableWidgetItem("N/A"))
             
             # Actions (placeholder for now)
-            self.websites_table.setItem(row, 6, QTableWidgetItem("Edit | Delete"))
+            self.websites_table.setItem(row, 6, QTableWidgetItem("编辑 | 删除"))
         
         # Update button states
         self.update_button_states()
@@ -135,8 +135,8 @@ class MonitoringWidget(QWidget):
         # For now, just show a message
         QMessageBox.information(
             self,
-            "Check Website",
-            f"Triggering immediate check for: {website_name}"
+            "检查网站",
+            f"触发立即检查: {website_name}"
         )
     
     @pyqtSlot()
@@ -150,8 +150,8 @@ class MonitoringWidget(QWidget):
         
         reply = QMessageBox.question(
             self,
-            "Confirm Removal",
-            f"Are you sure you want to remove '{website_name}' from monitoring?",
+            "确认删除",
+            f"您确定要从监控中删除 '{website_name}' 吗？",
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No
         )

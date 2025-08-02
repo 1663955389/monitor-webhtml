@@ -24,7 +24,7 @@ def main():
     
     # Create PyQt5 application
     app = QApplication(sys.argv)
-    app.setApplicationName("Website Monitor")
+    app.setApplicationName("网站监控")
     app.setApplicationVersion("1.0.0")
     
     # Create and show main window

@@ -85,7 +85,7 @@ class MainWindow(QMainWindow):
     
     def init_ui(self):
         """Initialize the user interface"""
-        self.setWindowTitle("Website Monitoring and Reporting System")
+        self.setWindowTitle("网站监控和报告系统")
         self.setGeometry(100, 100, 1400, 900)
         
         # Set application icon (if available)
@@ -126,53 +126,53 @@ class MainWindow(QMainWindow):
         menubar = self.menuBar()
         
         # File menu
-        file_menu = menubar.addMenu('File')
+        file_menu = menubar.addMenu('文件')
         
-        new_website_action = QAction('Add Website', self)
+        new_website_action = QAction('添加网站', self)
         new_website_action.setShortcut('Ctrl+N')
         new_website_action.triggered.connect(self.add_website)
         file_menu.addAction(new_website_action)
         
         file_menu.addSeparator()
         
-        exit_action = QAction('Exit', self)
+        exit_action = QAction('退出', self)
         exit_action.setShortcut('Ctrl+Q')
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
         
         # Monitoring menu
-        monitor_menu = menubar.addMenu('Monitoring')
+        monitor_menu = menubar.addMenu('监控')
         
-        start_action = QAction('Start Monitoring', self)
+        start_action = QAction('开始监控', self)
         start_action.setShortcut('F5')
         start_action.triggered.connect(self.start_monitoring)
         monitor_menu.addAction(start_action)
         
-        stop_action = QAction('Stop Monitoring', self)
+        stop_action = QAction('停止监控', self)
         stop_action.setShortcut('F6')
         stop_action.triggered.connect(self.stop_monitoring)
         monitor_menu.addAction(stop_action)
         
         # Tools menu
-        tools_menu = menubar.addMenu('Tools')
+        tools_menu = menubar.addMenu('工具')
         
-        notifications_action = QAction('Notification Settings', self)
+        notifications_action = QAction('通知设置', self)
         notifications_action.triggered.connect(self.configure_notifications)
         tools_menu.addAction(notifications_action)
         
         # Help menu
-        help_menu = menubar.addMenu('Help')
+        help_menu = menubar.addMenu('帮助')
         
-        about_action = QAction('About', self)
+        about_action = QAction('关于', self)
         about_action.triggered.connect(self.show_about)
         help_menu.addAction(about_action)
     
     def create_toolbar(self):
         """Create the toolbar"""
-        toolbar = self.addToolBar('Main')
+        toolbar = self.addToolBar('主要')
         
         # Start monitoring button
-        self.start_btn = QPushButton('Start Monitoring')
+        self.start_btn = QPushButton('开始监控')
         self.start_btn.setStyleSheet("""
             QPushButton {
                 background-color: #4CAF50;
@@ -193,7 +193,7 @@ class MainWindow(QMainWindow):
         toolbar.addWidget(self.start_btn)
         
         # Stop monitoring button
-        self.stop_btn = QPushButton('Stop Monitoring')
+        self.stop_btn = QPushButton('停止监控')
         self.stop_btn.setStyleSheet("""
             QPushButton {
                 background-color: #f44336;
@@ -217,14 +217,14 @@ class MainWindow(QMainWindow):
         toolbar.addSeparator()
         
         # Add website button
-        add_website_btn = QPushButton('Add Website')
+        add_website_btn = QPushButton('添加网站')
         add_website_btn.clicked.connect(self.add_website)
         toolbar.addWidget(add_website_btn)
     
     def create_monitoring_tab(self):
         """Create the monitoring tab"""
         self.monitoring_widget = MonitoringWidget(self.monitor)
-        self.tab_widget.addTab(self.monitoring_widget, "Monitoring")
+        self.tab_widget.addTab(self.monitoring_widget, "监控")
     
     def create_results_tab(self):
         """Create the results tab"""
@@ -235,10 +235,10 @@ class MainWindow(QMainWindow):
         self.results_text = QTextEdit()
         self.results_text.setReadOnly(True)
         self.results_text.setFont(QFont("Consolas", 10))
-        layout.addWidget(QLabel("Monitoring Results:"))
+        layout.addWidget(QLabel("监控结果:"))
         layout.addWidget(self.results_text)
         
-        self.tab_widget.addTab(results_widget, "Results")
+        self.tab_widget.addTab(results_widget, "结果")
     
     def create_variables_tab(self):
         """Create the variables tab"""
@@ -248,15 +248,15 @@ class MainWindow(QMainWindow):
         # Variables display
         self.variables_text = QTextEdit()
         self.variables_text.setReadOnly(True)
-        layout.addWidget(QLabel("Variables:"))
+        layout.addWidget(QLabel("变量:"))
         layout.addWidget(self.variables_text)
         
         # Refresh button
-        refresh_btn = QPushButton("Refresh Variables")
+        refresh_btn = QPushButton("刷新变量")
         refresh_btn.clicked.connect(self.refresh_variables)
         layout.addWidget(refresh_btn)
         
-        self.tab_widget.addTab(variables_widget, "Variables")
+        self.tab_widget.addTab(variables_widget, "变量")
     
     def create_reports_tab(self):
         """Create the reports tab"""
@@ -264,17 +264,17 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(reports_widget)
         
         # Reports controls
-        generate_btn = QPushButton("Generate Report")
+        generate_btn = QPushButton("生成报告")
         generate_btn.clicked.connect(self.generate_report)
         layout.addWidget(generate_btn)
         
         # Reports display
         self.reports_text = QTextEdit()
         self.reports_text.setReadOnly(True)
-        layout.addWidget(QLabel("Generated Reports:"))
+        layout.addWidget(QLabel("生成的报告:"))
         layout.addWidget(self.reports_text)
         
-        self.tab_widget.addTab(reports_widget, "Reports")
+        self.tab_widget.addTab(reports_widget, "报告")
     
     def create_settings_tab(self):
         """Create the settings tab"""
@@ -284,13 +284,13 @@ class MainWindow(QMainWindow):
         # Settings display
         self.settings_text = QTextEdit()
         self.settings_text.setReadOnly(True)
-        layout.addWidget(QLabel("Configuration:"))
+        layout.addWidget(QLabel("配置:"))
         layout.addWidget(self.settings_text)
         
         # Load current config
         self.load_config_display()
         
-        self.tab_widget.addTab(settings_widget, "Settings")
+        self.tab_widget.addTab(settings_widget, "设置")
     
     def create_status_bar(self):
         """Create the status bar"""
@@ -298,9 +298,9 @@ class MainWindow(QMainWindow):
         self.setStatusBar(self.status_bar)
         
         # Status labels
-        self.status_label = QLabel("Ready")
-        self.monitoring_status_label = QLabel("Monitoring: Stopped")
-        self.websites_count_label = QLabel("Websites: 0")
+        self.status_label = QLabel("就绪")
+        self.monitoring_status_label = QLabel("监控: 已停止")
+        self.websites_count_label = QLabel("网站: 0")
         
         self.status_bar.addWidget(self.status_label)
         self.status_bar.addPermanentWidget(self.websites_count_label)
@@ -363,7 +363,7 @@ class MainWindow(QMainWindow):
             return
         
         if not self.monitor.websites:
-            QMessageBox.warning(self, "Warning", "No websites configured for monitoring!")
+            QMessageBox.warning(self, "警告", "没有配置需要监控的网站!")
             return
         
         try:
@@ -375,11 +375,11 @@ class MainWindow(QMainWindow):
             self.start_btn.setEnabled(False)
             self.stop_btn.setEnabled(True)
             
-            self.status_label.setText("Starting monitoring...")
+            self.status_label.setText("正在启动监控...")
             self.logger.info("Monitoring started")
             
         except Exception as e:
-            QMessageBox.critical(self, "Error", f"Failed to start monitoring: {e}")
+            QMessageBox.critical(self, "错误", f"启动监控失败: {e}")
             self.logger.error(f"Failed to start monitoring: {e}")
     
     @pyqtSlot()
@@ -397,11 +397,11 @@ class MainWindow(QMainWindow):
             self.start_btn.setEnabled(True)
             self.stop_btn.setEnabled(False)
             
-            self.status_label.setText("Monitoring stopped")
+            self.status_label.setText("监控已停止")
             self.logger.info("Monitoring stopped")
             
         except Exception as e:
-            QMessageBox.critical(self, "Error", f"Failed to stop monitoring: {e}")
+            QMessageBox.critical(self, "错误", f"停止监控失败: {e}")
             self.logger.error(f"Failed to stop monitoring: {e}")
     
     @pyqtSlot(object)
@@ -412,17 +412,17 @@ class MainWindow(QMainWindow):
     def on_monitoring_result(self, result: MonitorResult):
         """Handle monitoring result"""
         # Update results display
-        status = "SUCCESS" if result.success else "FAILED"
+        status = "成功" if result.success else "失败"
         result_text = (
             f"[{result.timestamp.strftime('%H:%M:%S')}] "
             f"{result.website_name} - {status}\n"
-            f"  URL: {result.url}\n"
-            f"  Status: {result.status_code}\n"
-            f"  Response Time: {result.response_time:.2f}s\n"
+            f"  网址: {result.url}\n"
+            f"  状态: {result.status_code}\n"
+            f"  响应时间: {result.response_time:.2f}秒\n"
         )
         
         if result.error_message:
-            result_text += f"  Error: {result.error_message}\n"
+            result_text += f"  错误: {result.error_message}\n"
         
         result_text += "\n"
         
@@ -460,14 +460,14 @@ class MainWindow(QMainWindow):
         """Refresh variables display"""
         variables = self.variable_manager.get_all_variables_with_metadata()
         
-        text = "Variables:\n\n"
+        text = "变量:\n\n"
         for name, data in variables.items():
             value = data['value']
             metadata = data['metadata']
-            text += f"Name: {name}\n"
-            text += f"Type: {metadata.get('type', 'unknown')}\n"
-            text += f"Value: {str(value)[:100]}...\n" if len(str(value)) > 100 else f"Value: {value}\n"
-            text += f"Created: {metadata.get('created_at', 'unknown')}\n"
+            text += f"名称: {name}\n"
+            text += f"类型: {metadata.get('type', '未知')}\n"
+            text += f"值: {str(value)[:100]}...\n" if len(str(value)) > 100 else f"值: {value}\n"
+            text += f"创建时间: {metadata.get('created_at', '未知')}\n"
             text += "\n"
         
         self.variables_text.setPlainText(text)
@@ -483,11 +483,11 @@ class MainWindow(QMainWindow):
         """Update status bar information"""
         # Update website count
         website_count = len(self.monitor.websites)
-        self.websites_count_label.setText(f"Websites: {website_count}")
+        self.websites_count_label.setText(f"网站: {website_count}")
         
         # Update monitoring status
-        status = "Running" if self.is_monitoring else "Stopped"
-        self.monitoring_status_label.setText(f"Monitoring: {status}")
+        status = "运行中" if self.is_monitoring else "已停止"
+        self.monitoring_status_label.setText(f"监控: {status}")
         
         # Update variables tab if it's visible
         if self.tab_widget.currentIndex() == 2:  # Variables tab
@@ -497,11 +497,11 @@ class MainWindow(QMainWindow):
         """Show about dialog"""
         QMessageBox.about(
             self,
-            "About",
-            "Website Monitoring and Reporting System\n\n"
-            "A comprehensive solution for monitoring multiple websites\n"
-            "with custom reporting and notification capabilities.\n\n"
-            "Version: 1.0.0"
+            "关于",
+            "网站监控和报告系统\n\n"
+            "一个用于监控多个网站的综合解决方案，\n"
+            "具有自定义报告和通知功能。\n\n"
+            "版本: 1.0.0"
         )
     
     def closeEvent(self, event):
@@ -509,8 +509,8 @@ class MainWindow(QMainWindow):
         if self.is_monitoring:
             reply = QMessageBox.question(
                 self,
-                "Confirm Exit",
-                "Monitoring is still running. Are you sure you want to exit?",
+                "确认退出",
+                "监控仍在运行中。您确定要退出吗？",
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.No
             )
