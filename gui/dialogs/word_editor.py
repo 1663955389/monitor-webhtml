@@ -525,48 +525,141 @@ class WordReportEditor(QDialog):
         
         variables = self.variable_manager.get_all_variables_with_metadata()
         
+        if not variables:
+            # Add helpful message when no variables exist
+            help_item = QListWidgetItem("暂无可用变量")
+            help_item.setData(Qt.UserRole, None)
+            help_item.setFlags(help_item.flags() & ~Qt.ItemIsSelectable)  # Make non-selectable
+            self.variables_list.addItem(help_item)
+            
+            help_item2 = QListWidgetItem("执行巡检任务后将自动生成变量")
+            help_item2.setData(Qt.UserRole, None)
+            help_item2.setFlags(help_item2.flags() & ~Qt.ItemIsSelectable)
+            self.variables_list.addItem(help_item2)
+            return
+        
+        # Group variables by type for better organization
+        var_groups = {
+            'screenshot': [],
+            'extracted': [],
+            'status': [],
+            'api': [],
+            'download': [],
+            'other': []
+        }
+        
         for var_name, var_info in variables.items():
             var_type = var_info.get('metadata', {}).get('type', 'unknown')
             var_value = var_info.get('value', '')
+            var_description = var_info.get('metadata', {}).get('description', '')
             
-            # Create display text with type and preview
-            if var_type == 'image':
-                display_text = f"${{{var_name}}} [图片] - {var_value}"
-            elif var_type == 'text':
-                preview = str(var_value)[:30] + "..." if len(str(var_value)) > 30 else str(var_value)
-                display_text = f"${{{var_name}}} [文本] - {preview}"
-            elif var_type == 'number':
-                display_text = f"${{{var_name}}} [数字] - {var_value}"
+            # Categorize variables by name pattern
+            if 'screenshot' in var_name:
+                category = 'screenshot'
+            elif 'extracted' in var_name:
+                category = 'extracted'
+            elif 'status' in var_name:
+                category = 'status'
+            elif 'api' in var_name:
+                category = 'api'
+            elif 'download' in var_name:
+                category = 'download'
             else:
-                display_text = f"${{{var_name}}} [{var_type}] - {str(var_value)[:30]}..."
+                category = 'other'
             
-            item = QListWidgetItem(display_text)
-            item.setData(Qt.UserRole, var_name)  # Store variable name
-            self.variables_list.addItem(item)
+            var_groups[category].append({
+                'name': var_name,
+                'type': var_type,
+                'value': var_value,
+                'description': var_description
+            })
+        
+        # Add grouped variables to list
+        group_names = {
+            'screenshot': '📸 页面截图',
+            'extracted': '📝 提取内容',
+            'status': '✅ 状态信息',
+            'api': '🔗 API响应',
+            'download': '📁 下载文件',
+            'other': '🔧 其他变量'
+        }
+        
+        for group_key, group_title in group_names.items():
+            if var_groups[group_key]:
+                # Add group header
+                header_item = QListWidgetItem(f"━━━ {group_title} ━━━")
+                header_item.setData(Qt.UserRole, None)
+                header_item.setFlags(header_item.flags() & ~Qt.ItemIsSelectable)
+                header_font = QFont()
+                header_font.setBold(True)
+                header_item.setFont(header_font)
+                self.variables_list.addItem(header_item)
+                
+                # Add variables in this group
+                for var_info in var_groups[group_key]:
+                    var_name = var_info['name']
+                    var_type = var_info['type']
+                    var_value = var_info['value']
+                    var_description = var_info['description']
+                    
+                    # Create display text with description
+                    if var_description:
+                        display_text = f"${{{var_name}}}\n  📋 {var_description}"
+                    else:
+                        # Fallback display based on type
+                        if var_type == 'image':
+                            display_text = f"${{{var_name}}}\n  📸 图片文件: {Path(str(var_value)).name if var_value else '未知'}"
+                        elif var_type == 'text':
+                            preview = str(var_value)[:50] + "..." if len(str(var_value)) > 50 else str(var_value)
+                            display_text = f"${{{var_name}}}\n  📝 文本: {preview}"
+                        elif var_type == 'number':
+                            display_text = f"${{{var_name}}}\n  🔢 数值: {var_value}"
+                        else:
+                            display_text = f"${{{var_name}}}\n  🔧 {var_type}: {str(var_value)[:30]}..."
+                    
+                    item = QListWidgetItem(display_text)
+                    item.setData(Qt.UserRole, var_name)  # Store variable name
+                    item.setToolTip(f"变量名: {var_name}\n类型: {var_type}\n描述: {var_description or '无描述'}\n双击插入到编辑器")
+                    self.variables_list.addItem(item)
     
     def show_variable_selector(self):
         """Show variable selection dialog"""
-        if self.variables_list.count() == 0:
+        # Refresh variables list first
+        self.refresh_variables_list()
+        
+        variables = self.variable_manager.get_all_variables_with_metadata()
+        
+        if not variables:
             QMessageBox.information(
                 self, "提示", 
-                "当前没有可用的变量。\n\n变量会在执行巡检任务时自动生成，包括:\n• 页面截图\n• XPath提取的内容\n• 其他检查结果"
+                "当前没有可用的变量。\n\n变量会在执行巡检任务时自动生成，包括:\n" +
+                "• ${screenshot_任务名_网站} - 页面截图\n" +
+                "• ${extracted_检查名_任务名} - XPath/CSS提取的内容\n" +
+                "• ${status_任务名_网站} - 巡检状态 (成功/失败)\n" +
+                "• ${response_time_任务名_网站} - 页面响应时间\n" +
+                "• ${api_status_检查名_任务名} - API状态码\n\n" +
+                "执行巡检任务后，这些变量将自动出现在右侧变量列表中。"
             )
             return
         
-        # Refresh variables list
-        self.refresh_variables_list()
-        
         QMessageBox.information(
             self, "使用变量", 
-            "在下方的变量列表中双击变量名即可插入到编辑器中。\n\n变量语法: ${变量名}\n例如: ${screenshot_主网站} 或 ${extracted_用户数量}"
+            f"发现 {len(variables)} 个可用变量！\n\n" +
+            "使用方法:\n" +
+            "1. 在右侧变量列表中选择需要的变量\n" +
+            "2. 双击变量名即可插入到编辑器中\n" +
+            "3. 变量语法: ${变量名}\n" +
+            "4. 报告生成时会自动替换为实际值\n\n" +
+            "提示: 将鼠标悬停在变量上可查看详细信息"
         )
     
     def insert_selected_variable(self, item):
         """Insert selected variable into the content editor"""
         var_name = item.data(Qt.UserRole)
-        if var_name:
+        if var_name:  # Only insert if it's actually a variable (not a header or help text)
             cursor = self.content_editor.textCursor()
             cursor.insertText(f"${{{var_name}}}")
+            self.logger.info(f"Inserted variable: ${{{var_name}}}")
     
     def load_variables_from_patrol_results(self, patrol_results):
         """Load variables from patrol results for use in reports"""
