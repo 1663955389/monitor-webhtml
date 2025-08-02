@@ -582,9 +582,10 @@ class PatrolTaskConfigDialog(QDialog):
         report_group = QGroupBox("报告设置")
         report_layout = QFormLayout(report_group)
         
-        self.generate_report_check = QCheckBox("生成巡检报告")
+        self.generate_report_check = QCheckBox("巡检完成后自动生成报告")
         self.generate_report_check.setChecked(True)
         self.generate_report_check.toggled.connect(self.on_report_settings_changed)
+        self.generate_report_check.setToolTip("勾选后，每次巡检任务执行完成时会自动生成Word格式的巡检报告")
         report_layout.addRow("", self.generate_report_check)
         
         self.report_format_combo = QComboBox()

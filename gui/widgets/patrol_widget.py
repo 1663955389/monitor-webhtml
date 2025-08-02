@@ -619,17 +619,51 @@ class PatrolTaskWidget(QWidget):
         # Populate variables from the new results for immediate use
         self._populate_variables_from_results(results)
         
+        # Check if automatic report generation is enabled for this task
+        task = self.patrol_engine.get_patrol_task(task_name)
+        auto_generate_report = task and task.generate_report
+        
         # Show completion message
         success_count = sum(1 for r in results if r.success)
         total_count = len(results)
         
-        msg = (
-            f"巡检任务 '{task_name}' 执行完成\n\n"
-            f"总计: {total_count} 个网站\n"
-            f"成功: {success_count} 个\n"
-            f"失败: {total_count - success_count} 个\n\n"
-            f"💡 提示: 您可以使用'生成报告'和'编辑报告'功能来创建和自定义Word报告。"
-        )
+        if auto_generate_report:
+            # Automatically generate report
+            try:
+                report_path = self.report_generator.generate_word_report(
+                    task_name, results, self.variable_manager
+                )
+                
+                # Store the generated report path
+                self.last_generated_reports[task_name] = report_path
+                
+                msg = (
+                    f"巡检任务 '{task_name}' 执行完成\n\n"
+                    f"总计: {total_count} 个网站\n"
+                    f"成功: {success_count} 个\n"
+                    f"失败: {total_count - success_count} 个\n\n"
+                    f"📄 报告已自动生成: {report_path}\n\n"
+                    f"💡 提示: 您可以使用'编辑报告'功能来进一步自定义报告内容。"
+                )
+                
+            except Exception as e:
+                self.logger.error(f"Auto-generate report failed: {e}")
+                msg = (
+                    f"巡检任务 '{task_name}' 执行完成\n\n"
+                    f"总计: {total_count} 个网站\n"
+                    f"成功: {success_count} 个\n"
+                    f"失败: {total_count - success_count} 个\n\n"
+                    f"⚠️ 自动生成报告失败: {str(e)}\n"
+                    f"💡 您可以手动使用'生成报告'功能。"
+                )
+        else:
+            msg = (
+                f"巡检任务 '{task_name}' 执行完成\n\n"
+                f"总计: {total_count} 个网站\n"
+                f"成功: {success_count} 个\n"
+                f"失败: {total_count - success_count} 个\n\n"
+                f"💡 提示: 您可以使用'生成报告'和'编辑报告'功能来创建和自定义Word报告。"
+            )
         
         QMessageBox.information(self, "执行完成", msg)
         
