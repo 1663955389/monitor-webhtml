@@ -4,18 +4,20 @@ Patrol management widget for the main window (巡检管理组件)
 
 import logging
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, List, Optional
 
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
     QPushButton, QHeaderView, QMessageBox, QMenu, QLabel, QFrame,
-    QSplitter, QTextEdit, QGroupBox, QProgressBar, QComboBox
+    QSplitter, QTextEdit, QGroupBox, QProgressBar, QComboBox, QDialog
 )
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QThread, pyqtSlot
 from PyQt5.QtGui import QFont, QColor, QBrush, QIcon, QPixmap, QPainter
 
 from core.patrol import PatrolEngine, PatrolTask, PatrolResult, PatrolFrequency, PatrolCheck, PatrolType
 from gui.dialogs.patrol_config import PatrolTaskConfigDialog
+from gui.dialogs.word_editor import WordReportEditor
 from reports.generator import ReportGenerator
 
 
@@ -85,6 +87,7 @@ class PatrolTaskWidget(QWidget):
         # Execution state
         self.execution_threads: Dict[str, PatrolExecutionThread] = {}
         self.task_results: Dict[str, List[PatrolResult]] = {}
+        self.last_generated_reports: Dict[str, str] = {}  # Track last generated report paths
         
         self.setup_ui()
         self.setup_timers()
@@ -119,6 +122,13 @@ class PatrolTaskWidget(QWidget):
         self.delete_task_button.clicked.connect(self.delete_patrol_task)
         self.delete_task_button.setEnabled(False)
         header_layout.addWidget(self.delete_task_button)
+        
+        header_layout.addWidget(QLabel("|"))  # Separator
+        
+        # Report management buttons
+        self.open_word_editor_button = QPushButton("自定义报告编辑器")
+        self.open_word_editor_button.clicked.connect(self.open_word_editor)
+        header_layout.addWidget(self.open_word_editor_button)
         
         layout.addLayout(header_layout)
         
@@ -191,6 +201,12 @@ class PatrolTaskWidget(QWidget):
         self.generate_report_button.clicked.connect(self.generate_current_report)
         self.generate_report_button.setEnabled(False)
         header_layout.addWidget(self.generate_report_button)
+        
+        # Edit report button
+        self.edit_report_button = QPushButton("编辑报告")
+        self.edit_report_button.clicked.connect(self.edit_current_report)
+        self.edit_report_button.setEnabled(False)
+        header_layout.addWidget(self.edit_report_button)
         
         layout.addLayout(header_layout)
         
@@ -388,11 +404,14 @@ class PatrolTaskWidget(QWidget):
             if task_name_item:
                 task_name = task_name_item.data(Qt.UserRole)
                 self.display_task_results(task_name)
-                self.generate_report_button.setEnabled(
-                    task_name in self.task_results and len(self.task_results[task_name]) > 0
-                )
+                has_results = task_name in self.task_results and len(self.task_results[task_name]) > 0
+                self.generate_report_button.setEnabled(has_results)
+                # Enable edit report button only if there's a recently generated report
+                has_report = task_name in self.last_generated_reports
+                self.edit_report_button.setEnabled(has_report)
         else:
             self.generate_report_button.setEnabled(False)
+            self.edit_report_button.setEnabled(False)
     
     def show_context_menu(self, position):
         """Show context menu for tasks table"""
@@ -423,6 +442,12 @@ class PatrolTaskWidget(QWidget):
         
         view_results_action = menu.addAction("查看执行历史")
         view_results_action.triggered.connect(lambda: self.view_task_history(task_name))
+        
+        # Add edit report option if recent report exists
+        if task_name in self.last_generated_reports:
+            menu.addSeparator()
+            edit_report_action = menu.addAction("编辑最近报告")
+            edit_report_action.triggered.connect(lambda: self.edit_report_for_task(task_name))
         
         # Disable execute if already running
         if task_name in self.execution_threads:
@@ -730,14 +755,89 @@ class PatrolTaskWidget(QWidget):
             return
         
         try:
-            # Generate Word report
-            report_path = self.report_generator.generate_word_report(results)
+            # Generate patrol Word report with enhanced features
+            report_path = self.report_generator.generate_patrol_word_report(
+                patrol_results=results,
+                task_name=task_name
+            )
+            
+            # Store the path for editing functionality
+            self.last_generated_reports[task_name] = report_path
+            
+            # Update button states
+            self.edit_report_button.setEnabled(True)
+            
             QMessageBox.information(
                 self, "报告生成成功",
-                f"巡检报告已生成:\n{report_path}"
+                f"巡检报告已生成:\n{report_path}\n\n您可以点击'编辑报告'按钮来自定义报告内容。"
             )
         except Exception as e:
             QMessageBox.critical(self, "错误", f"生成报告失败: {str(e)}")
+    
+    def edit_current_report(self):
+        """Edit the most recently generated report for selected task"""
+        selected_rows = set(item.row() for item in self.tasks_table.selectedItems())
+        if len(selected_rows) != 1:
+            return
+        
+        row = list(selected_rows)[0]
+        task_name_item = self.tasks_table.item(row, 0)
+        task_name = task_name_item.data(Qt.UserRole)
+        
+        # Get the most recent report path for this task
+        report_path = self.last_generated_reports.get(task_name)
+        if not report_path or not Path(report_path).exists():
+            # No recent report, try to generate one first
+            reply = QMessageBox.question(
+                self, "无报告文件",
+                "找不到该任务的报告文件。是否要先生成报告？",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes
+            )
+            if reply == QMessageBox.Yes:
+                self.generate_current_report()
+                # After generation, try again
+                report_path = self.last_generated_reports.get(task_name)
+                if not report_path:
+                    return
+            else:
+                return
+        
+        try:
+            # Open Word report editor
+            editor = WordReportEditor(parent=self, report_path=report_path)
+            editor.report_saved.connect(lambda path: self._on_report_saved(task_name, path))
+            editor.exec_()
+            
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"打开报告编辑器失败: {str(e)}")
+    
+    def _on_report_saved(self, task_name: str, report_path: str):
+        """Handle report saved event"""
+        self.last_generated_reports[task_name] = report_path
+        QMessageBox.information(self, "成功", "报告已保存！")
+    
+    def edit_report_for_task(self, task_name: str):
+        """Edit report for a specific task (helper method for context menu)"""
+        # Select the task in the table first
+        for row in range(self.tasks_table.rowCount()):
+            item = self.tasks_table.item(row, 0)
+            if item and item.data(Qt.UserRole) == task_name:
+                self.tasks_table.selectRow(row)
+                break
+        
+        # Then call the main edit method
+        self.edit_current_report()
+    
+    def open_word_editor(self):
+        """Open Word editor for custom report editing"""
+        try:
+            # Open Word editor without any specific report
+            editor = WordReportEditor(parent=self)
+            editor.exec_()
+            
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"打开自定义报告编辑器失败: {str(e)}")
     
     def view_task_history(self, task_name: str):
         """View execution history for a task"""
