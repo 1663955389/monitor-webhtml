@@ -128,6 +128,7 @@ class PatrolTaskWidget(QWidget):
         # Report management buttons
         self.open_word_editor_button = QPushButton("自定义报告编辑器")
         self.open_word_editor_button.clicked.connect(self.open_word_editor)
+        self.open_word_editor_button.setToolTip("打开独立的Word报告编辑器，创建或编辑任意Word文档")
         header_layout.addWidget(self.open_word_editor_button)
         
         layout.addLayout(header_layout)
@@ -200,12 +201,14 @@ class PatrolTaskWidget(QWidget):
         self.generate_report_button = QPushButton("生成报告")
         self.generate_report_button.clicked.connect(self.generate_current_report)
         self.generate_report_button.setEnabled(False)
+        self.generate_report_button.setToolTip("为选中的巡检任务生成Word格式的巡检报告")
         header_layout.addWidget(self.generate_report_button)
         
         # Edit report button
         self.edit_report_button = QPushButton("编辑报告")
         self.edit_report_button.clicked.connect(self.edit_current_report)
         self.edit_report_button.setEnabled(False)
+        self.edit_report_button.setToolTip("编辑选中任务最近生成的巡检报告")
         header_layout.addWidget(self.edit_report_button)
         
         layout.addLayout(header_layout)
@@ -615,13 +618,15 @@ class PatrolTaskWidget(QWidget):
         success_count = sum(1 for r in results if r.success)
         total_count = len(results)
         
-        QMessageBox.information(
-            self, "执行完成",
+        msg = (
             f"巡检任务 '{task_name}' 执行完成\n\n"
             f"总计: {total_count} 个网站\n"
             f"成功: {success_count} 个\n"
-            f"失败: {total_count - success_count} 个"
+            f"失败: {total_count - success_count} 个\n\n"
+            f"💡 提示: 您可以使用'生成报告'和'编辑报告'功能来创建和自定义Word报告。"
         )
+        
+        QMessageBox.information(self, "执行完成", msg)
         
         # Refresh displays
         self.refresh_tasks_display()

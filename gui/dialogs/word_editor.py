@@ -4,6 +4,7 @@ Word report editing dialog for modifying generated reports
 
 import logging
 import os
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -50,6 +51,17 @@ class WordReportEditor(QDialog):
         self.open_btn = QPushButton("打开报告")
         self.open_btn.clicked.connect(self.open_report)
         toolbar_layout.addWidget(self.open_btn)
+        
+        self.new_btn = QPushButton("新建报告")
+        self.new_btn.clicked.connect(self.new_report)
+        toolbar_layout.addWidget(self.new_btn)
+        
+        # Template dropdown for new reports
+        self.template_combo = QComboBox()
+        self.template_combo.addItems(["基础模板", "详细巡检模板", "简要汇总模板"])
+        self.template_combo.setToolTip("选择新建报告的模板类型")
+        toolbar_layout.addWidget(QLabel("模板:"))
+        toolbar_layout.addWidget(self.template_combo)
         
         self.save_btn = QPushButton("保存报告")
         self.save_btn.clicked.connect(self.save_report)
@@ -152,6 +164,132 @@ class WordReportEditor(QDialog):
         
         if file_path:
             self.load_report(file_path)
+    
+    def new_report(self):
+        """Create a new blank report"""
+        try:
+            # Create a new document
+            self.document = Document()
+            self.current_report_path = None
+            
+            # Get selected template
+            template_type = self.template_combo.currentText()
+            
+            # Add content based on template
+            if template_type == "基础模板":
+                self._create_basic_template()
+            elif template_type == "详细巡检模板":
+                self._create_detailed_patrol_template()
+            elif template_type == "简要汇总模板":
+                self._create_summary_template()
+            
+            # Update UI state
+            self.save_btn.setEnabled(False)  # Disable save until we have a path
+            self.save_as_btn.setEnabled(True)
+            self.preview_btn.setEnabled(True)
+            self.add_paragraph_btn.setEnabled(True)
+            
+            # Populate structure table
+            self.populate_structure_table()
+            
+            # Refresh preview
+            self.refresh_preview()
+            
+            self.logger.info(f"Created new report with template: {template_type}")
+            
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"无法创建新报告:\n{str(e)}")
+            self.logger.error(f"Failed to create new report: {e}")
+    
+    def _create_basic_template(self):
+        """Create basic report template"""
+        title = self.document.add_heading('自定义报告', 0)
+        title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        
+        self.document.add_paragraph(f'创建时间: {datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')
+        
+        self.document.add_heading('概述', level=1)
+        self.document.add_paragraph('在此编写报告概述...')
+        
+        self.document.add_heading('内容', level=1)
+        self.document.add_paragraph('在此编写主要内容...')
+    
+    def _create_detailed_patrol_template(self):
+        """Create detailed patrol report template"""
+        title = self.document.add_heading('网站巡检详细报告', 0)
+        title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        
+        # Report info
+        info_para = self.document.add_paragraph(f'报告生成时间: {datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')
+        info_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        
+        # Executive summary
+        self.document.add_heading('执行摘要', level=1)
+        self.document.add_paragraph('本次巡检的总体情况概述...')
+        
+        # Statistics section
+        self.document.add_heading('统计概览', level=1)
+        stats_table = self.document.add_table(rows=5, cols=2)
+        stats_table.style = 'Table Grid'
+        
+        stats_data = [
+            ('巡检网站总数', '[待填写]'),
+            ('成功网站数', '[待填写]'),
+            ('失败网站数', '[待填写]'),
+            ('成功率', '[待填写]'),
+            ('平均响应时间', '[待填写]')
+        ]
+        
+        for i, (label, value) in enumerate(stats_data):
+            row = stats_table.rows[i]
+            row.cells[0].text = label
+            row.cells[1].text = value
+        
+        # Detailed results
+        self.document.add_heading('详细巡检结果', level=1)
+        self.document.add_paragraph('各网站的详细巡检结果...')
+        
+        # Issues and recommendations
+        self.document.add_heading('问题与建议', level=1)
+        self.document.add_paragraph('发现的问题及改进建议...')
+        
+        # Conclusion
+        self.document.add_heading('结论', level=1)
+        self.document.add_paragraph('巡检结论与后续行动计划...')
+    
+    def _create_summary_template(self):
+        """Create summary report template"""
+        title = self.document.add_heading('巡检汇总报告', 0)
+        title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        
+        self.document.add_paragraph(f'报告时间: {datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')
+        
+        # Quick stats
+        self.document.add_heading('快速统计', level=1)
+        summary_table = self.document.add_table(rows=3, cols=2)
+        summary_table.style = 'Table Grid'
+        
+        summary_data = [
+            ('总巡检数', '[待填写]'),
+            ('成功率', '[待填写]'),
+            ('主要问题', '[待填写]')
+        ]
+        
+        for i, (label, value) in enumerate(summary_data):
+            row = summary_table.rows[i]
+            row.cells[0].text = label
+            row.cells[1].text = value
+        
+        # Key findings
+        self.document.add_heading('主要发现', level=1)
+        self.document.add_paragraph('• 重要发现1')
+        self.document.add_paragraph('• 重要发现2')
+        self.document.add_paragraph('• 重要发现3')
+        
+        # Action items
+        self.document.add_heading('行动项', level=1)
+        self.document.add_paragraph('• 待办事项1')
+        self.document.add_paragraph('• 待办事项2')
     
     def load_report(self, file_path: str):
         """Load a Word report for editing"""
