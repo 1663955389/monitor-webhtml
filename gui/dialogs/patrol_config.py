@@ -220,6 +220,10 @@ class PatrolTaskConfigDialog(QDialog):
         checks_tab = self.create_checks_tab()
         tab_widget.addTab(checks_tab, "检查项目")
         
+        # Authentication tab
+        auth_tab = self.create_auth_tab()
+        tab_widget.addTab(auth_tab, "认证设置")
+        
         # Schedule tab
         schedule_tab = self.create_schedule_tab()
         tab_widget.addTab(schedule_tab, "调度设置")
@@ -364,6 +368,93 @@ class PatrolTaskConfigDialog(QDialog):
         
         return tab
     
+    def create_auth_tab(self) -> QWidget:
+        """Create authentication configuration tab"""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        
+        # Authentication group
+        auth_group = QGroupBox("登录认证设置")
+        auth_layout = QFormLayout(auth_group)
+        
+        # Auth type
+        self.auth_type_combo = QComboBox()
+        self.auth_type_combo.addItems(["无需认证", "表单登录", "HTTP基础认证", "Bearer令牌"])
+        self.auth_type_combo.currentTextChanged.connect(self.on_auth_type_changed)
+        auth_layout.addRow("认证类型:", self.auth_type_combo)
+        
+        # Login URL for form auth
+        self.login_url_edit = QLineEdit()
+        self.login_url_edit.setPlaceholderText("登录页面URL")
+        self.login_url_edit.setEnabled(False)
+        auth_layout.addRow("登录URL:", self.login_url_edit)
+        
+        # Username
+        self.username_edit = QLineEdit()
+        self.username_edit.setPlaceholderText("用户名")
+        self.username_edit.setEnabled(False)
+        auth_layout.addRow("用户名:", self.username_edit)
+        
+        # Password
+        self.password_edit = QLineEdit()
+        self.password_edit.setPlaceholderText("密码")
+        self.password_edit.setEchoMode(QLineEdit.Password)
+        self.password_edit.setEnabled(False)
+        auth_layout.addRow("密码:", self.password_edit)
+        
+        # Token for bearer auth
+        self.token_edit = QLineEdit()
+        self.token_edit.setPlaceholderText("访问令牌")
+        self.token_edit.setEnabled(False)
+        auth_layout.addRow("令牌:", self.token_edit)
+        
+        # Form field names for form auth
+        form_fields_group = QGroupBox("表单字段设置")
+        form_fields_layout = QFormLayout(form_fields_group)
+        
+        self.username_field_edit = QLineEdit()
+        self.username_field_edit.setPlaceholderText("用户名字段名 (默认: username)")
+        self.username_field_edit.setEnabled(False)
+        form_fields_layout.addRow("用户名字段:", self.username_field_edit)
+        
+        self.password_field_edit = QLineEdit()
+        self.password_field_edit.setPlaceholderText("密码字段名 (默认: password)")
+        self.password_field_edit.setEnabled(False)
+        form_fields_layout.addRow("密码字段:", self.password_field_edit)
+        
+        self.additional_fields_edit = QTextEdit()
+        self.additional_fields_edit.setPlaceholderText("附加字段 (JSON格式)\n例如: {\"csrf_token\": \"value\"}")
+        self.additional_fields_edit.setMaximumHeight(80)
+        self.additional_fields_edit.setEnabled(False)
+        form_fields_layout.addRow("附加字段:", self.additional_fields_edit)
+        
+        layout.addWidget(auth_group)
+        layout.addWidget(form_fields_group)
+        layout.addStretch()
+        
+        return tab
+    
+    def on_auth_type_changed(self):
+        """Handle authentication type change"""
+        auth_type = self.auth_type_combo.currentText()
+        
+        # Enable/disable fields based on auth type
+        is_none = auth_type == "无需认证"
+        is_form = auth_type == "表单登录"
+        is_basic = auth_type == "HTTP基础认证"
+        is_bearer = auth_type == "Bearer令牌"
+        
+        # Basic fields
+        self.username_edit.setEnabled(is_form or is_basic)
+        self.password_edit.setEnabled(is_form or is_basic)
+        self.token_edit.setEnabled(is_bearer)
+        
+        # Form-specific fields
+        self.login_url_edit.setEnabled(is_form)
+        self.username_field_edit.setEnabled(is_form)
+        self.password_field_edit.setEnabled(is_form)
+        self.additional_fields_edit.setEnabled(is_form)
+    
     def create_schedule_tab(self) -> QWidget:
         """Create schedule configuration tab"""
         tab = QWidget()
@@ -374,7 +465,7 @@ class PatrolTaskConfigDialog(QDialog):
         freq_layout = QFormLayout(freq_group)
         
         self.frequency_combo = QComboBox()
-        self.frequency_combo.addItems(["每日", "每周", "每月", "自定义"])
+        self.frequency_combo.addItems(["每日", "每日多次", "每周", "每月", "自定义"])
         self.frequency_combo.currentTextChanged.connect(self.on_frequency_changed)
         freq_layout.addRow("频率:", self.frequency_combo)
         
@@ -382,6 +473,12 @@ class PatrolTaskConfigDialog(QDialog):
         self.start_time_edit.setTime(QTime(9, 0))
         self.start_time_edit.setDisplayFormat("HH:mm")
         freq_layout.addRow("开始时间:", self.start_time_edit)
+        
+        # Multiple daily times
+        self.multiple_times_edit = QLineEdit()
+        self.multiple_times_edit.setPlaceholderText("多个时间用逗号分隔，如: 09:00,14:00,18:00")
+        self.multiple_times_edit.setEnabled(False)
+        freq_layout.addRow("每日多次时间:", self.multiple_times_edit)
         
         self.custom_schedule_edit = QLineEdit()
         self.custom_schedule_edit.setPlaceholderText("Cron表达式，如: 0 9 * * 1 (每周一9点)")
@@ -551,6 +648,7 @@ class PatrolTaskConfigDialog(QDialog):
         """Handle frequency selection change"""
         frequency = self.frequency_combo.currentText()
         self.custom_schedule_edit.setEnabled(frequency == "自定义")
+        self.multiple_times_edit.setEnabled(frequency == "每日多次")
         self.update_schedule_info()
     
     def update_schedule_info(self):
@@ -638,6 +736,7 @@ class PatrolTaskConfigDialog(QDialog):
         # Schedule tab
         freq_map = {
             PatrolFrequency.DAILY: "每日",
+            PatrolFrequency.MULTIPLE_DAILY: "每日多次",
             PatrolFrequency.WEEKLY: "每周",
             PatrolFrequency.MONTHLY: "每月",
             PatrolFrequency.CUSTOM: "自定义"
@@ -656,6 +755,40 @@ class PatrolTaskConfigDialog(QDialog):
         
         if self.task.custom_schedule:
             self.custom_schedule_edit.setText(self.task.custom_schedule)
+        
+        # Load multiple daily times
+        if hasattr(self.task, 'multiple_times') and self.task.multiple_times:
+            self.multiple_times_edit.setText(','.join(self.task.multiple_times))
+        
+        # Authentication tab
+        if hasattr(self.task, 'auth_config') and self.task.auth_config:
+            auth_config = self.task.auth_config
+            auth_type = auth_config.get('type', 'none')
+            
+            if auth_type == 'form':
+                self.auth_type_combo.setCurrentText("表单登录")
+                self.login_url_edit.setText(auth_config.get('login_url', ''))
+                self.username_edit.setText(auth_config.get('username', ''))
+                self.password_edit.setText(auth_config.get('password', ''))
+                self.username_field_edit.setText(auth_config.get('username_field', ''))
+                self.password_field_edit.setText(auth_config.get('password_field', ''))
+                
+                additional_fields = auth_config.get('additional_fields', {})
+                if additional_fields:
+                    import json
+                    self.additional_fields_edit.setPlainText(json.dumps(additional_fields, indent=2))
+                    
+            elif auth_type == 'basic':
+                self.auth_type_combo.setCurrentText("HTTP基础认证")
+                self.username_edit.setText(auth_config.get('username', ''))
+                self.password_edit.setText(auth_config.get('password', ''))
+                
+            elif auth_type == 'bearer':
+                self.auth_type_combo.setCurrentText("Bearer令牌")
+                self.token_edit.setText(auth_config.get('token', ''))
+        
+        # Trigger auth type change to enable/disable fields
+        self.on_auth_type_changed()
         
         # Reports tab
         self.generate_report_check.setChecked(self.task.generate_report)
@@ -693,6 +826,7 @@ class PatrolTaskConfigDialog(QDialog):
         # Map frequency
         freq_map = {
             "每日": PatrolFrequency.DAILY,
+            "每日多次": PatrolFrequency.MULTIPLE_DAILY,
             "每周": PatrolFrequency.WEEKLY,
             "每月": PatrolFrequency.MONTHLY,
             "自定义": PatrolFrequency.CUSTOM
@@ -711,6 +845,52 @@ class PatrolTaskConfigDialog(QDialog):
         recipients_text = self.recipients_text.toPlainText().strip()
         recipients = [email.strip() for email in recipients_text.split('\n') if email.strip()]
         
+        # Get authentication configuration
+        auth_config = None
+        auth_type = self.auth_type_combo.currentText()
+        if auth_type != "无需认证":
+            auth_config = {"type": "none"}  # Default
+            
+            if auth_type == "表单登录":
+                auth_config = {
+                    "type": "form",
+                    "login_url": self.login_url_edit.text().strip(),
+                    "username": self.username_edit.text().strip(),
+                    "password": self.password_edit.text().strip(),
+                    "username_field": self.username_field_edit.text().strip() or "username",
+                    "password_field": self.password_field_edit.text().strip() or "password"
+                }
+                
+                # Add additional fields if specified
+                additional_text = self.additional_fields_edit.toPlainText().strip()
+                if additional_text:
+                    try:
+                        import json
+                        additional_fields = json.loads(additional_text)
+                        auth_config["additional_fields"] = additional_fields
+                    except:
+                        pass  # Ignore invalid JSON
+                        
+            elif auth_type == "HTTP基础认证":
+                auth_config = {
+                    "type": "basic",
+                    "username": self.username_edit.text().strip(),
+                    "password": self.password_edit.text().strip()
+                }
+                
+            elif auth_type == "Bearer令牌":
+                auth_config = {
+                    "type": "bearer",
+                    "token": self.token_edit.text().strip()
+                }
+        
+        # Get multiple daily times
+        multiple_times = []
+        if frequency == PatrolFrequency.MULTIPLE_DAILY:
+            times_text = self.multiple_times_edit.text().strip()
+            if times_text:
+                multiple_times = [t.strip() for t in times_text.split(',') if t.strip()]
+        
         return PatrolTask(
             name=self.name_edit.text().strip(),
             description=self.description_edit.toPlainText().strip(),
@@ -719,6 +899,8 @@ class PatrolTaskConfigDialog(QDialog):
             frequency=frequency,
             custom_schedule=self.custom_schedule_edit.text().strip() or None,
             start_time=self.start_time_edit.time().toString("HH:mm"),
+            multiple_times=multiple_times,
+            auth_config=auth_config,
             generate_report=self.generate_report_check.isChecked(),
             report_format=report_format,
             custom_template=self.custom_template_edit.text().strip() or None,
