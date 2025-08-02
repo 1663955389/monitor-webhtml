@@ -1,4 +1,5 @@
 # Notifications module
-# Notification functionality will be implemented here
+from .email import EmailNotifier
+from .webhook import WebhookNotifier
 
-__all__ = []
+__all__ = ['EmailNotifier', 'WebhookNotifier']

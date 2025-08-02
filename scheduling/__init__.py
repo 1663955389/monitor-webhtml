@@ -1,4 +1,4 @@
 # Scheduling module
-# Task scheduling functionality will be implemented here
+from .scheduler import TaskScheduler
 
-__all__ = []
+__all__ = ['TaskScheduler']

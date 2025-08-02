@@ -1,4 +1,4 @@
 # Reports module
-# Report generation functionality will be implemented here
+from .generator import ReportGenerator
 
-__all__ = []
+__all__ = ['ReportGenerator']
