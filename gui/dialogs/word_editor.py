@@ -11,7 +11,8 @@ from typing import Optional
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QTextEdit,
     QLabel, QFileDialog, QMessageBox, QSplitter, QGroupBox,
-    QTableWidget, QTableWidgetItem, QHeaderView, QComboBox
+    QTableWidget, QTableWidgetItem, QHeaderView, QComboBox,
+    QListWidget, QListWidgetItem
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont
@@ -19,6 +20,8 @@ from PyQt5.QtGui import QFont
 from docx import Document
 from docx.shared import Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+from core.variables import VariableManager
 
 
 class WordReportEditor(QDialog):
@@ -31,6 +34,7 @@ class WordReportEditor(QDialog):
         self.logger = logging.getLogger(__name__)
         self.current_report_path = report_path
         self.document = None
+        self.variable_manager = VariableManager()
         
         self.init_ui()
         
@@ -95,18 +99,22 @@ class WordReportEditor(QDialog):
         left_layout.addWidget(structure_label)
         
         self.structure_table = QTableWidget()
-        self.structure_table.setColumnCount(3)
-        self.structure_table.setHorizontalHeaderLabels(["类型", "内容", "编辑"])
-        self.structure_table.horizontalHeader().setStretchLastSection(True)
+        self.structure_table.setColumnCount(4)
+        self.structure_table.setHorizontalHeaderLabels(["类型", "内容", "编辑", "删除"])
+        self.structure_table.horizontalHeader().setStretchLastSection(False)
+        self.structure_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        self.structure_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.structure_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        self.structure_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
         left_layout.addWidget(self.structure_table)
         
         # Content editor
-        editor_label = QLabel("内容编辑:")
+        editor_label = QLabel("内容编辑 (支持变量: ${变量名}):")
         left_layout.addWidget(editor_label)
         
         self.content_editor = QTextEdit()
         self.content_editor.setFont(QFont("Arial", 10))
-        self.content_editor.setPlaceholderText("选择要编辑的段落或表格...")
+        self.content_editor.setPlaceholderText("选择要编辑的段落或表格...\n支持变量语法: ${变量名}")
         left_layout.addWidget(self.content_editor)
         
         # Edit controls
@@ -122,14 +130,32 @@ class WordReportEditor(QDialog):
         self.add_paragraph_btn.setEnabled(False)
         edit_controls_layout.addWidget(self.add_paragraph_btn)
         
+        self.insert_variable_btn = QPushButton("插入变量")
+        self.insert_variable_btn.clicked.connect(self.show_variable_selector)
+        self.insert_variable_btn.setEnabled(True)
+        edit_controls_layout.addWidget(self.insert_variable_btn)
+        
         edit_controls_layout.addStretch()
         left_layout.addLayout(edit_controls_layout)
         
         splitter.addWidget(left_widget)
         
-        # Right side: Preview
-        right_widget = QGroupBox("文档预览")
+        # Right side: Preview and Variables
+        right_widget = QGroupBox("预览和变量")
         right_layout = QVBoxLayout(right_widget)
+        
+        # Available variables section
+        variables_label = QLabel("可用变量:")
+        right_layout.addWidget(variables_label)
+        
+        self.variables_list = QListWidget()
+        self.variables_list.setMaximumHeight(150)
+        self.variables_list.itemDoubleClicked.connect(self.insert_selected_variable)
+        right_layout.addWidget(self.variables_list)
+        
+        # Preview section
+        preview_label = QLabel("文档预览:")
+        right_layout.addWidget(preview_label)
         
         self.preview_text = QTextEdit()
         self.preview_text.setReadOnly(True)
@@ -155,6 +181,9 @@ class WordReportEditor(QDialog):
         
         # Connect table selection
         self.structure_table.currentCellChanged.connect(self.on_structure_selection_changed)
+        
+        # Load available variables
+        self.refresh_variables_list()
     
     def open_report(self):
         """Open an existing Word report"""
@@ -342,6 +371,12 @@ class WordReportEditor(QDialog):
             edit_btn = QPushButton("编辑")
             edit_btn.clicked.connect(lambda checked, idx=i: self.edit_paragraph(idx))
             self.structure_table.setCellWidget(row, 2, edit_btn)
+            
+            # Delete button
+            delete_btn = QPushButton("删除")
+            delete_btn.clicked.connect(lambda checked, idx=i: self.delete_paragraph(idx))
+            delete_btn.setStyleSheet("QPushButton { background-color: #dc3545; color: white; }")
+            self.structure_table.setCellWidget(row, 3, delete_btn)
         
         # Add tables
         for i, table in enumerate(self.document.tables):
@@ -357,6 +392,12 @@ class WordReportEditor(QDialog):
             edit_btn = QPushButton("编辑")
             edit_btn.clicked.connect(lambda checked, idx=i: self.edit_table(idx))
             self.structure_table.setCellWidget(row, 2, edit_btn)
+            
+            # Delete button
+            delete_btn = QPushButton("删除")
+            delete_btn.clicked.connect(lambda checked, idx=i: self.delete_table(idx))
+            delete_btn.setStyleSheet("QPushButton { background-color: #dc3545; color: white; }")
+            self.structure_table.setCellWidget(row, 3, delete_btn)
     
     def edit_paragraph(self, paragraph_index: int):
         """Edit a specific paragraph"""
@@ -394,14 +435,17 @@ class WordReportEditor(QDialog):
         element_type, element_index = self.current_edit_element
         
         try:
+            # Apply variable substitution before updating
+            substituted_content = self.variable_manager.substitute_variables(new_content)
+            
             if element_type == 'paragraph':
                 paragraph = self.document.paragraphs[element_index]
                 paragraph.clear()
-                paragraph.add_run(new_content)
+                paragraph.add_run(substituted_content)
                 
             elif element_type == 'table':
                 table = self.document.tables[element_index]
-                lines = new_content.strip().split('\n')
+                lines = substituted_content.strip().split('\n')
                 
                 for row_idx, line in enumerate(lines):
                     if row_idx < len(table.rows):
@@ -419,6 +463,159 @@ class WordReportEditor(QDialog):
         except Exception as e:
             QMessageBox.critical(self, "错误", f"更新内容失败:\n{str(e)}")
     
+    def delete_paragraph(self, paragraph_index: int):
+        """Delete a specific paragraph"""
+        if not self.document or paragraph_index >= len(self.document.paragraphs):
+            return
+        
+        # Confirm deletion
+        reply = QMessageBox.question(
+            self, "确认删除", 
+            f"确定要删除第 {paragraph_index + 1} 个段落吗？",
+            QMessageBox.Yes | QMessageBox.No
+        )
+        
+        if reply == QMessageBox.Yes:
+            try:
+                # Remove paragraph from document
+                paragraph = self.document.paragraphs[paragraph_index]
+                p = paragraph._element
+                p.getparent().remove(p)
+                
+                # Refresh structure and preview
+                self.populate_structure_table()
+                self.refresh_preview()
+                
+                QMessageBox.information(self, "成功", "段落已删除")
+                
+            except Exception as e:
+                QMessageBox.critical(self, "错误", f"删除段落失败:\n{str(e)}")
+    
+    def delete_table(self, table_index: int):
+        """Delete a specific table"""
+        if not self.document or table_index >= len(self.document.tables):
+            return
+        
+        # Confirm deletion
+        reply = QMessageBox.question(
+            self, "确认删除", 
+            f"确定要删除第 {table_index + 1} 个表格吗？",
+            QMessageBox.Yes | QMessageBox.No
+        )
+        
+        if reply == QMessageBox.Yes:
+            try:
+                # Remove table from document
+                table = self.document.tables[table_index]
+                tbl = table._element
+                tbl.getparent().remove(tbl)
+                
+                # Refresh structure and preview
+                self.populate_structure_table()
+                self.refresh_preview()
+                
+                QMessageBox.information(self, "成功", "表格已删除")
+                
+            except Exception as e:
+                QMessageBox.critical(self, "错误", f"删除表格失败:\n{str(e)}")
+    
+    def refresh_variables_list(self):
+        """Refresh the list of available variables"""
+        self.variables_list.clear()
+        
+        variables = self.variable_manager.get_all_variables_with_metadata()
+        
+        for var_name, var_info in variables.items():
+            var_type = var_info.get('metadata', {}).get('type', 'unknown')
+            var_value = var_info.get('value', '')
+            
+            # Create display text with type and preview
+            if var_type == 'image':
+                display_text = f"${{{var_name}}} [图片] - {var_value}"
+            elif var_type == 'text':
+                preview = str(var_value)[:30] + "..." if len(str(var_value)) > 30 else str(var_value)
+                display_text = f"${{{var_name}}} [文本] - {preview}"
+            elif var_type == 'number':
+                display_text = f"${{{var_name}}} [数字] - {var_value}"
+            else:
+                display_text = f"${{{var_name}}} [{var_type}] - {str(var_value)[:30]}..."
+            
+            item = QListWidgetItem(display_text)
+            item.setData(Qt.UserRole, var_name)  # Store variable name
+            self.variables_list.addItem(item)
+    
+    def show_variable_selector(self):
+        """Show variable selection dialog"""
+        if self.variables_list.count() == 0:
+            QMessageBox.information(
+                self, "提示", 
+                "当前没有可用的变量。\n\n变量会在执行巡检任务时自动生成，包括:\n• 页面截图\n• XPath提取的内容\n• 其他检查结果"
+            )
+            return
+        
+        # Refresh variables list
+        self.refresh_variables_list()
+        
+        QMessageBox.information(
+            self, "使用变量", 
+            "在下方的变量列表中双击变量名即可插入到编辑器中。\n\n变量语法: ${变量名}\n例如: ${screenshot_主网站} 或 ${extracted_用户数量}"
+        )
+    
+    def insert_selected_variable(self, item):
+        """Insert selected variable into the content editor"""
+        var_name = item.data(Qt.UserRole)
+        if var_name:
+            cursor = self.content_editor.textCursor()
+            cursor.insertText(f"${{{var_name}}}")
+    
+    def load_variables_from_patrol_results(self, patrol_results):
+        """Load variables from patrol results for use in reports"""
+        try:
+            for result in patrol_results:
+                # Store screenshot as variable
+                if result.screenshot_path:
+                    var_name = f"screenshot_{result.task_name}_{result.website_url}".replace("://", "_").replace("/", "_").replace(".", "_")
+                    self.variable_manager.set_variable(
+                        var_name, 
+                        result.screenshot_path, 
+                        "image", 
+                        f"Screenshot from {result.website_url}"
+                    )
+                
+                # Store extracted values as variables
+                if result.check_results:
+                    for check_name, check_result in result.check_results.items():
+                        if check_result.get('extracted_value'):
+                            var_name = f"extracted_{check_name}_{result.task_name}".replace(" ", "_")
+                            self.variable_manager.set_variable(
+                                var_name,
+                                check_result['extracted_value'],
+                                "text",
+                                f"Extracted value from {check_name} check"
+                            )
+                
+                # Store other extracted data
+                if result.extracted_data:
+                    for key, value in result.extracted_data.items():
+                        var_name = f"data_{key}_{result.task_name}".replace(" ", "_")
+                        self.variable_manager.set_variable(
+                            var_name,
+                            value,
+                            "auto",
+                            f"Data extracted from {result.website_url}"
+                        )
+            
+            # Refresh the variables list
+            self.refresh_variables_list()
+            
+        except Exception as e:
+            self.logger.error(f"Failed to load variables from patrol results: {e}")
+    
+    def set_variable_manager(self, variable_manager: VariableManager):
+        """Set an external variable manager"""
+        self.variable_manager = variable_manager
+        self.refresh_variables_list()
+    
     def add_paragraph(self):
         """Add a new paragraph to the document"""
         if not self.document:
@@ -429,22 +626,29 @@ class WordReportEditor(QDialog):
             QMessageBox.warning(self, "警告", "请在编辑框中输入要添加的内容")
             return
         
-        # Add new paragraph at the end
-        self.document.add_paragraph(new_text)
-        
-        # Refresh structure and preview
-        self.populate_structure_table()
-        self.refresh_preview()
-        self.content_editor.clear()
-        
-        QMessageBox.information(self, "成功", "已添加新段落")
+        try:
+            # Apply variable substitution
+            substituted_text = self.variable_manager.substitute_variables(new_text)
+            
+            # Add new paragraph at the end
+            self.document.add_paragraph(substituted_text)
+            
+            # Refresh structure and preview
+            self.populate_structure_table()
+            self.refresh_preview()
+            self.content_editor.clear()
+            
+            QMessageBox.information(self, "成功", "已添加新段落")
+            
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"添加段落失败:\n{str(e)}")
     
     def refresh_preview(self):
         """Refresh the document preview"""
         if not self.document:
             return
         
-        preview_content = "文档预览:\n\n"
+        preview_content = "文档预览 (变量已替换):\n\n"
         
         for paragraph in self.document.paragraphs:
             if paragraph.style.name.startswith('Heading'):
@@ -453,13 +657,20 @@ class WordReportEditor(QDialog):
             else:
                 prefix = ""
             
-            preview_content += prefix + paragraph.text + "\n\n"
+            # Apply variable substitution to preview
+            paragraph_text = self.variable_manager.substitute_variables(paragraph.text)
+            preview_content += prefix + paragraph_text + "\n\n"
         
         # Add tables
         for i, table in enumerate(self.document.tables):
             preview_content += f"[表格 {i+1}]\n"
             for row in table.rows:
-                row_text = " | ".join([cell.text for cell in row.cells])
+                row_texts = []
+                for cell in row.cells:
+                    # Apply variable substitution to table cells
+                    cell_text = self.variable_manager.substitute_variables(cell.text)
+                    row_texts.append(cell_text)
+                row_text = " | ".join(row_texts)
                 preview_content += row_text + "\n"
             preview_content += "\n"
         

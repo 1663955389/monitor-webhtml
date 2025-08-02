@@ -16,6 +16,7 @@ from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QThread, pyqtSlot
 from PyQt5.QtGui import QFont, QColor, QBrush, QIcon, QPixmap, QPainter
 
 from core.patrol import PatrolEngine, PatrolTask, PatrolResult, PatrolFrequency, PatrolCheck, PatrolType
+from core.variables import VariableManager
 from gui.dialogs.patrol_config import PatrolTaskConfigDialog
 from gui.dialogs.word_editor import WordReportEditor
 from reports.generator import ReportGenerator
@@ -83,6 +84,7 @@ class PatrolTaskWidget(QWidget):
         # Core components
         self.patrol_engine = PatrolEngine()
         self.report_generator = ReportGenerator()
+        self.variable_manager = VariableManager()
         
         # Execution state
         self.execution_threads: Dict[str, PatrolExecutionThread] = {}
@@ -614,6 +616,9 @@ class PatrolTaskWidget(QWidget):
         # Keep only recent results (last 100)
         self.task_results[task_name] = self.task_results[task_name][-100:]
         
+        # Populate variables from the new results for immediate use
+        self._populate_variables_from_results(results)
+        
         # Show completion message
         success_count = sum(1 for r in results if r.success)
         total_count = len(results)
@@ -809,13 +814,82 @@ class PatrolTaskWidget(QWidget):
                 return
         
         try:
-            # Open Word report editor
+            # Populate variables from patrol results
+            results = self.task_results.get(task_name, [])
+            self._populate_variables_from_results(results)
+            
+            # Open Word report editor with variables
             editor = WordReportEditor(parent=self, report_path=report_path)
+            editor.set_variable_manager(self.variable_manager)
             editor.report_saved.connect(lambda path: self._on_report_saved(task_name, path))
             editor.exec_()
             
         except Exception as e:
             QMessageBox.critical(self, "错误", f"打开报告编辑器失败: {str(e)}")
+    
+    def _populate_variables_from_results(self, results: List[PatrolResult]):
+        """Populate variables from patrol results"""
+        try:
+            for result in results:
+                # Create safe variable names
+                safe_task_name = "".join(c for c in result.task_name if c.isalnum() or c in ('_',))
+                safe_url = result.website_url.replace("://", "_").replace("/", "_").replace(".", "_").replace(":", "_")
+                
+                # Store screenshot as variable
+                if result.screenshot_path:
+                    var_name = f"screenshot_{safe_task_name}_{safe_url}"
+                    self.variable_manager.set_variable(
+                        var_name, 
+                        result.screenshot_path, 
+                        "image", 
+                        f"页面截图来源: {result.website_url}"
+                    )
+                
+                # Store basic result info
+                var_name_status = f"status_{safe_task_name}_{safe_url}"
+                self.variable_manager.set_variable(
+                    var_name_status,
+                    "成功" if result.success else "失败",
+                    "text",
+                    f"巡检状态: {result.website_url}"
+                )
+                
+                if result.response_time:
+                    var_name_time = f"response_time_{safe_task_name}_{safe_url}"
+                    self.variable_manager.set_variable(
+                        var_name_time,
+                        f"{result.response_time:.2f}秒",
+                        "text",
+                        f"响应时间: {result.website_url}"
+                    )
+                
+                # Store extracted values as variables
+                if result.check_results:
+                    for check_name, check_result in result.check_results.items():
+                        if check_result.get('extracted_value'):
+                            safe_check_name = "".join(c for c in check_name if c.isalnum() or c in ('_',))
+                            var_name = f"extracted_{safe_check_name}_{safe_task_name}"
+                            self.variable_manager.set_variable(
+                                var_name,
+                                check_result['extracted_value'],
+                                "text",
+                                f"提取值来源: {check_name} ({result.website_url})"
+                            )
+                
+                # Store other extracted data
+                if result.extracted_data:
+                    for key, value in result.extracted_data.items():
+                        safe_key = "".join(c for c in key if c.isalnum() or c in ('_',))
+                        var_name = f"data_{safe_key}_{safe_task_name}"
+                        self.variable_manager.set_variable(
+                            var_name,
+                            value,
+                            "auto",
+                            f"数据来源: {result.website_url}"
+                        )
+                        
+        except Exception as e:
+            self.logger.error(f"Failed to populate variables from results: {e}")
     
     def _on_report_saved(self, task_name: str, report_path: str):
         """Handle report saved event"""
@@ -837,8 +911,9 @@ class PatrolTaskWidget(QWidget):
     def open_word_editor(self):
         """Open Word editor for custom report editing"""
         try:
-            # Open Word editor without any specific report
+            # Open Word editor without any specific report but with variable manager
             editor = WordReportEditor(parent=self)
+            editor.set_variable_manager(self.variable_manager)
             editor.exec_()
             
         except Exception as e:
