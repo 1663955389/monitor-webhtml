@@ -1,16 +1,17 @@
-# Website Monitoring and Reporting System
+# Website Content Patrol and Reporting System (网站内容巡检和报告系统)
 
-A comprehensive, modern solution for monitoring multiple websites with advanced features including authentication, custom reporting, notifications, task scheduling, and a PyQt5 graphical interface.
+A comprehensive solution for scheduled website content inspection with advanced reporting capabilities, featuring a fully localized Chinese GUI interface and custom Word document generation.
 
 ## 🌟 Key Features
 
-- ✅ **Multi-website monitoring** with performance metrics and content validation
+- ✅ **Scheduled Content Patrol (定时巡检)** - Scheduled website content inspection rather than continuous monitoring
+- ✅ **Custom Word Report Generation (自定义Word报告)** - Generate professional Word documents with patrol results
+- ✅ **Flexible Patrol Task Management (巡检任务管理)** - Create and customize scheduled inspection tasks
+- ✅ **Multiple Content Check Types (多种检查类型)** - Content, API, visual, download, and form checks
+- ✅ **Chinese Localized Interface (中文界面)** - Fully localized GUI with patrol terminology
 - ✅ **Multiple authentication methods** (HTTP Basic, Bearer Token, Form Login)
 - ✅ **Screenshot capture** and file download capabilities
-- ✅ **Custom report generation** (HTML/JSON) with templating system
 - ✅ **Email and webhook notifications** (Slack, Discord, Teams support)
-- ✅ **Task scheduling** with automated cleanup and reporting
-- ✅ **Modern PyQt5 GUI** with real-time monitoring displays
 - ✅ **Variable management system** for dynamic data handling
 - ✅ **Secure configuration** with encrypted credential storage
 - ✅ **Comprehensive logging** with automatic rotation and cleanup
@@ -27,6 +28,37 @@ python demo.py
 pip install -r requirements.txt
 python main.py
 ```
+
+## 🎯 Core Functionality Changes
+
+### From Continuous Monitoring to Scheduled Patrol
+This system has been redesigned from continuous website monitoring to **scheduled content inspection (巡检)**:
+
+- **Patrol Tasks (巡检任务)**: Create scheduled tasks to inspect website content at specific times
+- **Content Inspection (内容巡检)**: Focus on content validation rather than uptime monitoring  
+- **Custom Scheduling (自定义调度)**: Daily, weekly, monthly, or custom cron-based scheduling
+- **Word Report Generation (Word报告生成)**: Professional Word documents with inspection results
+
+### New Patrol Features
+
+#### Patrol Task Management
+- **Task Creation**: Easy-to-use GUI for creating patrol tasks
+- **Multiple Check Types**: Content, API, visual, download, and form validation
+- **Flexible Scheduling**: Custom timing for each patrol task
+- **Real-time Execution**: Manual execution or scheduled automatic runs
+
+#### Advanced Content Checks
+- **Content Validation**: CSS selectors, XPath, text matching
+- **API Endpoint Testing**: Status codes, response validation
+- **Visual Comparison**: Screenshot-based visual checks
+- **File Download Testing**: Verify file availability and integrity
+- **Form Submission Testing**: Automated form testing
+
+#### Professional Reporting
+- **Word Documents**: Custom-formatted patrol reports in .docx format
+- **Chinese Localization**: All reports and interface in Chinese
+- **Rich Content**: Include screenshots, charts, and detailed results
+- **Multiple Formats**: Word, HTML, and JSON export options
 
 ## 📊 Architecture
 

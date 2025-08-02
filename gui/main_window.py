@@ -18,6 +18,7 @@ from core.monitor import WebsiteMonitor, MonitorResult
 from core.auth import AuthenticationManager
 from core.variables import VariableManager
 from gui.widgets.monitoring_widget import MonitoringWidget
+from gui.widgets.patrol_widget import PatrolTaskWidget
 from gui.dialogs.website_config import WebsiteConfigDialog
 from gui.dialogs.notification_config import NotificationConfigDialog
 from config.settings import config_manager
@@ -85,7 +86,7 @@ class MainWindow(QMainWindow):
     
     def init_ui(self):
         """Initialize the user interface"""
-        self.setWindowTitle("网站监控和报告系统")
+        self.setWindowTitle("网站巡检和报告系统")
         self.setGeometry(100, 100, 1400, 900)
         
         # Set application icon (if available)
@@ -109,6 +110,7 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(self.tab_widget)
         
         # Create tabs
+        self.create_patrol_tab()
         self.create_monitoring_tab()
         self.create_results_tab()
         self.create_variables_tab()
@@ -133,6 +135,11 @@ class MainWindow(QMainWindow):
         new_website_action.triggered.connect(self.add_website)
         file_menu.addAction(new_website_action)
         
+        new_patrol_action = QAction('添加巡检任务', self)
+        new_patrol_action.setShortcut('Ctrl+P')
+        new_patrol_action.triggered.connect(self.add_patrol_task)
+        file_menu.addAction(new_patrol_action)
+        
         file_menu.addSeparator()
         
         exit_action = QAction('退出', self)
@@ -140,18 +147,23 @@ class MainWindow(QMainWindow):
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
         
-        # Monitoring menu
-        monitor_menu = menubar.addMenu('监控')
+        # Patrol menu (changed from Monitoring)
+        patrol_menu = menubar.addMenu('巡检')
+        
+        execute_patrol_action = QAction('执行巡检', self)
+        execute_patrol_action.setShortcut('F5')
+        execute_patrol_action.triggered.connect(self.execute_selected_patrol)
+        patrol_menu.addAction(execute_patrol_action)
         
         start_action = QAction('开始监控', self)
-        start_action.setShortcut('F5')
+        start_action.setShortcut('F6')
         start_action.triggered.connect(self.start_monitoring)
-        monitor_menu.addAction(start_action)
+        patrol_menu.addAction(start_action)
         
         stop_action = QAction('停止监控', self)
-        stop_action.setShortcut('F6')
+        stop_action.setShortcut('F7')
         stop_action.triggered.connect(self.stop_monitoring)
-        monitor_menu.addAction(stop_action)
+        patrol_menu.addAction(stop_action)
         
         # Tools menu
         tools_menu = menubar.addMenu('工具')
@@ -220,6 +232,29 @@ class MainWindow(QMainWindow):
         add_website_btn = QPushButton('添加网站')
         add_website_btn.clicked.connect(self.add_website)
         toolbar.addWidget(add_website_btn)
+        
+        # Add patrol task button
+        add_patrol_btn = QPushButton('添加巡检任务')
+        add_patrol_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2196F3;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #1976D2;
+            }
+        """)
+        add_patrol_btn.clicked.connect(self.add_patrol_task)
+        toolbar.addWidget(add_patrol_btn)
+    
+    def create_patrol_tab(self):
+        """Create the patrol management tab"""
+        self.patrol_widget = PatrolTaskWidget()
+        self.tab_widget.addTab(self.patrol_widget, "巡检任务")
     
     def create_monitoring_tab(self):
         """Create the monitoring tab"""
@@ -442,6 +477,26 @@ class MainWindow(QMainWindow):
             self.monitor.add_website(website_config)
             self.monitoring_widget.refresh_websites()
             self.update_status()
+    
+    @pyqtSlot()
+    def add_patrol_task(self):
+        """Add a new patrol task"""
+        if hasattr(self, 'patrol_widget'):
+            self.patrol_widget.add_patrol_task()
+    
+    @pyqtSlot()
+    def execute_selected_patrol(self):
+        """Execute the currently selected patrol task"""
+        if hasattr(self, 'patrol_widget'):
+            # Switch to patrol tab if not already there
+            patrol_tab_index = 0  # Patrol tab is first
+            self.tab_widget.setCurrentIndex(patrol_tab_index)
+            
+            # Could trigger execution of selected task
+            QMessageBox.information(
+                self, "提示", 
+                "请在巡检任务表格中选择要执行的任务，然后点击'执行'按钮"
+            )
     
     @pyqtSlot()
     def configure_notifications(self):
