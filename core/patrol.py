@@ -48,6 +48,7 @@ class PatrolCheck:
     tolerance: Optional[str] = None  # For visual/numeric comparisons
     description: str = ""
     enabled: bool = True
+    associated_url: Optional[str] = None  # Specific URL this check should run against (if None, runs against all task URLs)
 
 
 @dataclass
@@ -253,8 +254,12 @@ class PatrolEngine:
                 # Execute patrol checks
                 for check in task.checks:
                     if check.enabled:
+                        # Skip this check if it has an associated URL that doesn't match
+                        if check.associated_url and check.associated_url != website_url:
+                            continue
+                            
                         check_result = await self._execute_patrol_check(
-                            check, website_url, content, response, headers, cookies
+                            check, task, website_url, content, response, headers, cookies
                         )
                         result.check_results[check.name] = check_result
                         
@@ -270,8 +275,50 @@ class PatrolEngine:
                         )
                         result.screenshot_path = screenshot_path
                         self.logger.info(f"Screenshot captured: {screenshot_path}")
+                        
+                        # Generate screenshot variable
+                        safe_url = website_url.replace('https://', '').replace('http://', '').replace('/', '_').replace(':', '_').replace('.', '_')
+                        safe_task_name = task.name.replace(' ', '_').replace('-', '_')
+                        screenshot_var_name = f"screenshot_{safe_url}_{safe_task_name}"
+                        self.variable_manager.set_variable(
+                            screenshot_var_name, 
+                            screenshot_path, 
+                            "image", 
+                            f"截图来自 {website_url} (任务: {task.name})"
+                        )
                     except Exception as e:
                         self.logger.warning(f"Failed to capture screenshot: {e}")
+                
+                # Generate common variables for this website
+                safe_url = website_url.replace('https://', '').replace('http://', '').replace('/', '_').replace(':', '_').replace('.', '_')
+                safe_task_name = task.name.replace(' ', '_').replace('-', '_')
+                
+                # Status variable
+                status_var_name = f"status_{safe_url}_{safe_task_name}"
+                self.variable_manager.set_variable(
+                    status_var_name,
+                    "成功" if result.success else "失败",
+                    "text",
+                    f"巡检状态 {website_url} (任务: {task.name})"
+                )
+                
+                # Response time variable
+                response_time_var_name = f"response_time_{safe_url}_{safe_task_name}"
+                self.variable_manager.set_variable(
+                    response_time_var_name,
+                    f"{result.response_time:.2f}秒",
+                    "text",
+                    f"响应时间 {website_url} (任务: {task.name})"
+                )
+                
+                # Content size variable
+                content_size_var_name = f"content_size_{safe_url}_{safe_task_name}"
+                self.variable_manager.set_variable(
+                    content_size_var_name,
+                    f"{result.content_size} 字节",
+                    "text",
+                    f"内容大小 {website_url} (任务: {task.name})"
+                )
                 
         except asyncio.TimeoutError:
             result.error_message = f"请求超时 ({task.timeout}秒)"
@@ -283,7 +330,7 @@ class PatrolEngine:
         
         return result
     
-    async def _execute_patrol_check(self, check: PatrolCheck, url: str, 
+    async def _execute_patrol_check(self, check: PatrolCheck, task: PatrolTask, url: str, 
                                   content: str, response: aiohttp.ClientResponse,
                                   headers: dict = None, cookies: dict = None) -> Dict[str, Any]:
         """Execute a specific patrol check"""
@@ -402,6 +449,65 @@ class PatrolEngine:
         except Exception as e:
             check_result['message'] = f"检查执行错误: {str(e)}"
             self.logger.error(f"Error executing check {check.name}: {e}")
+        
+        # Generate variables for this check result
+        safe_check_name = check.name.replace(' ', '_').replace('-', '_')
+        safe_task_name = task.name.replace(' ', '_').replace('-', '_')
+        
+        # Status variable for this check
+        check_status_var = f"status_{safe_check_name}_{safe_task_name}"
+        self.variable_manager.set_variable(
+            check_status_var,
+            "成功" if check_result['success'] else "失败",
+            "text",
+            f"检查项 '{check.name}' 状态 (任务: {task.name})"
+        )
+        
+        # Timestamp variable
+        timestamp_var = f"timestamp_{safe_check_name}_{safe_task_name}"
+        self.variable_manager.set_variable(
+            timestamp_var,
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "text",
+            f"检查项 '{check.name}' 执行时间 (任务: {task.name})"
+        )
+        
+        # Type-specific variables
+        if check.type == PatrolType.CONTENT_CHECK and check_result.get('extracted_value'):
+            extracted_var = f"extracted_{safe_check_name}_{safe_task_name}"
+            self.variable_manager.set_variable(
+                extracted_var,
+                check_result['extracted_value'],
+                "text",
+                f"从检查项 '{check.name}' 提取的内容 (任务: {task.name})"
+            )
+        
+        elif check.type == PatrolType.API_CHECK:
+            api_status_var = f"api_status_{safe_check_name}_{safe_task_name}"
+            self.variable_manager.set_variable(
+                api_status_var,
+                str(check_result.get('value', '')),
+                "number",
+                f"API检查 '{check.name}' 状态码 (任务: {task.name})"
+            )
+            
+            if check_result.get('extracted_value'):
+                api_response_var = f"api_response_{safe_check_name}_{safe_task_name}"
+                self.variable_manager.set_variable(
+                    api_response_var,
+                    check_result['extracted_value'],
+                    "text",
+                    f"API检查 '{check.name}' 响应内容 (任务: {task.name})"
+                )
+        
+        elif check.type == PatrolType.DOWNLOAD_CHECK and check_result.get('value'):
+            download_path_var = f"download_path_{safe_check_name}_{safe_task_name}"
+            self.variable_manager.set_variable(
+                download_path_var,
+                check_result['value'],
+                "file",
+                f"下载检查 '{check.name}' 文件路径 (任务: {task.name})"
+            )
         
         return check_result
     

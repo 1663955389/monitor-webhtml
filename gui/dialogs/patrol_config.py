@@ -61,6 +61,11 @@ class PatrolCheckWidget(QWidget):
         self.enabled_check.toggled.connect(self.check_changed.emit)
         basic_layout.addRow("", self.enabled_check)
         
+        self.url_edit = QLineEdit()
+        self.url_edit.setPlaceholderText("留空则对所有网站执行，否则仅对指定URL执行")
+        self.url_edit.textChanged.connect(self.check_changed.emit)
+        basic_layout.addRow("关联URL:", self.url_edit)
+        
         layout.addWidget(basic_group)
         
         # Check configuration
@@ -86,6 +91,21 @@ class PatrolCheckWidget(QWidget):
         config_layout.addRow(self.tolerance_label, self.tolerance_edit)
         
         layout.addWidget(config_group)
+        
+        # Variables info group
+        variables_group = QGroupBox("生成的变量")
+        variables_layout = QVBoxLayout(variables_group)
+        
+        self.variables_info_label = QLabel()
+        self.variables_info_label.setWordWrap(True)
+        self.variables_info_label.setStyleSheet("background-color: #f0f0f0; padding: 8px; border: 1px solid #ccc;")
+        self.variables_info_label.setFont(QFont("Consolas", 9))
+        variables_layout.addWidget(self.variables_info_label)
+        
+        layout.addWidget(variables_group)
+        
+        # Update variables info when check changes
+        self.check_changed.connect(self.update_variables_info)
         
         # Update UI based on type
         self.on_type_changed()
@@ -136,6 +156,52 @@ class PatrolCheckWidget(QWidget):
         
         self.check_changed.emit()
     
+    def update_variables_info(self):
+        """Update the variables information display"""
+        check_name = self.name_edit.text().strip()
+        check_type = self.type_combo.currentText()
+        url = self.url_edit.text().strip()
+        
+        if not check_name:
+            self.variables_info_label.setText("请先输入检查项名称以查看将生成的变量")
+            return
+        
+        # Generate variable names based on check configuration
+        variables = []
+        safe_check_name = check_name.replace(' ', '_').replace('-', '_')
+        
+        if check_type == "内容检查":
+            variables.append(f"${{extracted_{safe_check_name}_任务名}} - 提取的文本内容")
+            variables.append(f"${{status_{safe_check_name}_任务名}} - 检查状态 (成功/失败)")
+        elif check_type == "API检查":
+            variables.append(f"${{api_status_{safe_check_name}_任务名}} - API状态码")
+            variables.append(f"${{api_response_{safe_check_name}_任务名}} - API响应内容")
+        elif check_type == "下载检查":
+            variables.append(f"${{download_path_{safe_check_name}_任务名}} - 下载文件路径")
+            variables.append(f"${{download_size_{safe_check_name}_任务名}} - 文件大小")
+        elif check_type == "视觉检查":
+            variables.append(f"${{visual_result_{safe_check_name}_任务名}} - 视觉对比结果")
+            variables.append(f"${{visual_similarity_{safe_check_name}_任务名}} - 相似度分数")
+        elif check_type == "表单检查":
+            variables.append(f"${{form_result_{safe_check_name}_任务名}} - 表单提交结果")
+        
+        # Add common variables for all checks
+        variables.append(f"${{timestamp_{safe_check_name}_任务名}} - 检查执行时间")
+        
+        # Add URL-specific variables if URL is specified
+        if url:
+            safe_url = url.replace('https://', '').replace('http://', '').replace('/', '_').replace(':', '_').replace('.', '_')
+            variables.append(f"${{screenshot_{safe_url}_任务名}} - 页面截图路径")
+            variables.append(f"${{response_time_{safe_url}_任务名}} - 页面响应时间")
+        
+        variables_text = "\n".join(variables)
+        if url:
+            variables_text = f"此检查项将为URL '{url}' 生成以下变量:\n\n{variables_text}"
+        else:
+            variables_text = f"此检查项将为所有任务URL生成以下变量:\n\n{variables_text}"
+        
+        self.variables_info_label.setText(variables_text)
+    
     def load_check_data(self):
         """Load check data into UI"""
         if not self.check:
@@ -147,6 +213,7 @@ class PatrolCheckWidget(QWidget):
         self.expected_edit.setText(self.check.expected_value or "")
         self.tolerance_edit.setText(self.check.tolerance or "")
         self.enabled_check.setChecked(self.check.enabled)
+        self.url_edit.setText(self.check.associated_url or "")
         
         # Set type combo
         type_map = {
@@ -160,6 +227,9 @@ class PatrolCheckWidget(QWidget):
         index = self.type_combo.findText(type_text)
         if index >= 0:
             self.type_combo.setCurrentIndex(index)
+        
+        # Update variables info after loading data
+        self.update_variables_info()
     
     def get_check(self) -> PatrolCheck:
         """Get patrol check from UI"""
@@ -178,7 +248,8 @@ class PatrolCheckWidget(QWidget):
             expected_value=self.expected_edit.text().strip() or None,
             tolerance=self.tolerance_edit.text().strip() or None,
             description=self.description_edit.text().strip(),
-            enabled=self.enabled_check.isChecked()
+            enabled=self.enabled_check.isChecked(),
+            associated_url=self.url_edit.text().strip() or None
         )
     
     def is_valid(self) -> bool:
@@ -191,6 +262,7 @@ class PatrolTaskConfigDialog(QDialog):
     
     def __init__(self, task: Optional[PatrolTask] = None, parent=None):
         super().__init__(parent)
+        self.logger = logging.getLogger(__name__)
         self.task = task
         self.check_widgets: List[PatrolCheckWidget] = []
         
@@ -610,16 +682,36 @@ class PatrolTaskConfigDialog(QDialog):
     
     def remove_check_widget(self, container):
         """Remove a check widget"""
-        # Find and remove the widget
+        # Find and remove the widget more safely
+        widget_to_remove = None
+        index_to_remove = -1
+        
         for i, widget in enumerate(self.check_widgets):
-            if widget.parent().parent() == container:
-                self.checks_layout.removeWidget(container)
-                container.deleteLater()
-                del self.check_widgets[i]
+            # Check if this widget is inside the container being removed
+            current_widget = widget
+            while current_widget and current_widget != container:
+                current_widget = current_widget.parent()
+            
+            if current_widget == container:
+                widget_to_remove = widget
+                index_to_remove = i
                 break
         
-        # Update labels
-        self.update_check_labels()
+        if widget_to_remove is not None and index_to_remove >= 0:
+            # Remove from layout and delete
+            self.checks_layout.removeWidget(container)
+            container.setParent(None)
+            container.deleteLater()
+            
+            # Remove from our list
+            del self.check_widgets[index_to_remove]
+            
+            # Update labels after removal
+            self.update_check_labels()
+            
+            self.logger.debug(f"Removed check widget at index {index_to_remove}")
+        else:
+            self.logger.warning("Could not find widget to remove")
     
     def clear_checks(self):
         """Clear all check widgets"""
