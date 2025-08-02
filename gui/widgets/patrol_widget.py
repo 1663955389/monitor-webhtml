@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QThread, pyqtSlot
 from PyQt5.QtGui import QFont, QColor, QBrush, QIcon, QPixmap, QPainter
 
-from core.patrol import PatrolEngine, PatrolTask, PatrolResult
+from core.patrol import PatrolEngine, PatrolTask, PatrolResult, PatrolFrequency, PatrolCheck, PatrolType
 from gui.dialogs.patrol_config import PatrolTaskConfigDialog
 from reports.generator import ReportGenerator
 
@@ -236,7 +236,6 @@ class PatrolTaskWidget(QWidget):
     
     def load_sample_tasks(self):
         """Load sample patrol tasks for demonstration"""
-        from core.patrol import PatrolTask, PatrolCheck, PatrolFrequency, PatrolType
         
         # Sample task 1
         sample_task1 = PatrolTask(
