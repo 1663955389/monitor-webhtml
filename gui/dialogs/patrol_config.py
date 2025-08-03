@@ -67,6 +67,11 @@ class PatrolCheckWidget(QWidget):
         self.url_edit.textChanged.connect(self.check_changed.emit)
         basic_layout.addRow("关联URL:", self.url_edit)
         
+        self.click_element_edit = QLineEdit()
+        self.click_element_edit.setPlaceholderText("CSS选择器或XPath，留空则不执行点击操作")
+        self.click_element_edit.textChanged.connect(self.check_changed.emit)
+        basic_layout.addRow("点击元素:", self.click_element_edit)
+        
         layout.addWidget(basic_group)
         
         # Check configuration
@@ -200,6 +205,13 @@ class PatrolCheckWidget(QWidget):
             variables.append(f"${{response_time_{safe_url}_任务名}} - 页面响应时间")
         
         variables_text = "\n".join(variables)
+        
+        # Add click action information if configured
+        click_element = self.click_element_edit.text().strip()
+        if click_element:
+            click_info = f"⚠️ 数据提取前将点击元素: {click_element}\n\n"
+            variables_text = click_info + variables_text
+        
         if url:
             variables_text = f"此检查项将为URL '{url}' 生成以下变量:\n\n{variables_text}"
         else:
@@ -219,6 +231,7 @@ class PatrolCheckWidget(QWidget):
         self.tolerance_edit.setText(self.check.tolerance or "")
         self.enabled_check.setChecked(self.check.enabled)
         self.url_edit.setText(self.check.associated_url or "")
+        self.click_element_edit.setText(self.check.click_element or "")
         
         # Set type combo
         type_map = {
@@ -254,7 +267,8 @@ class PatrolCheckWidget(QWidget):
             tolerance=self.tolerance_edit.text().strip() or None,
             description=self.description_edit.text().strip(),
             enabled=self.enabled_check.isChecked(),
-            associated_url=self.url_edit.text().strip() or None
+            associated_url=self.url_edit.text().strip() or None,
+            click_element=self.click_element_edit.text().strip() or None
         )
     
     def is_valid(self) -> bool:

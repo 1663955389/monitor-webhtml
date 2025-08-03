@@ -239,6 +239,57 @@ class ScreenshotCapture:
             self.logger.error(f"Error capturing full page screenshot: {e}")
             raise
     
+    async def click_element(self, url: str, element_selector: str) -> bool:
+        """Click an element on the page before other operations"""
+        try:
+            loop = asyncio.get_event_loop()
+            result = await loop.run_in_executor(
+                None, self._click_element_sync, url, element_selector
+            )
+            return result
+        except Exception as e:
+            self.logger.error(f"Failed to click element on {url}: {e}")
+            return False
+    
+    def _click_element_sync(self, url: str, element_selector: str) -> bool:
+        """Synchronous element click"""
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        
+        driver = self._setup_driver()
+        
+        try:
+            # Navigate to URL
+            driver.get(url)
+            
+            # Wait for page to load
+            driver.implicitly_wait(10)
+            
+            # Wait for element to be clickable
+            wait = WebDriverWait(driver, 10)
+            
+            # Determine selector type and find element
+            if element_selector.startswith('//') or element_selector.startswith('/'):
+                # XPath selector
+                element = wait.until(EC.element_to_be_clickable((By.XPATH, element_selector)))
+            else:
+                # CSS selector
+                element = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, element_selector)))
+            
+            # Click the element
+            element.click()
+            
+            # Wait a moment for any page changes to occur
+            driver.implicitly_wait(2)
+            
+            self.logger.info(f"Successfully clicked element: {element_selector}")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Error clicking element {element_selector}: {e}")
+            return False
+
     def cleanup_old_screenshots(self, days: int = 30) -> None:
         """Remove screenshots older than specified days"""
         import time

@@ -49,6 +49,7 @@ class PatrolCheck:
     description: str = ""
     enabled: bool = True
     associated_url: Optional[str] = None  # Specific URL this check should run against (if None, runs against all task URLs)
+    click_element: Optional[str] = None  # CSS selector or XPath of element to click before data extraction
 
 
 @dataclass
@@ -385,6 +386,15 @@ class PatrolEngine:
         }
         
         try:
+            # Handle click action before data extraction if configured
+            if check.click_element:
+                click_success = await self.screenshot_capture.click_element(url, check.click_element)
+                if click_success:
+                    check_result['message'] += f"点击元素 {check.click_element} 成功; "
+                else:
+                    check_result['message'] += f"点击元素 {check.click_element} 失败; "
+                    # Continue with check execution even if click fails
+            
             if check.type == PatrolType.CONTENT_CHECK:
                 # Enhanced content check: extract values first, then validate if expected value is provided
                 from bs4 import BeautifulSoup
