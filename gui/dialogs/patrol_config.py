@@ -435,8 +435,7 @@ class PatrolTaskConfigDialog(QDialog):
         
         layout.addWidget(scroll_area)
         
-        # Add default check
-        self.add_check_widget()
+        # Don't add a default check - let users add their own
         
         return tab
     
@@ -666,7 +665,8 @@ class PatrolTaskConfigDialog(QDialog):
         header_layout.addStretch()
         
         remove_button = QPushButton("删除")
-        remove_button.clicked.connect(lambda: self.remove_check_widget(container))
+        # Use a proper closure to capture the container variable
+        remove_button.clicked.connect(lambda checked, c=container: self.remove_check_widget(c))
         header_layout.addWidget(remove_button)
         
         container_layout.addLayout(header_layout)
@@ -683,55 +683,81 @@ class PatrolTaskConfigDialog(QDialog):
     
     def remove_check_widget(self, container):
         """Remove a check widget"""
-        # Find and remove the widget more safely
-        widget_to_remove = None
-        index_to_remove = -1
-        
-        for i, widget in enumerate(self.check_widgets):
-            # Check if this widget is inside the container being removed
-            current_widget = widget
-            while current_widget and current_widget != container:
-                current_widget = current_widget.parent()
+        try:
+            # Find the widget to remove more safely
+            widget_to_remove = None
+            index_to_remove = -1
             
-            if current_widget == container:
-                widget_to_remove = widget
-                index_to_remove = i
-                break
-        
-        if widget_to_remove is not None and index_to_remove >= 0:
-            # Remove from layout and delete
-            self.checks_layout.removeWidget(container)
-            container.setParent(None)
-            container.deleteLater()
+            for i, widget in enumerate(self.check_widgets):
+                # Use a safer way to traverse the widget hierarchy
+                parent = widget.parent()
+                if parent and parent.parent() == container:
+                    widget_to_remove = widget
+                    index_to_remove = i
+                    break
             
-            # Remove from our list
-            del self.check_widgets[index_to_remove]
-            
-            # Update labels after removal
-            self.update_check_labels()
-            
-            self.logger.debug(f"Removed check widget at index {index_to_remove}")
-        else:
-            self.logger.warning("Could not find widget to remove")
+            if widget_to_remove is not None and index_to_remove >= 0:
+                # Remove from our list first
+                del self.check_widgets[index_to_remove]
+                
+                # Remove from layout and delete the container
+                self.checks_layout.removeWidget(container)
+                container.setParent(None)
+                container.deleteLater()
+                
+                # Update labels after removal
+                self.update_check_labels()
+                
+                self.logger.debug(f"Removed check widget at index {index_to_remove}")
+                
+                # Enable delete buttons if there are still widgets
+                self.update_delete_buttons()
+            else:
+                self.logger.warning("Could not find widget to remove")
+                
+        except Exception as e:
+            self.logger.error(f"Error removing check widget: {e}")
+            # Don't let the error crash the application
     
     def clear_checks(self):
         """Clear all check widgets"""
-        for widget in self.check_widgets:
-            container = widget.parent().parent()
-            self.checks_layout.removeWidget(container)
-            container.deleteLater()
-        self.check_widgets.clear()
-        
-        # Add one default check
-        self.add_check_widget()
+        try:
+            for widget in self.check_widgets:
+                container = widget.parent().parent()
+                if container:
+                    self.checks_layout.removeWidget(container)
+                    container.setParent(None)
+                    container.deleteLater()
+            self.check_widgets.clear()
+            
+            # Don't automatically add a default check after clearing
+            self.logger.debug("Cleared all check widgets")
+        except Exception as e:
+            self.logger.error(f"Error clearing check widgets: {e}")
+            # Clear the list anyway to avoid inconsistent state
+            self.check_widgets.clear()
     
     def update_check_labels(self):
         """Update check widget labels"""
-        for i, widget in enumerate(self.check_widgets):
-            container = widget.parent().parent()
-            header_layout = container.layout().itemAt(0).layout()
-            label = header_layout.itemAt(0).widget()
-            label.setText(f"检查项 {i + 1}")
+        try:
+            for i, widget in enumerate(self.check_widgets):
+                container = widget.parent().parent()
+                if container and container.layout():
+                    header_layout_item = container.layout().itemAt(0)
+                    if header_layout_item and header_layout_item.layout():
+                        header_layout = header_layout_item.layout()
+                        label_item = header_layout.itemAt(0)
+                        if label_item and label_item.widget():
+                            label = label_item.widget()
+                            label.setText(f"检查项 {i + 1}")
+        except Exception as e:
+            self.logger.error(f"Error updating check labels: {e}")
+    
+    def update_delete_buttons(self):
+        """Update delete button states - all check items can be deleted"""
+        # Allow deletion of all check items, even if it results in zero checks
+        # The validation will handle the requirement for at least one valid check during save
+        pass
     
     def on_check_changed(self):
         """Handle check configuration changes"""
@@ -812,7 +838,8 @@ class PatrolTaskConfigDialog(QDialog):
             header_layout.addStretch()
             
             remove_button = QPushButton("删除")
-            remove_button.clicked.connect(lambda: self.remove_check_widget(container))
+            # Use a proper closure to capture the container variable
+            remove_button.clicked.connect(lambda checked, c=container: self.remove_check_widget(c))
             header_layout.addWidget(remove_button)
             
             container_layout.addLayout(header_layout)
@@ -1018,9 +1045,13 @@ class PatrolTaskConfigDialog(QDialog):
             return
         
         # Check if any checks are valid
+        if not self.check_widgets:
+            QMessageBox.warning(self, "验证错误", "请至少添加一个检查项")
+            return
+            
         valid_checks = [w for w in self.check_widgets if w.is_valid()]
         if not valid_checks:
-            QMessageBox.warning(self, "验证错误", "请至少配置一个有效的检查项")
+            QMessageBox.warning(self, "验证错误", "请至少配置一个有效的检查项（名称和目标不能为空）")
             return
         
         # Validate custom schedule if selected
