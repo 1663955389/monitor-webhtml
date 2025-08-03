@@ -3,6 +3,7 @@ Patrol task configuration dialog (巡检任务配置对话框)
 """
 
 import logging
+import re
 from datetime import datetime, time
 from typing import Dict, List, Optional, Any
 
@@ -1017,14 +1018,23 @@ class PatrolTaskConfigDialog(QDialog):
     
     def accept(self):
         """Validate and accept dialog"""
+        # Force focus away from all input fields to commit any pending changes
+        self.setFocus()
+        
+        # Process any pending events to ensure all widgets are updated
+        from PyQt5.QtWidgets import QApplication
+        QApplication.processEvents()
+        
         # Validate required fields
         if not self.name_edit.text().strip():
             QMessageBox.warning(self, "验证错误", "请输入任务名称")
+            self.name_edit.setFocus()
             return
         
         websites_text = self.websites_text.toPlainText().strip()
         if not websites_text:
             QMessageBox.warning(self, "验证错误", "请至少添加一个巡检网站")
+            self.websites_text.setFocus()
             return
         
         # Check if any checks are valid
@@ -1041,6 +1051,33 @@ class PatrolTaskConfigDialog(QDialog):
         if self.frequency_combo.currentText() == "自定义":
             if not self.custom_schedule_edit.text().strip():
                 QMessageBox.warning(self, "验证错误", "请输入自定义调度的Cron表达式")
+                self.custom_schedule_edit.setFocus()
+                return
+        
+        # Validate multiple daily times if selected
+        if self.frequency_combo.currentText() == "每日多次":
+            times_text = self.multiple_times_edit.text().strip()
+            if not times_text:
+                QMessageBox.warning(self, "验证错误", "请输入多次执行的时间（格式: 09:00,14:00,18:00）")
+                self.multiple_times_edit.setFocus()
+                return
+            # Validate time format
+            try:
+                times = [t.strip() for t in times_text.split(',') if t.strip()]
+                for time_str in times:
+                    if not re.match(r'^\d{1,2}:\d{2}$', time_str):
+                        raise ValueError(f"时间格式错误: {time_str}")
+                    # Validate hour and minute ranges
+                    hour, minute = map(int, time_str.split(':'))
+                    if hour < 0 or hour > 23:
+                        raise ValueError(f"小时必须在0-23之间: {time_str}")
+                    if minute < 0 or minute > 59:
+                        raise ValueError(f"分钟必须在0-59之间: {time_str}")
+                if not times:
+                    raise ValueError("请至少输入一个有效时间")
+            except ValueError as e:
+                QMessageBox.warning(self, "验证错误", f"时间格式错误: {str(e)}\n请使用格式: 09:00,14:00,18:00")
+                self.multiple_times_edit.setFocus()
                 return
         
         super().accept()

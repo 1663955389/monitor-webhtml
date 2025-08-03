@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (
     QListWidget, QListWidgetItem
 )
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QBrush, QColor
 
 from docx import Document
 from docx.shared import Inches
@@ -525,102 +525,136 @@ class WordReportEditor(QDialog):
         
         variables = self.variable_manager.get_all_variables_with_metadata()
         
-        if not variables:
-            # Add helpful message when no variables exist
-            help_item = QListWidgetItem("暂无可用变量")
-            help_item.setData(Qt.UserRole, None)
-            help_item.setFlags(help_item.flags() & ~Qt.ItemIsSelectable)  # Make non-selectable
-            self.variables_list.addItem(help_item)
-            
-            help_item2 = QListWidgetItem("执行巡检任务后将自动生成变量")
-            help_item2.setData(Qt.UserRole, None)
-            help_item2.setFlags(help_item2.flags() & ~Qt.ItemIsSelectable)
-            self.variables_list.addItem(help_item2)
-            return
+        # Always show all possible variable patterns, regardless of whether they exist
+        self._add_all_possible_variables(variables)
+    
+    def _add_all_possible_variables(self, existing_variables):
+        """Add all possible variable patterns to the list"""
         
-        # Group variables by type for better organization
-        var_groups = {
-            'screenshot': [],
-            'extracted': [],
-            'status': [],
-            'api': [],
-            'download': [],
-            'other': []
+        # Define all possible variable patterns
+        variable_patterns = {
+            '📅 时间变量': [
+                ('patrol_time_任务名', '巡检执行时间 (HH:MM:SS)', 'time'),
+                ('patrol_time_formatted_任务名', '完整格式时间 (年月日 时分秒)', 'time'), 
+                ('patrol_date_任务名', '巡检执行日期 (YYYY-MM-DD)', 'date'),
+                ('patrol_datetime_任务名', '日期时间 (YYYY-MM-DD HH:MM:SS)', 'datetime'),
+            ],
+            '📸 页面截图': [
+                ('screenshot_任务名_网站', '页面整体截图', 'image'),
+                ('visual_检查名_任务名', '视觉检查截图 (特定元素)', 'image'),
+            ],
+            '📝 提取内容': [
+                ('extracted_检查名_任务名', 'XPath/CSS选择器提取的文本内容', 'text'),
+                ('api_response_检查名_任务名', 'API检查返回的响应内容', 'text'),
+            ],
+            '✅ 状态信息': [
+                ('status_检查名_任务名', '检查项状态 (成功/失败)', 'text'),
+                ('status_任务名_网站', '网站巡检状态 (成功/失败)', 'text'),
+                ('api_status_检查名_任务名', 'API状态码 (200, 404等)', 'number'),
+                ('response_time_任务名_网站', '网站响应时间 (毫秒)', 'number'),
+            ],
+            '📁 下载文件': [
+                ('download_path_检查名_任务名', '下载文件的完整路径', 'file'),
+                ('download_name_检查名_任务名', '下载文件的文件名', 'text'),
+                ('download_size_检查名_任务名', '下载文件大小 (字节)', 'number'),
+            ],
+            '🔗 表单检查': [
+                ('form_result_检查名_任务名', '表单提交结果', 'text'),
+                ('form_response_检查名_任务名', '表单提交后的响应', 'text'),
+            ]
         }
         
-        for var_name, var_info in variables.items():
-            var_type = var_info.get('metadata', {}).get('type', 'unknown')
-            var_value = var_info.get('value', '')
-            var_description = var_info.get('metadata', {}).get('description', '')
-            
-            # Categorize variables by name pattern
-            if 'screenshot' in var_name:
-                category = 'screenshot'
-            elif 'extracted' in var_name:
-                category = 'extracted'
-            elif 'status' in var_name:
-                category = 'status'
-            elif 'api' in var_name:
-                category = 'api'
-            elif 'download' in var_name:
-                category = 'download'
-            else:
-                category = 'other'
-            
-            var_groups[category].append({
-                'name': var_name,
-                'type': var_type,
-                'value': var_value,
-                'description': var_description
-            })
+        # Track which variables actually exist
+        existing_var_names = set(existing_variables.keys()) if existing_variables else set()
         
-        # Add grouped variables to list
-        group_names = {
-            'screenshot': '📸 页面截图',
-            'extracted': '📝 提取内容',
-            'status': '✅ 状态信息',
-            'api': '🔗 API响应',
-            'download': '📁 下载文件',
-            'other': '🔧 其他变量'
-        }
-        
-        for group_key, group_title in group_names.items():
-            if var_groups[group_key]:
-                # Add group header
-                header_item = QListWidgetItem(f"━━━ {group_title} ━━━")
-                header_item.setData(Qt.UserRole, None)
-                header_item.setFlags(header_item.flags() & ~Qt.ItemIsSelectable)
-                header_font = QFont()
-                header_font.setBold(True)
-                header_item.setFont(header_font)
-                self.variables_list.addItem(header_item)
+        # Add each category
+        for category_name, var_list in variable_patterns.items():
+            # Add category header
+            header_item = QListWidgetItem(f"━━━ {category_name} ━━━")
+            header_item.setData(Qt.UserRole, None)
+            header_item.setFlags(header_item.flags() & ~Qt.ItemIsSelectable)
+            header_font = QFont()
+            header_font.setBold(True)
+            header_item.setFont(header_font)
+            self.variables_list.addItem(header_item)
+            
+            # Add variables in this category
+            for var_pattern, description, var_type in var_list:
+                # Check if this variable pattern matches any existing variables
+                matching_vars = [name for name in existing_var_names 
+                               if self._matches_pattern(name, var_pattern)]
                 
-                # Add variables in this group
-                for var_info in var_groups[group_key]:
-                    var_name = var_info['name']
-                    var_type = var_info['type']
-                    var_value = var_info['value']
-                    var_description = var_info['description']
-                    
-                    # Create display text with description
-                    if var_description:
-                        display_text = f"${{{var_name}}}\n  📋 {var_description}"
-                    else:
-                        # Fallback display based on type
-                        if var_type == 'image':
-                            display_text = f"${{{var_name}}}\n  📸 图片文件: {Path(str(var_value)).name if var_value else '未知'}"
-                        elif var_type == 'text':
-                            preview = str(var_value)[:50] + "..." if len(str(var_value)) > 50 else str(var_value)
-                            display_text = f"${{{var_name}}}\n  📝 文本: {preview}"
-                        elif var_type == 'number':
-                            display_text = f"${{{var_name}}}\n  🔢 数值: {var_value}"
+                if matching_vars:
+                    # Show actual existing variables
+                    for var_name in matching_vars:
+                        var_info = existing_variables[var_name]
+                        actual_value = var_info.get('value', '')
+                        actual_description = var_info.get('metadata', {}).get('description', description)
+                        
+                        # Create display text with actual value preview
+                        if var_type == 'image' and actual_value:
+                            display_text = f"${{{var_name}}} ✅\n  📸 {actual_description}\n  📄 文件: {Path(str(actual_value)).name}"
+                        elif var_type == 'text' and actual_value:
+                            preview = str(actual_value)[:50] + "..." if len(str(actual_value)) > 50 else str(actual_value)
+                            display_text = f"${{{var_name}}} ✅\n  📝 {actual_description}\n  💬 内容: {preview}"
+                        elif var_type in ['number', 'time', 'date', 'datetime'] and actual_value:
+                            display_text = f"${{{var_name}}} ✅\n  🔢 {actual_description}\n  📊 值: {actual_value}"
                         else:
-                            display_text = f"${{{var_name}}}\n  🔧 {var_type}: {str(var_value)[:30]}..."
+                            display_text = f"${{{var_name}}} ✅\n  ℹ️ {actual_description}"
+                            
+                        item = QListWidgetItem(display_text)
+                        item.setData(Qt.UserRole, var_name)
+                        item.setToolTip(f"变量名: {var_name}\n类型: {var_type}\n描述: {actual_description}\n当前值: {actual_value}\n双击插入到编辑器")
+                        
+                        # Style existing variables differently
+                        item.setBackground(QBrush(QColor(240, 255, 240)))  # Light green background
+                        self.variables_list.addItem(item)
+                else:
+                    # Show pattern template for variables that don't exist yet
+                    display_text = f"${{{var_pattern}}} ⏳\n  ℹ️ {description}\n  💡 执行巡检后自动生成"
                     
                     item = QListWidgetItem(display_text)
-                    item.setData(Qt.UserRole, var_name)  # Store variable name
-                    item.setToolTip(f"变量名: {var_name}\n类型: {var_type}\n描述: {var_description or '无描述'}\n双击插入到编辑器")
+                    item.setData(Qt.UserRole, var_pattern)
+                    item.setToolTip(f"变量模式: {var_pattern}\n类型: {var_type}\n描述: {description}\n状态: 将在执行巡检任务后自动生成\n双击插入模式到编辑器")
+                    
+                    # Style template variables differently  
+                    item.setBackground(QBrush(QColor(250, 250, 250)))  # Light gray background
+                    font = QFont()
+                    font.setItalic(True)
+                    item.setFont(font)
                     self.variables_list.addItem(item)
+    
+    def _matches_pattern(self, var_name, pattern):
+        """Check if a variable name matches a pattern like 'patrol_time_任务名'"""
+        # Convert pattern to regex-like matching
+        # Since variable names can contain multiple underscores from URL cleaning,
+        # we need more flexible patterns
+        import re
+        
+        # Replace common placeholders with regex patterns
+        regex_pattern = pattern
+        regex_pattern = regex_pattern.replace('任务名', '__TASK_NAME__')
+        regex_pattern = regex_pattern.replace('网站', '__WEBSITE__')  
+        regex_pattern = regex_pattern.replace('检查名', '__CHECK_NAME__')
+        
+        # Escape special regex characters
+        regex_pattern = re.escape(regex_pattern)
+        
+        # Replace our placeholders with actual regex patterns
+        # Use more flexible patterns that allow underscores within values
+        regex_pattern = regex_pattern.replace('__TASK_NAME__', r'[^_]+(?:_[^_]+)*')  # Allow underscores within task names
+        regex_pattern = regex_pattern.replace('__WEBSITE__', r'.+')  # Websites can contain any chars after processing  
+        regex_pattern = regex_pattern.replace('__CHECK_NAME__', r'[^_]+(?:_[^_]+)*')  # Allow underscores within check names
+        
+        # Add anchors
+        regex_pattern = f"^{regex_pattern}$"
+        
+        try:
+            return bool(re.match(regex_pattern, var_name))
+        except:
+            # Fallback to simple prefix matching
+            pattern_prefix = pattern.split('_')[0]
+            return var_name.startswith(pattern_prefix)
     
     def show_variable_selector(self):
         """Show variable selection dialog"""
