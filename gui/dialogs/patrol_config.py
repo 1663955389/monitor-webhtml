@@ -116,15 +116,15 @@ class PatrolCheckWidget(QWidget):
         
         if check_type == "内容检查":
             self.target_label.setText("CSS选择器/XPath*:")
-            self.target_edit.setPlaceholderText("CSS选择器、XPath或搜索文本")
-            self.expected_label.setText("期望文本:")
-            self.expected_edit.setPlaceholderText("页面中应包含的文本")
+            self.target_edit.setPlaceholderText("CSS选择器或XPath路径")
+            self.expected_label.setText("期望值:")
+            self.expected_edit.setPlaceholderText("可选：期望的文本内容，用于验证提取的值")
             self.tolerance_label.setText("匹配模式:")
-            self.tolerance_edit.setPlaceholderText("exact|contains|regex")
+            self.tolerance_edit.setPlaceholderText("exact|contains|regex （默认：contains）")
             
         elif check_type == "API检查":
             self.target_label.setText("API端点*:")
-            self.target_edit.setPlaceholderText("API URL")
+            self.target_edit.setPlaceholderText("API URL或JSON字段路径")
             self.expected_label.setText("期望状态码:")
             self.expected_edit.setPlaceholderText("200")
             self.tolerance_label.setText("超时时间:")
@@ -134,17 +134,17 @@ class PatrolCheckWidget(QWidget):
             self.target_label.setText("下载URL*:")
             self.target_edit.setPlaceholderText("要下载的文件URL")
             self.expected_label.setText("文件大小范围:")
-            self.expected_edit.setPlaceholderText("最小-最大 字节数")
+            self.expected_edit.setPlaceholderText("最小-最大 字节数（可选）")
             self.tolerance_label.setText("文件类型:")
-            self.tolerance_edit.setPlaceholderText("pdf|doc|xlsx|zip")
+            self.tolerance_edit.setPlaceholderText("pdf|doc|xlsx|zip（可选）")
             
         elif check_type == "视觉检查":
-            self.target_label.setText("对比基准:")
-            self.target_edit.setPlaceholderText("基准截图路径或CSS选择器")
+            self.target_label.setText("截图类型*:")
+            self.target_edit.setPlaceholderText("full（全页）|viewport（视口）|CSS选择器（特定元素）")
             self.expected_label.setText("相似度阈值:")
-            self.expected_edit.setPlaceholderText("0.95")
+            self.expected_edit.setPlaceholderText("0.95（未来功能）")
             self.tolerance_label.setText("对比区域:")
-            self.tolerance_edit.setPlaceholderText("full|selector")
+            self.tolerance_edit.setPlaceholderText("对比功能待实现")
             
         elif check_type == "表单检查":
             self.target_label.setText("表单选择器*:")
@@ -173,17 +173,21 @@ class PatrolCheckWidget(QWidget):
         if check_type == "内容检查":
             variables.append(f"${{extracted_{safe_check_name}_任务名}} - 提取的文本内容")
             variables.append(f"${{status_{safe_check_name}_任务名}} - 检查状态 (成功/失败)")
+            if self.expected_edit.text().strip():
+                variables.append(f"${{validation_{safe_check_name}_任务名}} - 验证结果 (通过/失败)")
         elif check_type == "API检查":
             variables.append(f"${{api_status_{safe_check_name}_任务名}} - API状态码")
             variables.append(f"${{api_response_{safe_check_name}_任务名}} - API响应内容")
         elif check_type == "下载检查":
             variables.append(f"${{download_path_{safe_check_name}_任务名}} - 下载文件路径")
             variables.append(f"${{download_size_{safe_check_name}_任务名}} - 文件大小")
+            variables.append(f"${{download_name_{safe_check_name}_任务名}} - 文件名")
         elif check_type == "视觉检查":
-            variables.append(f"${{visual_result_{safe_check_name}_任务名}} - 视觉对比结果")
-            variables.append(f"${{visual_similarity_{safe_check_name}_任务名}} - 相似度分数")
+            variables.append(f"${{visual_{safe_check_name}_任务名}} - 截图路径")
+            variables.append(f"${{status_{safe_check_name}_任务名}} - 截图状态 (成功/失败)")
         elif check_type == "表单检查":
             variables.append(f"${{form_result_{safe_check_name}_任务名}} - 表单提交结果")
+            variables.append(f"${{status_{safe_check_name}_任务名}} - 检查状态 (成功/失败)")
         
         # Add common variables for all checks
         variables.append(f"${{timestamp_{safe_check_name}_任务名}} - 检查执行时间")

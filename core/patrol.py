@@ -270,14 +270,15 @@ class PatrolEngine:
                 # Take screenshot if configured or if visual checks are needed
                 if any(check.type == PatrolType.VISUAL_CHECK for check in task.checks) or task.generate_report:
                     try:
+                        safe_url = website_url.replace('https://', '').replace('http://', '').replace('/', '_').replace(':', '_').replace('.', '_')
+                        website_name = f"{task.name}_{safe_url}"
                         screenshot_path = await self.screenshot_capture.capture_screenshot(
-                            website_url, headers, cookies
+                            website_url, website_name
                         )
                         result.screenshot_path = screenshot_path
                         self.logger.info(f"Screenshot captured: {screenshot_path}")
                         
                         # Generate screenshot variable
-                        safe_url = website_url.replace('https://', '').replace('http://', '').replace('/', '_').replace(':', '_').replace('.', '_')
                         safe_task_name = task.name.replace(' ', '_').replace('-', '_')
                         screenshot_var_name = f"screenshot_{safe_url}_{safe_task_name}"
                         self.variable_manager.set_variable(
@@ -345,59 +346,78 @@ class PatrolEngine:
         
         try:
             if check.type == PatrolType.CONTENT_CHECK:
-                # Enhanced content check with XPath and CSS selector support
-                if check.expected_value:
-                    # Simple text content check
+                # Enhanced content check: extract values first, then validate if expected value is provided
+                from bs4 import BeautifulSoup
+                soup = BeautifulSoup(content, 'html.parser')
+                extracted_value = None
+                
+                if check.target.startswith('//') or check.target.startswith('/'):
+                    # XPath support using lxml
+                    try:
+                        from lxml import html, etree
+                        tree = html.fromstring(content)
+                        elements = tree.xpath(check.target)
+                        
+                        if elements:
+                            # Extract text content from first element
+                            if hasattr(elements[0], 'text'):
+                                extracted_value = elements[0].text
+                            elif isinstance(elements[0], str):
+                                extracted_value = elements[0]
+                            else:
+                                extracted_value = str(elements[0])
+                            
+                            check_result['extracted_value'] = extracted_value
+                            check_result['value'] = len(elements)
+                            check_result['message'] = f"XPath找到 {len(elements)} 个元素，提取值: {extracted_value[:100]}"
+                        else:
+                            check_result['message'] = "XPath未找到匹配元素"
+                            
+                    except ImportError:
+                        check_result['message'] = "XPath支持需要安装lxml库: pip install lxml"
+                    except Exception as e:
+                        check_result['message'] = f"XPath执行错误: {str(e)}"
+                else:
+                    # CSS selector with value extraction
+                    elements = soup.select(check.target)
+                    if elements:
+                        # Extract text content from first element
+                        extracted_value = elements[0].get_text(strip=True)
+                        check_result['extracted_value'] = extracted_value
+                        check_result['value'] = len(elements)
+                        check_result['message'] = f"CSS选择器找到 {len(elements)} 个元素，提取值: {extracted_value[:100]}"
+                    else:
+                        check_result['message'] = f"CSS选择器未找到匹配元素: {check.target}"
+                
+                # Always try to extract value first, then validate if expected value is provided
+                if extracted_value is not None:
+                    check_result['success'] = True  # Value extraction successful
+                    
+                    # If expected value is provided, validate against it
+                    if check.expected_value:
+                        if check.tolerance == "exact":
+                            validation_success = extracted_value == check.expected_value
+                        elif check.tolerance == "regex":
+                            import re
+                            try:
+                                validation_success = bool(re.search(check.expected_value, extracted_value))
+                            except Exception as e:
+                                validation_success = False
+                                check_result['message'] += f", 正则表达式错误: {str(e)}"
+                        else:  # contains (default)
+                            validation_success = check.expected_value in extracted_value
+                        
+                        check_result['validation_success'] = validation_success
+                        check_result['message'] += f", 验证: {'通过' if validation_success else '失败'}"
+                        
+                        # Overall success depends on validation if expected value is provided
+                        check_result['success'] = validation_success
+                elif check.expected_value:
+                    # If no value extracted but expected value provided, do simple text search
                     found = check.expected_value in content
                     check_result['success'] = found
                     check_result['value'] = found
-                    check_result['message'] = f"内容检查: {'找到' if found else '未找到'} '{check.expected_value}'"
-                else:
-                    # XPath or CSS selector check with value extraction
-                    from bs4 import BeautifulSoup
-                    soup = BeautifulSoup(content, 'html.parser')
-                    
-                    if check.target.startswith('//') or check.target.startswith('/'):
-                        # XPath support using lxml
-                        try:
-                            from lxml import html, etree
-                            tree = html.fromstring(content)
-                            elements = tree.xpath(check.target)
-                            
-                            if elements:
-                                check_result['success'] = True
-                                check_result['value'] = len(elements)
-                                
-                                # Extract text content from first element
-                                if hasattr(elements[0], 'text'):
-                                    extracted_text = elements[0].text
-                                elif isinstance(elements[0], str):
-                                    extracted_text = elements[0]
-                                else:
-                                    extracted_text = str(elements[0])
-                                
-                                check_result['extracted_value'] = extracted_text
-                                check_result['message'] = f"XPath找到 {len(elements)} 个元素，提取值: {extracted_text[:100]}"
-                            else:
-                                check_result['message'] = "XPath未找到匹配元素"
-                                
-                        except ImportError:
-                            check_result['message'] = "XPath支持需要安装lxml库: pip install lxml"
-                        except Exception as e:
-                            check_result['message'] = f"XPath执行错误: {str(e)}"
-                    else:
-                        # CSS selector with value extraction
-                        elements = soup.select(check.target)
-                        if elements:
-                            check_result['success'] = True
-                            check_result['value'] = len(elements)
-                            
-                            # Extract text content from first element
-                            extracted_text = elements[0].get_text(strip=True)
-                            check_result['extracted_value'] = extracted_text
-                            check_result['message'] = f"CSS选择器找到 {len(elements)} 个元素，提取值: {extracted_text[:100]}"
-                        else:
-                            check_result['message'] = f"CSS选择器未找到匹配元素: {check.target}"
+                    check_result['message'] = f"文本搜索: {'找到' if found else '未找到'} '{check.expected_value}'"
             
             elif check.type == PatrolType.API_CHECK:
                 # API response check
@@ -427,18 +447,110 @@ class PatrolEngine:
                         check_result['message'] += f", JSON提取失败: {str(e)}"
             
             elif check.type == PatrolType.VISUAL_CHECK:
-                # Visual check would require screenshot comparison
-                check_result['message'] = "视觉检查需要截图对比功能"
+                # Enhanced visual check with screenshot capture
+                try:
+                    screenshot_path = None
+                    safe_url = url.replace('https://', '').replace('http://', '').replace('/', '_').replace(':', '_').replace('.', '_')
+                    website_name = f"{task.name}_{check.name}_{safe_url}"
+                    
+                    if check.target and check.target.lower() not in ['full', 'fullpage', '全页', 'viewport', '视口']:
+                        # Element-specific screenshot using CSS selector
+                        screenshot_path = await self.screenshot_capture.capture_element_screenshot(
+                            url, website_name, check.target
+                        )
+                        check_result['message'] = f"元素截图 ({check.target}): {'成功' if screenshot_path else '失败'}"
+                    else:
+                        # Full page screenshot
+                        if check.target and ('full' in check.target.lower() or '全页' in check.target):
+                            screenshot_path = await self.screenshot_capture.capture_full_page_screenshot(
+                                url, website_name
+                            )
+                            check_result['message'] = f"全页截图: {'成功' if screenshot_path else '失败'}"
+                        else:
+                            # Standard viewport screenshot
+                            screenshot_path = await self.screenshot_capture.capture_screenshot(
+                                url, website_name
+                            )
+                            check_result['message'] = f"页面截图: {'成功' if screenshot_path else '失败'}"
+                    
+                    if screenshot_path:
+                        check_result['success'] = True
+                        check_result['value'] = screenshot_path
+                        check_result['screenshot_path'] = screenshot_path
+                        
+                        # Generate visual check variable
+                        safe_check_name = check.name.replace(' ', '_').replace('-', '_')
+                        safe_task_name = task.name.replace(' ', '_').replace('-', '_')
+                        visual_var_name = f"visual_{safe_check_name}_{safe_task_name}"
+                        self.variable_manager.set_variable(
+                            visual_var_name,
+                            screenshot_path,
+                            "image",
+                            f"视觉检查 '{check.name}' 截图 (任务: {task.name})"
+                        )
+                    else:
+                        check_result['message'] += " - 截图失败"
+                        
+                except Exception as e:
+                    check_result['message'] = f"视觉检查错误: {str(e)}"
             
             elif check.type == PatrolType.DOWNLOAD_CHECK:
-                # File download check
+                # Enhanced file download check with metadata
                 try:
+                    safe_url = url.replace('https://', '').replace('http://', '').replace('/', '_').replace(':', '_').replace('.', '_')
+                    website_name = f"{task.name}_{check.name}_{safe_url}"
                     download_path = await self.file_downloader.download_file(
-                        check.target, url
+                        check.target, website_name
                     )
-                    check_result['success'] = bool(download_path)
-                    check_result['value'] = download_path
-                    check_result['message'] = f"文件下载: {'成功' if download_path else '失败'}"
+                    
+                    if download_path:
+                        check_result['success'] = True
+                        check_result['value'] = download_path
+                        
+                        # Get file information
+                        file_info = self.file_downloader.get_download_info(download_path)
+                        check_result['file_info'] = file_info
+                        
+                        if file_info.get('exists'):
+                            check_result['message'] = f"文件下载成功: {file_info.get('filename')} ({file_info.get('size')} 字节)"
+                        else:
+                            check_result['message'] = "文件下载成功但无法获取文件信息"
+                        
+                        # Generate download variables
+                        safe_check_name = check.name.replace(' ', '_').replace('-', '_')
+                        safe_task_name = task.name.replace(' ', '_').replace('-', '_')
+                        
+                        # File path variable
+                        download_path_var = f"download_path_{safe_check_name}_{safe_task_name}"
+                        self.variable_manager.set_variable(
+                            download_path_var,
+                            download_path,
+                            "file",
+                            f"下载检查 '{check.name}' 文件路径 (任务: {task.name})"
+                        )
+                        
+                        # File size variable
+                        if file_info.get('size'):
+                            download_size_var = f"download_size_{safe_check_name}_{safe_task_name}"
+                            self.variable_manager.set_variable(
+                                download_size_var,
+                                f"{file_info['size']} 字节",
+                                "text",
+                                f"下载检查 '{check.name}' 文件大小 (任务: {task.name})"
+                            )
+                        
+                        # File name variable
+                        if file_info.get('filename'):
+                            download_name_var = f"download_name_{safe_check_name}_{safe_task_name}"
+                            self.variable_manager.set_variable(
+                                download_name_var,
+                                file_info['filename'],
+                                "text",
+                                f"下载检查 '{check.name}' 文件名 (任务: {task.name})"
+                            )
+                    else:
+                        check_result['message'] = "文件下载失败"
+                        
                 except Exception as e:
                     check_result['message'] = f"下载失败: {str(e)}"
             
@@ -481,6 +593,16 @@ class PatrolEngine:
                 "text",
                 f"从检查项 '{check.name}' 提取的内容 (任务: {task.name})"
             )
+            
+            # Add validation result if available
+            if 'validation_success' in check_result:
+                validation_var = f"validation_{safe_check_name}_{safe_task_name}"
+                self.variable_manager.set_variable(
+                    validation_var,
+                    "通过" if check_result['validation_success'] else "失败",
+                    "text",
+                    f"检查项 '{check.name}' 验证结果 (任务: {task.name})"
+                )
         
         elif check.type == PatrolType.API_CHECK:
             api_status_var = f"api_status_{safe_check_name}_{safe_task_name}"
@@ -500,14 +622,13 @@ class PatrolEngine:
                     f"API检查 '{check.name}' 响应内容 (任务: {task.name})"
                 )
         
-        elif check.type == PatrolType.DOWNLOAD_CHECK and check_result.get('value'):
-            download_path_var = f"download_path_{safe_check_name}_{safe_task_name}"
-            self.variable_manager.set_variable(
-                download_path_var,
-                check_result['value'],
-                "file",
-                f"下载检查 '{check.name}' 文件路径 (任务: {task.name})"
-            )
+        elif check.type == PatrolType.VISUAL_CHECK and check_result.get('screenshot_path'):
+            # Visual check variable already generated in the execution section
+            pass
+        
+        elif check.type == PatrolType.DOWNLOAD_CHECK:
+            # Download check variables already generated in the execution section
+            pass
         
         return check_result
     
