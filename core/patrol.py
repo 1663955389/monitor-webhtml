@@ -183,6 +183,46 @@ class PatrolEngine:
             return []
         
         self.logger.info(f"Executing patrol task: {task_name}")
+        
+        # Generate patrol execution time variable
+        patrol_time = datetime.now()
+        safe_task_name = task.name.replace(' ', '_').replace('-', '_')
+        
+        # Generate multiple time format variables for flexibility in Word reports
+        time_var_name = f"patrol_time_{safe_task_name}"
+        time_formatted_var_name = f"patrol_time_formatted_{safe_task_name}"
+        date_var_name = f"patrol_date_{safe_task_name}"
+        datetime_var_name = f"patrol_datetime_{safe_task_name}"
+        
+        # Set time variables with different formats
+        self.variable_manager.set_variable(
+            time_var_name,
+            patrol_time.strftime("%H:%M:%S"),
+            "text",
+            f"巡检执行时间 (任务: {task.name})"
+        )
+        
+        self.variable_manager.set_variable(
+            time_formatted_var_name,
+            patrol_time.strftime("%Y年%m月%d日 %H:%M:%S"),
+            "text",
+            f"巡检执行时间-完整格式 (任务: {task.name})"
+        )
+        
+        self.variable_manager.set_variable(
+            date_var_name,
+            patrol_time.strftime("%Y-%m-%d"),
+            "text",
+            f"巡检执行日期 (任务: {task.name})"
+        )
+        
+        self.variable_manager.set_variable(
+            datetime_var_name,
+            patrol_time.strftime("%Y-%m-%d %H:%M:%S"),
+            "text",
+            f"巡检执行日期时间 (任务: {task.name})"
+        )
+        
         results = []
         
         async with self as patrol_engine:
@@ -198,7 +238,7 @@ class PatrolEngine:
                         self.logger.error(f"Error in result callback: {e}")
         
         # Update task metadata
-        task.last_run = datetime.now()
+        task.last_run = patrol_time
         task.run_count += 1
         
         self.logger.info(f"Completed patrol task: {task_name}, {len(results)} websites checked")

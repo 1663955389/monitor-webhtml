@@ -633,6 +633,10 @@ class WordReportEditor(QDialog):
             QMessageBox.information(
                 self, "提示", 
                 "当前没有可用的变量。\n\n变量会在执行巡检任务时自动生成，包括:\n" +
+                "• ${patrol_time_任务名} - 巡检执行时间 (HH:MM:SS)\n" +
+                "• ${patrol_time_formatted_任务名} - 完整格式时间 (年月日 时分秒)\n" +
+                "• ${patrol_date_任务名} - 巡检执行日期 (YYYY-MM-DD)\n" +
+                "• ${patrol_datetime_任务名} - 日期时间 (YYYY-MM-DD HH:MM:SS)\n" +
                 "• ${screenshot_任务名_网站} - 页面截图\n" +
                 "• ${extracted_检查名_任务名} - XPath/CSS提取的内容\n" +
                 "• ${status_任务名_网站} - 巡检状态 (成功/失败)\n" +
