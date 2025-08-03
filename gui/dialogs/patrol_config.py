@@ -649,10 +649,14 @@ class PatrolTaskConfigDialog(QDialog):
     
     def add_check_widget(self):
         """Add a new check configuration widget"""
-        check_widget = PatrolCheckWidget()
+        self.load_single_check_widget()
+    
+    def load_single_check_widget(self, check: Optional[PatrolCheck] = None):
+        """Load a single check widget - used for both adding new and loading existing checks"""
+        check_widget = PatrolCheckWidget(check)
         check_widget.check_changed.connect(self.on_check_changed)
         
-        # Add remove button
+        # Create container for the check widget
         container = QWidget()
         container_layout = QVBoxLayout(container)
         
@@ -665,8 +669,9 @@ class PatrolTaskConfigDialog(QDialog):
         header_layout.addStretch()
         
         remove_button = QPushButton("删除")
-        # Use a proper closure to capture the container variable
-        remove_button.clicked.connect(lambda checked, c=container: self.remove_check_widget(c))
+        # Store the container reference directly on the button to avoid closure issues
+        remove_button.container_ref = container
+        remove_button.clicked.connect(lambda: self.remove_check_widget(remove_button.container_ref))
         header_layout.addWidget(remove_button)
         
         container_layout.addLayout(header_layout)
@@ -682,22 +687,23 @@ class PatrolTaskConfigDialog(QDialog):
         self.check_widgets.append(check_widget)
     
     def remove_check_widget(self, container):
-        """Remove a check widget"""
+        """Remove a check widget with improved safety"""
         try:
-            # Find the widget to remove more safely
+            # Find the widget to remove by directly checking the container's children
             widget_to_remove = None
             index_to_remove = -1
             
-            for i, widget in enumerate(self.check_widgets):
-                # Use a safer way to traverse the widget hierarchy
-                parent = widget.parent()
-                if parent and parent.parent() == container:
-                    widget_to_remove = widget
+            # Look through all check widgets to find the one in this container
+            for i, check_widget in enumerate(self.check_widgets):
+                # Check if this widget is directly contained in the provided container
+                current_parent = check_widget.parent()
+                if current_parent and current_parent == container:
+                    widget_to_remove = check_widget
                     index_to_remove = i
                     break
             
             if widget_to_remove is not None and index_to_remove >= 0:
-                # Remove from our list first
+                # Remove from our list first to maintain consistency
                 del self.check_widgets[index_to_remove]
                 
                 # Remove from layout and delete the container
@@ -708,15 +714,14 @@ class PatrolTaskConfigDialog(QDialog):
                 # Update labels after removal
                 self.update_check_labels()
                 
-                self.logger.debug(f"Removed check widget at index {index_to_remove}")
-                
-                # Enable delete buttons if there are still widgets
-                self.update_delete_buttons()
+                self.logger.info(f"Successfully removed check widget at index {index_to_remove}")
             else:
-                self.logger.warning("Could not find widget to remove")
+                self.logger.warning("Could not find the check widget to remove")
                 
         except Exception as e:
             self.logger.error(f"Error removing check widget: {e}")
+            import traceback
+            self.logger.error(f"Traceback: {traceback.format_exc()}")
             # Don't let the error crash the application
     
     def clear_checks(self):
@@ -825,33 +830,7 @@ class PatrolTaskConfigDialog(QDialog):
         # Checks tab
         self.clear_checks()
         for check in self.task.checks:
-            check_widget = PatrolCheckWidget(check)
-            check_widget.check_changed.connect(self.on_check_changed)
-            
-            container = QWidget()
-            container_layout = QVBoxLayout(container)
-            
-            header_layout = QHBoxLayout()
-            header_label = QLabel(f"检查项 {len(self.check_widgets) + 1}")
-            header_label.setFont(QFont("", weight=QFont.Bold))
-            header_layout.addWidget(header_label)
-            header_layout.addStretch()
-            
-            remove_button = QPushButton("删除")
-            # Use a proper closure to capture the container variable
-            remove_button.clicked.connect(lambda checked, c=container: self.remove_check_widget(c))
-            header_layout.addWidget(remove_button)
-            
-            container_layout.addLayout(header_layout)
-            container_layout.addWidget(check_widget)
-            
-            separator = QFrame()
-            separator.setFrameShape(QFrame.HLine)
-            separator.setFrameShadow(QFrame.Sunken)
-            container_layout.addWidget(separator)
-            
-            self.checks_layout.addWidget(container)
-            self.check_widgets.append(check_widget)
+            self.load_single_check_widget(check)
         
         # Schedule tab
         freq_map = {
