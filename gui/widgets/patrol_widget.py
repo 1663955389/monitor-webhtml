@@ -630,8 +630,8 @@ class PatrolTaskWidget(QWidget):
         if auto_generate_report:
             # Automatically generate report
             try:
-                report_path = self.report_generator.generate_word_report(
-                    task_name, results, self.variable_manager
+                report_path = self.report_generator.generate_patrol_word_report(
+                    results, task_name
                 )
                 
                 # Store the generated report path
@@ -801,8 +801,7 @@ class PatrolTaskWidget(QWidget):
         try:
             # Generate patrol Word report with enhanced features
             report_path = self.report_generator.generate_patrol_word_report(
-                patrol_results=results,
-                task_name=task_name
+                results, task_name
             )
             
             # Store the path for editing functionality

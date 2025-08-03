@@ -462,6 +462,11 @@ class ReportGenerator:
             self.logger.error(f"Failed to generate email content: {e}")
             raise
     
+    def generate_word_report(self, patrol_results: List, task_name: str = "巡检任务", 
+                           template_name: str = "default") -> str:
+        """Alias for generate_patrol_word_report for backwards compatibility"""
+        return self.generate_patrol_word_report(patrol_results, task_name, template_name)
+    
     def generate_patrol_word_report(self, patrol_results: List, task_name: str = "巡检任务", 
                                   template_name: str = "default") -> str:
         """Generate Word document report from patrol results with screenshots and extracted values"""
@@ -579,6 +584,38 @@ class ReportGenerator:
                         row_cells[1].text = "✓" if check_result.get('success') else "✗"
                         row_cells[2].text = str(check_result.get('extracted_value', '')) if check_result.get('extracted_value') else '无'
                         row_cells[3].text = check_result.get('message', '')
+                        
+                        # Add visual check screenshots inline
+                        if check_result.get('screenshot_path') and Path(check_result['screenshot_path']).exists():
+                            doc.add_paragraph(f"检查项 '{check_name}' 截图:")
+                            try:
+                                screenshot_paragraph = doc.add_paragraph()
+                                run = screenshot_paragraph.runs[0] if screenshot_paragraph.runs else screenshot_paragraph.add_run()
+                                run.add_picture(check_result['screenshot_path'], width=Inches(4.0))
+                            except Exception as e:
+                                doc.add_paragraph(f"截图加载失败: {e}")
+                                
+                        # Add download file information
+                        if check_result.get('file_info'):
+                            file_info = check_result['file_info']
+                            if file_info.get('exists'):
+                                doc.add_paragraph(f"下载文件 '{check_name}':")
+                                file_para = doc.add_paragraph()
+                                file_para.add_run(f"• 文件名: ").bold = True
+                                file_para.add_run(f"{file_info.get('filename', '未知')}\n")
+                                file_para.add_run(f"• 文件大小: ").bold = True
+                                file_para.add_run(f"{file_info.get('size', 0)} 字节\n")
+                                file_para.add_run(f"• 文件路径: ").bold = True
+                                file_para.add_run(f"{check_result.get('value', '')}")
+                                
+                # Add any downloaded files from this result
+                if result.downloaded_files:
+                    doc.add_heading('下载文件', level=3)
+                    for file_path in result.downloaded_files:
+                        if Path(file_path).exists():
+                            file_para = doc.add_paragraph()
+                            file_para.add_run(f"• {Path(file_path).name}: ").bold = True
+                            file_para.add_run(file_path)
                 
                 # Add error details if failed
                 if not result.success and result.error_message:
