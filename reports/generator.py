@@ -463,19 +463,25 @@ class ReportGenerator:
             raise
     
     def generate_word_report(self, patrol_results: List, task_name: str = "巡检任务", 
-                           template_name: str = "default") -> str:
+                           template_name: str = "default", custom_template_path: Optional[str] = None) -> str:
         """Alias for generate_patrol_word_report for backwards compatibility"""
-        return self.generate_patrol_word_report(patrol_results, task_name, template_name)
+        return self.generate_patrol_word_report(patrol_results, task_name, template_name, custom_template_path)
     
     def generate_patrol_word_report(self, patrol_results: List, task_name: str = "巡检任务", 
-                                  template_name: str = "default") -> str:
+                                  template_name: str = "default", custom_template_path: Optional[str] = None) -> str:
         """Generate Word document report from patrol results with screenshots and extracted values"""
         try:
             # Import PatrolResult if needed
             from core.patrol import PatrolResult
             
-            # Create a new document
-            doc = Document()
+            # Create a new document - use custom template if provided
+            if custom_template_path and Path(custom_template_path).exists():
+                self.logger.info(f"Using custom template: {custom_template_path}")
+                doc = Document(custom_template_path)
+            else:
+                if custom_template_path:
+                    self.logger.warning(f"Custom template not found: {custom_template_path}, using default")
+                doc = Document()
             
             # Set document title
             title = doc.add_heading('网站巡检报告', 0)

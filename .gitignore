@@ -130,6 +130,9 @@ data/logs/
 *.db
 *.sqlite
 
+# Test templates (exclude test custom templates)
+reports/templates/custom_template.docx
+
 # IDE
 .vscode/
 .idea/

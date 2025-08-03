@@ -631,7 +631,7 @@ class PatrolTaskWidget(QWidget):
             # Automatically generate report
             try:
                 report_path = self.report_generator.generate_patrol_word_report(
-                    results, task_name
+                    results, task_name, custom_template_path=task.custom_template
                 )
                 
                 # Store the generated report path
@@ -799,9 +799,13 @@ class PatrolTaskWidget(QWidget):
             return
         
         try:
+            # Get the task configuration to access custom template
+            task = self.patrol_engine.get_patrol_task(task_name)
+            custom_template = task.custom_template if task else None
+            
             # Generate patrol Word report with enhanced features
             report_path = self.report_generator.generate_patrol_word_report(
-                results, task_name
+                results, task_name, custom_template_path=custom_template
             )
             
             # Store the path for editing functionality
@@ -810,9 +814,10 @@ class PatrolTaskWidget(QWidget):
             # Update button states
             self.edit_report_button.setEnabled(True)
             
+            template_msg = f"\n使用自定义模板: {custom_template}" if custom_template else ""
             QMessageBox.information(
                 self, "报告生成成功",
-                f"巡检报告已生成:\n{report_path}\n\n您可以点击'编辑报告'按钮来自定义报告内容。"
+                f"巡检报告已生成:\n{report_path}{template_msg}\n\n您可以点击'编辑报告'按钮来自定义报告内容。"
             )
         except Exception as e:
             QMessageBox.critical(self, "错误", f"生成报告失败: {str(e)}")
