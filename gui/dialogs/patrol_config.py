@@ -1032,13 +1032,85 @@ class PatrolTaskConfigDialog(QDialog):
     
     def accept(self):
         """Validate and accept dialog"""
-        # Force focus away from all input fields to commit any pending changes
-        self.setFocus()
+        # Enhanced focus clearing to ensure all input changes are committed
+        self._ensure_all_changes_committed()
+    
+    def _ensure_all_changes_committed(self):
+        """Ensure all input widget changes are committed before validation"""
+        from PyQt5.QtWidgets import QApplication, QLineEdit, QTextEdit, QTimeEdit, QComboBox, QSpinBox
         
-        # Process any pending events to ensure all widgets are updated
-        from PyQt5.QtWidgets import QApplication
-        QApplication.processEvents()
+        try:
+            self.logger.debug("Starting enhanced focus clearing to commit all changes")
+            
+            # Step 1: Clear focus from all input widgets to trigger their editingFinished signals
+            all_widgets = [
+                # Basic tab widgets
+                self.name_edit, self.description_edit, self.timeout_spin, self.retry_spin,
+                # Websites tab widgets  
+                self.websites_text, self.quick_url_edit,
+                # Auth tab widgets
+                self.auth_type_combo, self.login_url_edit, self.username_edit, self.password_edit,
+                self.token_edit, self.username_field_edit, self.password_field_edit, self.additional_fields_edit,
+                # Schedule tab widgets
+                self.frequency_combo, self.start_time_edit, self.multiple_times_edit, self.custom_schedule_edit,
+                # Reports tab widgets
+                self.report_format_combo, self.custom_template_edit,
+                # Notifications tab widgets
+                self.recipients_text
+            ]
+            
+            # Step 2: Force focus clearing for all widgets
+            widgets_cleared = 0
+            for widget in all_widgets:
+                if widget and hasattr(widget, 'clearFocus'):
+                    widget.clearFocus()
+                    widgets_cleared += 1
+            
+            # Step 3: Also clear focus from all check widgets
+            check_widgets_cleared = 0
+            for check_widget in self.check_widgets:
+                check_input_widgets = [
+                    check_widget.name_edit, check_widget.description_edit, check_widget.target_edit,
+                    check_widget.expected_edit, check_widget.tolerance_edit, check_widget.url_edit,
+                    check_widget.click_element_edit, check_widget.type_combo
+                ]
+                for widget in check_input_widgets:
+                    if widget and hasattr(widget, 'clearFocus'):
+                        widget.clearFocus()
+                        check_widgets_cleared += 1
+            
+            self.logger.debug(f"Cleared focus from {widgets_cleared} main widgets and {check_widgets_cleared} check widgets")
+            
+            # Step 4: Set focus to the dialog itself to ensure no input widget has focus
+            self.setFocus()
+            
+            # Step 5: Process events multiple times to ensure all signals are handled
+            for i in range(3):  # Process events multiple times for reliability
+                QApplication.processEvents()
+                QApplication.sendPostedEvents()  # Process any posted events
+                self.logger.debug(f"Processed events - iteration {i+1}")
+            
+            # Step 6: Add a small delay to allow Qt's event system to complete
+            import time
+            time.sleep(0.01)  # 10ms delay
+            
+            # Step 7: Final event processing
+            QApplication.processEvents()
+            
+            self.logger.debug("Enhanced focus clearing completed successfully")
+            
+        except Exception as e:
+            self.logger.error(f"Error during focus clearing: {e}")
+            # Continue anyway to avoid blocking the save operation
+            # At minimum, clear focus and process events once
+            self.setFocus()
+            QApplication.processEvents()
         
+        # Now proceed with validation
+        self._validate_and_accept()
+    
+    def _validate_and_accept(self):
+        """Perform validation and accept the dialog"""
         # Validate required fields
         if not self.name_edit.text().strip():
             QMessageBox.warning(self, "验证错误", "请输入任务名称")
@@ -1094,4 +1166,5 @@ class PatrolTaskConfigDialog(QDialog):
                 self.multiple_times_edit.setFocus()
                 return
         
+        # All validation passed, accept the dialog
         super().accept()
