@@ -1,0 +1,44 @@
+2025-08-13 15:11:37,918 p=4217 u=runner n=ansible INFO| PLAY [代理状态和网站连通性监控] ************************************************
+2025-08-13 15:11:37,924 p=4217 u=runner n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2025-08-13 15:11:38,836 p=4217 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 15:11:38,841 p=4217 u=runner n=ansible INFO| TASK [创建日志目录] ************************************************************
+2025-08-13 15:11:39,112 p=4217 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 15:11:39,118 p=4217 u=runner n=ansible INFO| TASK [初始化监控结果变量] ******************************************************
+2025-08-13 15:11:39,125 p=4217 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 15:11:39,131 p=4217 u=runner n=ansible INFO| TASK [执行代理监控任务] ********************************************************
+2025-08-13 15:11:39,151 p=4217 u=runner n=ansible INFO| included: proxy-monitor for localhost
+2025-08-13 15:11:39,156 p=4217 u=runner n=ansible INFO| TASK [proxy-monitor : 获取已启用的代理服务器列表] ******************************
+2025-08-13 15:11:39,179 p=4217 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 15:11:39,184 p=4217 u=runner n=ansible INFO| TASK [proxy-monitor : 获取测试网站列表] ****************************************
+2025-08-13 15:11:39,205 p=4217 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 15:11:39,211 p=4217 u=runner n=ansible INFO| TASK [proxy-monitor : 初始化测试结果] ******************************************
+2025-08-13 15:11:39,221 p=4217 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 15:11:39,227 p=4217 u=runner n=ansible INFO| TASK [proxy-monitor : 对每个代理执行网站连通性测试] ****************************
+2025-08-13 15:11:39,233 p=4217 u=runner n=ansible INFO| TASK [proxy-monitor : 生成监控日志] ********************************************
+2025-08-13 15:11:39,238 p=4217 u=runner n=ansible INFO| TASK [proxy-monitor : 更新全局监控结果] ****************************************
+2025-08-13 15:11:39,246 p=4217 u=runner n=ansible INFO| TASK [计算总体统计信息] ********************************************************
+2025-08-13 15:11:39,251 p=4217 u=runner n=ansible INFO| TASK [显示监控汇总] ************************************************************
+2025-08-13 15:11:39,255 p=4217 u=runner n=ansible INFO| TASK [发送告警邮件] ************************************************************
+2025-08-13 15:11:39,260 p=4217 u=runner n=ansible INFO| TASK [监控状态总结] ************************************************************
+2025-08-13 15:11:39,260 p=4217 u=runner n=ansible INFO| PLAY RECAP *********************************************************************
+2025-08-13 15:11:39,260 p=4217 u=runner n=ansible INFO| localhost                  : ok=7    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-08-13 15:11:39,261 p=4217 u=runner n=ansible ERROR| ERROR! Unexpected Exception, this is probably a bug: [Errno 32] Broken pipe
+2025-08-13 15:11:39,261 p=4217 u=runner n=ansible INFO| to see the full traceback, use -vvv
+2025-08-13 15:11:39,435 p=4217 u=runner n=ansible INFO| the full traceback was:
+
+Traceback (most recent call last):
+  File "/opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/cli/__init__.py", line 646, in cli_executor
+    exit_code = cli.run()
+                ^^^^^^^^^
+  File "/opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/cli/playbook.py", line 155, in run
+    results = pbex.run()
+              ^^^^^^^^^^
+  File "/opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/executor/playbook_executor.py", line 252, in run
+    self._tqm.cleanup()
+  File "/opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/executor/task_queue_manager.py", line 365, in cleanup
+    sys.stdout.flush()
+  File "/opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/utils/display.py", line 199, in locking_wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
+

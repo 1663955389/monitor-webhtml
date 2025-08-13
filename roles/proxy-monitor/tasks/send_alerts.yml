@@ -1,0 +1,30 @@
+---
+# 发送代理故障告警邮件
+
+- name: 生成HTML告警邮件
+  template:
+    src: email-alert.html.j2
+    dest: "{{ monitoring.logging.log_dir }}/alert_email.html"
+    mode: '0644'
+  vars:
+    alert_timestamp: "{{ ansible_date_time.iso8601 }}"
+    alert_results: "{{ proxy_test_results }}"
+
+- name: 发送告警邮件
+  mail:
+    to: "{{ email_config.to_emails }}"
+    from: "{{ email_config.from_email }}"
+    subject: "{{ email_config.subject_prefix }} 代理监控告警 - {{ ansible_date_time.iso8601 }}"
+    body: "{{ lookup('file', monitoring.logging.log_dir + '/alert_email.html') }}"
+    subtype: html
+    host: "{{ email_config.smtp_server }}"
+    port: "{{ email_config.smtp_port }}"
+    username: "{{ email_config.smtp_username }}"
+    password: "{{ email_config.smtp_password }}"
+    secure: "{{ 'starttls' if email_config.smtp_use_tls else 'never' }}"
+  ignore_errors: true
+  register: email_result
+
+- name: 记录邮件发送结果
+  debug:
+    msg: "告警邮件{{ '发送成功' if email_result is succeeded else '发送失败: ' + (email_result.msg | default('未知错误')) }}"

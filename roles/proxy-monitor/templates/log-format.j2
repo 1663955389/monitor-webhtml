@@ -1,0 +1,91 @@
+{% if monitoring.logging.log_format == 'json' %}
+{
+  "时间戳": "{{ log_timestamp }}",
+  "监控汇总": {
+    "代理总数": {{ test_results | length }},
+    "健康代理": {{ test_results.values() | selectattr('status', 'equalto', 'HEALTHY') | list | length }},
+    "异常代理": {{ test_results.values() | selectattr('status', 'equalto', 'UNHEALTHY') | list | length }},
+    "总体成功率": {{ (test_results.values() | map(attribute='successful_tests') | sum | float * 100 / test_results.values() | map(attribute='total_tests') | sum | float) | round(2) if test_results.values() | map(attribute='total_tests') | sum > 0 else 0 }}
+  },
+  "代理详情": [
+{% for proxy_name, proxy_data in test_results.items() %}
+    {
+      "代理名称": "{{ proxy_name }}",
+      "代理地址": "{{ proxy_data.proxy_url }}",
+      "状态": "{{ proxy_data.status }}",
+      "成功率": {{ proxy_data.success_rate }},
+      "成功数": {{ proxy_data.successful_tests }},
+      "失败数": {{ proxy_data.failed_tests }},
+      "总数": {{ proxy_data.total_tests }},
+      "测试详情": [
+{% for test in proxy_data.test_details %}
+        {
+          "网站": "{{ test.website }}",
+          "地址": "{{ test.url }}",
+          "状态": "{{ test.status }}",
+          "状态码": {{ test.status_code }},
+          "响应时间": {{ test.response_time }},
+          "错误信息": "{{ test.error_msg | default('') }}",
+          "时间戳": "{{ test.timestamp }}"
+        }{% if not loop.last %},{% endif %}
+{% endfor %}
+      ]
+    }{% if not loop.last %},{% endif %}
+{% endfor %}
+  ]
+}
+{% else %}
+===============================================================================
+代理监控报告
+===============================================================================
+时间: {{ log_timestamp }}
+系统: Ansible 代理监控系统
+
+汇总信息:
+--------
+监控代理总数: {{ test_results | length }}
+健康代理数量: {{ test_results.values() | selectattr('status', 'equalto', 'HEALTHY') | list | length }}
+异常代理数量: {{ test_results.values() | selectattr('status', 'equalto', 'UNHEALTHY') | list | length }}
+总体成功率: {{ (test_results.values() | map(attribute='successful_tests') | sum | float * 100 / test_results.values() | map(attribute='total_tests') | sum | float) | round(2) if test_results.values() | map(attribute='total_tests') | sum > 0 else 0 }}%
+
+详细结果:
+---------
+{% for proxy_name, proxy_data in test_results.items() %}
+
+[{{ proxy_data.status }}] {{ proxy_name }}
+{{ '-' * (proxy_name | length + 15) }}
+代理地址: {{ proxy_data.proxy_url }}
+状态: {{ proxy_data.status }}
+成功率: {{ proxy_data.success_rate }}%
+测试结果: {{ proxy_data.successful_tests }}/{{ proxy_data.total_tests }} 成功
+检测时间: {{ proxy_data.timestamp }}
+
+网站测试结果:
+{% for test in proxy_data.test_details %}
+  • {{ test.website }} ({{ test.url }})
+    状态: {{ test.status }}
+    响应时间: {{ test.response_time if test.response_time != -1 else '无' }}ms
+    HTTP状态码: {{ test.status_code if test.status_code != -1 else '无' }}
+{% if test.error_msg %}    错误信息: {{ test.error_msg }}{% endif %}
+{% endfor %}
+{% endfor %}
+
+阈值设置:
+---------
+最大响应时间: {{ monitoring.thresholds.max_response_time }}ms
+最小成功率: {{ monitoring.thresholds.min_success_rate }}%
+最大失败率: {{ monitoring.thresholds.max_failure_rate }}%
+
+{% if test_results.values() | selectattr('status', 'equalto', 'UNHEALTHY') | list | length > 0 %}
+告警信息:
+---------
+以下代理需要关注:
+{% for proxy_name, proxy_data in test_results.items() %}
+{% if proxy_data.status == 'UNHEALTHY' %}
+- {{ proxy_name }}: 成功率 {{ proxy_data.success_rate }}% (低于阈值 {{ monitoring.thresholds.min_success_rate }}%)
+{% endif %}
+{% endfor %}
+{% endif %}
+
+===============================================================================
+{% endif %}

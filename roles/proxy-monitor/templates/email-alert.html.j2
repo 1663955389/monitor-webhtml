@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代理监控告警</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #d32f2f;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+        }
+        .summary {
+            background-color: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #2196f3;
+        }
+        .proxy-item {
+            background-color: #fff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ff9800;
+        }
+        .proxy-healthy {
+            border-left-color: #4caf50;
+        }
+        .proxy-unhealthy {
+            border-left-color: #f44336;
+        }
+        .test-details {
+            margin-top: 10px;
+        }
+        .status-success {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .status-failed {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚨 代理监控告警</h1>
+        <p>告警时间: {{ alert_timestamp }}</p>
+    </div>
+    
+    <div class="content">
+        <div class="summary">
+            <h2>📊 监控汇总</h2>
+            <p><strong>监控代理总数:</strong> {{ alert_results | length }}</p>
+            <p><strong>异常代理:</strong> {{ alert_results.values() | selectattr('status', 'equalto', 'UNHEALTHY') | list | length }}</p>
+            <p><strong>健康代理:</strong> {{ alert_results.values() | selectattr('status', 'equalto', 'HEALTHY') | list | length }}</p>
+            <p><strong>告警阈值:</strong> 成功率低于 {{ monitoring.thresholds.min_success_rate }}%</p>
+        </div>
+
+        <h2>🔍 代理状态详情</h2>
+        {% for proxy_name, proxy_data in alert_results.items() %}
+        <div class="proxy-item {{ 'proxy-healthy' if proxy_data.status == 'HEALTHY' else 'proxy-unhealthy' }}">
+            <h3>
+                {% if proxy_data.status == 'HEALTHY' %}
+                    ✅ {{ proxy_name }}
+                {% else %}
+                    ❌ {{ proxy_name }}
+                {% endif %}
+            </h3>
+            <p><strong>代理地址:</strong> {{ proxy_data.proxy_url }}</p>
+            <p><strong>状态:</strong> 
+                <span class="{{ 'status-success' if proxy_data.status == 'HEALTHY' else 'status-failed' }}">
+                    {{ '健康' if proxy_data.status == 'HEALTHY' else '异常' }}
+                </span>
+            </p>
+            <p><strong>成功率:</strong> {{ proxy_data.success_rate }}%</p>
+            <p><strong>测试结果:</strong> {{ proxy_data.successful_tests }}/{{ proxy_data.total_tests }} 成功</p>
+            
+            <div class="test-details">
+                <h4>📋 测试详情:</h4>
+                <table>
+                    <tr>
+                        <th>网站</th>
+                        <th>地址</th>
+                        <th>状态</th>
+                        <th>响应时间(ms)</th>
+                        <th>HTTP状态码</th>
+                    </tr>
+                    {% for test in proxy_data.test_details %}
+                    <tr>
+                        <td>{{ test.website }}</td>
+                        <td>{{ test.url }}</td>
+                        <td class="{{ 'status-success' if test.status == 'SUCCESS' else 'status-failed' }}">
+                            {{ '成功' if test.status == 'SUCCESS' else '失败' }}
+                        </td>
+                        <td>{{ test.response_time if test.response_time != -1 else '无' }}</td>
+                        <td>{{ test.status_code if test.status_code != -1 else '无' }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="summary">
+            <h2>🔧 建议操作</h2>
+            <ul>
+                {% for proxy_name, proxy_data in alert_results.items() %}
+                    {% if proxy_data.status == 'UNHEALTHY' %}
+                <li><strong>{{ proxy_name }}:</strong> 检查代理服务器连通性和配置</li>
+                    {% endif %}
+                {% endfor %}
+                <li>查看代理服务器日志获取详细错误信息</li>
+                <li>验证监控系统与代理服务器之间的网络连通性</li>
+                <li>检查代理认证凭据是否有效</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>此告警由 Ansible 代理监控系统自动生成</p>
+        <p>详细信息请查看监控日志: {{ monitoring.logging.log_dir }}/{{ monitoring.logging.log_file }}</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+---
+# 代理监控角色变量配置
+
+# 默认超时设置(秒)
+default_timeout: 10
+connection_timeout: 5
+
+# HTTP请求配置
+http_config:
+  user_agent: "Ansible-Proxy-Monitor/1.0"
+  follow_redirects: true    # 跟随重定向
+  validate_certs: false     # 不验证SSL证书
+  max_redirects: 3          # 最大重定向次数
+
+# 状态码定义
+status_codes:
+  success: [200, 201, 202, 204, 301, 302, 304]  # 成功状态码
+  warning: [400, 401, 403, 404]                  # 警告状态码
+  error: [500, 502, 503, 504, 505]               # 错误状态码
+
+# 代理认证类型
+auth_types:
+  basic: "basic"     # 基础认证
+  digest: "digest"   # 摘要认证
+  none: "none"       # 无认证
+
+# 测试模式
+test_patterns:
+  connectivity: "basic_http_check"     # 连通性测试
+  performance: "response_time_check"   # 性能测试
+  content: "content_validation"        # 内容验证
