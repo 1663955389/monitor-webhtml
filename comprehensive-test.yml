@@ -1,0 +1,42 @@
+---
+# Comprehensive test configuration showing various scenarios
+monitor_config:
+  proxies:
+    - name: "direct_connection"
+      http: ""  # No proxy - direct connection
+      enabled: true
+    - name: "simulated_proxy_success"
+      http: ""  # Simulate working proxy (direct connection)
+      enabled: true
+    - name: "simulated_proxy_failure"
+      http: "http://non-existent-proxy:8080"
+      enabled: true
+    - name: "disabled_proxy"
+      http: "http://disabled-proxy:8080"
+      enabled: false  # This should be skipped
+      
+  sites:
+    - name: "File URI Test (Success)"
+      url: "file:///etc/hostname"  # Local file that should exist
+      validate_certs: false
+      max_latency_ms: 1000
+      allowed_status_codes: [200, 301, 302, 403, 404, 500]
+    - name: "Localhost Test"
+      url: "http://localhost:80"
+      validate_certs: false
+      max_latency_ms: 5000
+      allowed_status_codes: [200, 301, 302, 403, 404, 500, 502, 503]
+
+# Monitoring settings - more permissive for demo
+monitor_settings:
+  retries: 1
+  timeout_seconds: 5
+  max_latency_ms: 10000
+  allowed_status_codes: [200, 201, 202, 301, 302, 403, 404, 500, 502, 503]
+  parallel_limit: 5
+
+# Output configuration
+output_settings:
+  html_report_path: "/tmp/comprehensive_monitoring_report.html"
+  json_log_path: "/tmp/comprehensive_monitoring_results.json"
+  send_email: false

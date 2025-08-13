@@ -1,0 +1,50 @@
+---
+- name: Monitor proxies and websites
+  hosts: localhost
+  gather_facts: yes
+  vars:
+    # Default configuration - can be overridden
+    monitor_config:
+      proxies:
+        - name: "proxy1"
+          http: "http://proxy1.example.com:8080"
+          https: "https://proxy1.example.com:8080"
+          enabled: true
+        - name: "proxy2"
+          http: "http://proxy2.example.com:3128"
+          enabled: true
+        - name: "disabled_proxy"
+          http: "http://disabled.example.com:8080"
+          enabled: false
+      sites:
+        - name: "Google"
+          url: "https://www.google.com"
+          validate_certs: true
+        - name: "Example"
+          url: "http://www.example.com"
+          validate_certs: false
+          max_latency_ms: 2000
+          allowed_status_codes: [200, 301, 302]
+      
+    # Global monitoring settings
+    monitor_settings:
+      retries: 3
+      timeout_seconds: 30
+      max_latency_ms: 5000
+      allowed_status_codes: [200, 201, 202, 301, 302]
+      parallel_limit: 10
+      
+    # Output settings
+    output_settings:
+      html_report_path: "/tmp/monitoring_report.html"
+      json_log_path: "/tmp/monitoring_results.json"
+      send_email: false
+      email_settings:
+        smtp_server: "localhost"
+        smtp_port: 25
+        from_email: "monitoring@example.com"
+        to_emails: ["admin@example.com"]
+        subject: "Proxy Monitoring Report - {{ ansible_date_time.date }}"
+
+  roles:
+    - monitor_proxies

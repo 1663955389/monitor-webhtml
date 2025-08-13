@@ -1,0 +1,32 @@
+---
+# Test configuration for proxy monitoring (safe test mode)
+monitor_config:
+  proxies:
+    - name: "no_proxy_test"
+      http: ""  # Empty proxy for direct connection test
+      enabled: true
+      
+  sites:
+    - name: "Google Test"
+      url: "https://www.google.com"
+      validate_certs: true
+      max_latency_ms: 10000
+      allowed_status_codes: [200, 301, 302]
+    - name: "Example Test"
+      url: "http://httpbin.org/status/200"
+      validate_certs: false
+      max_latency_ms: 15000
+
+# Monitoring settings
+monitor_settings:
+  retries: 2
+  timeout_seconds: 10
+  max_latency_ms: 15000
+  allowed_status_codes: [200, 201, 202, 301, 302]
+  parallel_limit: 5
+
+# Output configuration
+output_settings:
+  html_report_path: "/tmp/test_monitoring_report.html"
+  json_log_path: "/tmp/test_monitoring_results.json"
+  send_email: false

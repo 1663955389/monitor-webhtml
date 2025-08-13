@@ -1,0 +1,31 @@
+---
+# Simple test configuration with localhost endpoints
+monitor_config:
+  proxies:
+    - name: "direct_connection"
+      http: ""  # No proxy - direct connection
+      enabled: true
+    - name: "fake_proxy"
+      http: "http://fake-proxy:8080"  # This will fail as expected
+      enabled: true
+      
+  sites:
+    - name: "Localhost Test"
+      url: "http://localhost:80"  # Will likely fail but should show structure
+      validate_certs: false
+      max_latency_ms: 5000
+      allowed_status_codes: [200, 301, 302, 404, 500, 502, 503]  # Allow various codes
+
+# Monitoring settings
+monitor_settings:
+  retries: 1
+  timeout_seconds: 5
+  max_latency_ms: 10000
+  allowed_status_codes: [200, 201, 202, 301, 302, 404, 500, 502, 503]
+  parallel_limit: 5
+
+# Output configuration
+output_settings:
+  html_report_path: "/tmp/demo_monitoring_report.html"
+  json_log_path: "/tmp/demo_monitoring_results.json"
+  send_email: false

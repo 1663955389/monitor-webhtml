@@ -1,0 +1,57 @@
+---
+# Example configuration for proxy monitoring
+# This file can be used to override default settings
+
+monitor_config:
+  proxies:
+    - name: "corporate_proxy"
+      http: "http://proxy.company.com:8080"
+      https: "https://proxy.company.com:8080"
+      enabled: true
+    - name: "backup_proxy"
+      http: "http://backup-proxy.company.com:3128"
+      enabled: true
+    - name: "test_proxy"
+      http: "http://test-proxy.company.com:8080"
+      enabled: false  # Disabled for testing
+      
+  sites:
+    - name: "Company Website"
+      url: "https://www.company.com"
+      validate_certs: true
+      max_latency_ms: 3000
+      allowed_status_codes: [200, 301, 302]
+    - name: "External API"
+      url: "https://api.external-service.com/health"
+      validate_certs: true
+      max_latency_ms: 2000
+      retries: 5
+    - name: "Internal Service"
+      url: "http://internal.company.com/status"
+      validate_certs: false
+      max_latency_ms: 1000
+    - name: "Google (reference)"
+      url: "https://www.google.com"
+      validate_certs: true
+
+# Monitoring settings
+monitor_settings:
+  retries: 3
+  timeout_seconds: 30
+  max_latency_ms: 5000
+  allowed_status_codes: [200, 201, 202, 301, 302]
+  parallel_limit: 10
+
+# Output configuration
+output_settings:
+  html_report_path: "/tmp/monitoring_report.html"
+  json_log_path: "/tmp/monitoring_results.json"
+  send_email: false
+  email_settings:
+    smtp_server: "mail.company.com"
+    smtp_port: 587
+    from_email: "monitoring@company.com"
+    to_emails:
+      - "admin@company.com"
+      - "ops-team@company.com"
+    subject: "Proxy Monitoring Report - {{ ansible_date_time.date }}"
