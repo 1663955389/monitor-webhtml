@@ -315,3 +315,2267 @@ BrokenPipeError: [Errno 32] Broken pipe
 2025-08-13 16:11:31,959 p=4622 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
 2025-08-13 16:11:31,959 p=4622 u=runner n=ansible INFO| localhost                  : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 2025-08-13 16:12:50,356 p=4684 u=runner n=ansible INFO| playbook: playbooks/monitor-proxies.yml
+2025-08-13 22:52:22,088 p=3371 u=runner n=ansible INFO| Using /home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg as config file
+2025-08-13 22:52:22,664 p=3371 u=runner n=ansible INFO| PLAY [代理状态和网站连通性监控] ****************************************************************************************
+2025-08-13 22:52:22,711 p=3371 u=runner n=ansible INFO| TASK [Gathering Facts] *************************************************************************************************
+2025-08-13 22:52:24,082 p=3371 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 22:52:24,087 p=3371 u=runner n=ansible INFO| TASK [创建日志目录] ****************************************************************************************************
+2025-08-13 22:52:24,427 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"changed": false, "gid": 118, "group": "docker", "mode": "0755", "owner": "runner", "path": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs", "size": 4096, "state": "directory", "uid": 1001}
+2025-08-13 22:52:24,439 p=3371 u=runner n=ansible INFO| TASK [初始化监控结果变量] **********************************************************************************************
+2025-08-13 22:52:24,447 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"failed_proxies": [], "monitoring_results": [], "successful_tests": 0, "total_tests": 0}, "changed": false}
+2025-08-13 22:52:24,452 p=3371 u=runner n=ansible INFO| TASK [执行代理监控任务] ************************************************************************************************
+2025-08-13 22:52:24,471 p=3371 u=runner n=ansible INFO| included: proxy-monitor for localhost
+2025-08-13 22:52:24,476 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 获取已启用的代理服务器列表] **********************************************************************
+2025-08-13 22:52:24,540 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"enabled_proxies": [{"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_host": "localhost", "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "enabled": true, "group_names": ["proxy_servers"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "proxy1", "inventory_hostname_short": "proxy1", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "proxy_password": "pass1", "proxy_url": "http://proxy1.example.com:8080", "proxy_username": "user1"}, {"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_host": "localhost", "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "enabled": true, "group_names": ["proxy_servers"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "proxy2", "inventory_hostname_short": "proxy2", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "proxy_password": "pass2", "proxy_url": "http://proxy2.example.com:8080", "proxy_username": "user2"}]}, "changed": false}
+2025-08-13 22:52:24,545 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 获取测试网站列表] ********************************************************************************
+2025-08-13 22:52:24,566 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"test_websites": [{"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "google", "inventory_hostname_short": "google", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 10, "test_url": "https://www.google.com"}, {"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "github", "inventory_hostname_short": "github", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 15, "test_url": "https://github.com"}, {"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "baidu", "inventory_hostname_short": "baidu", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 10, "test_url": "https://www.baidu.com"}, {"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "httpbin", "inventory_hostname_short": "httpbin", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 5, "test_url": "https://httpbin.org/status/200"}]}, "changed": false}
+2025-08-13 22:52:24,572 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 初始化测试结果] **********************************************************************************
+2025-08-13 22:52:24,582 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"current_timestamp": "2025-08-13T22:52:23Z", "proxy_test_results": {}}, "changed": false}
+2025-08-13 22:52:24,587 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 对每个代理执行网站连通性测试] ********************************************************************
+2025-08-13 22:52:24,610 p=3371 u=runner n=ansible INFO| included: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml for localhost => (item=proxy1)
+2025-08-13 22:52:24,614 p=3371 u=runner n=ansible INFO| included: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml for localhost => (item=proxy2)
+2025-08-13 22:52:24,619 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 初始化代理测试结果] ******************************************************************************
+2025-08-13 22:52:24,630 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"failed_count": 0, "proxy_name": "proxy1", "proxy_tests": [], "successful_count": 0}, "changed": false}
+2025-08-13 22:52:24,636 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 测试代理对各网站的连通性] ************************************************************************
+2025-08-13 22:52:24,943 p=3371 u=runner n=ansible INFO| changed: [localhost] => (item=google) => {"ansible_loop_var": "website_item", "changed": true, "cmd": "# 使用带认证的代理\ncurl -x \"http://user1:pass1@proxy1.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 10     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://www.google.com\"\n", "delta": "0:00:00.010837", "end": "2025-08-13 22:52:24.923135", "failed_when_result": false, "msg": "non-zero return code", "rc": 5, "start": "2025-08-13 22:52:24.912298", "stderr": "", "stderr_lines": [], "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001202", "stdout_lines": ["CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001202"], "website_item": {"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "google", "inventory_hostname_short": "google", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 10, "test_url": "https://www.google.com"}}
+2025-08-13 22:52:25,120 p=3371 u=runner n=ansible INFO| changed: [localhost] => (item=github) => {"ansible_loop_var": "website_item", "changed": true, "cmd": "# 使用带认证的代理\ncurl -x \"http://user1:pass1@proxy1.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 15     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://github.com\"\n", "delta": "0:00:00.009816", "end": "2025-08-13 22:52:25.100838", "failed_when_result": false, "msg": "non-zero return code", "rc": 5, "start": "2025-08-13 22:52:25.091022", "stderr": "", "stderr_lines": [], "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001161", "stdout_lines": ["CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001161"], "website_item": {"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "github", "inventory_hostname_short": "github", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 15, "test_url": "https://github.com"}}
+2025-08-13 22:52:25,308 p=3371 u=runner n=ansible INFO| changed: [localhost] => (item=baidu) => {"ansible_loop_var": "website_item", "changed": true, "cmd": "# 使用带认证的代理\ncurl -x \"http://user1:pass1@proxy1.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 10     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://www.baidu.com\"\n", "delta": "0:00:00.011951", "end": "2025-08-13 22:52:25.283822", "failed_when_result": false, "msg": "non-zero return code", "rc": 5, "start": "2025-08-13 22:52:25.271871", "stderr": "", "stderr_lines": [], "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001367", "stdout_lines": ["CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001367"], "website_item": {"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "baidu", "inventory_hostname_short": "baidu", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 10, "test_url": "https://www.baidu.com"}}
+2025-08-13 22:52:25,483 p=3371 u=runner n=ansible INFO| changed: [localhost] => (item=httpbin) => {"ansible_loop_var": "website_item", "changed": true, "cmd": "# 使用带认证的代理\ncurl -x \"http://user1:pass1@proxy1.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 5     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://httpbin.org/status/200\"\n", "delta": "0:00:00.010088", "end": "2025-08-13 22:52:25.464983", "failed_when_result": false, "msg": "non-zero return code", "rc": 5, "start": "2025-08-13 22:52:25.454895", "stderr": "", "stderr_lines": [], "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001480", "stdout_lines": ["CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001480"], "website_item": {"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "httpbin", "inventory_hostname_short": "httpbin", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 5, "test_url": "https://httpbin.org/status/200"}}
+2025-08-13 22:52:25,490 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 处理每个网站的测试结果] **************************************************************************
+2025-08-13 22:52:25,592 p=3371 u=runner n=ansible INFO| ok: [localhost] => (item=0) => {"ansible_facts": {"failed_count": "1", "proxy_tests": [{"error_msg": "", "response_time": "1.2", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.google.com", "website": "google"}], "successful_count": "0"}, "ansible_loop_var": "item_index", "changed": false, "item_index": 0}
+2025-08-13 22:52:25,673 p=3371 u=runner n=ansible INFO| ok: [localhost] => (item=1) => {"ansible_facts": {"failed_count": "2", "proxy_tests": [{"error_msg": "", "response_time": "1.2", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.google.com", "website": "google"}, {"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://github.com", "website": "github"}], "successful_count": "0"}, "ansible_loop_var": "item_index", "changed": false, "item_index": 1}
+2025-08-13 22:52:25,754 p=3371 u=runner n=ansible INFO| ok: [localhost] => (item=2) => {"ansible_facts": {"failed_count": "3", "proxy_tests": [{"error_msg": "", "response_time": "1.2", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.google.com", "website": "google"}, {"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://github.com", "website": "github"}, {"error_msg": "", "response_time": "1.37", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.baidu.com", "website": "baidu"}], "successful_count": "0"}, "ansible_loop_var": "item_index", "changed": false, "item_index": 2}
+2025-08-13 22:52:25,839 p=3371 u=runner n=ansible INFO| ok: [localhost] => (item=3) => {"ansible_facts": {"failed_count": "4", "proxy_tests": [{"error_msg": "", "response_time": "1.2", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.google.com", "website": "google"}, {"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://github.com", "website": "github"}, {"error_msg": "", "response_time": "1.37", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.baidu.com", "website": "baidu"}, {"error_msg": "", "response_time": "1.48", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://httpbin.org/status/200", "website": "httpbin"}], "successful_count": "0"}, "ansible_loop_var": "item_index", "changed": false, "item_index": 3}
+2025-08-13 22:52:25,846 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 处理检查模式的测试结果] **************************************************************************
+2025-08-13 22:52:25,867 p=3371 u=runner n=ansible INFO| skipping: [localhost] => (item=0)  => {"ansible_loop_var": "item_index", "changed": false, "false_condition": "ansible_check_mode and website_test_result.results is not defined", "item_index": 0, "skip_reason": "Conditional result was False"}
+2025-08-13 22:52:25,869 p=3371 u=runner n=ansible INFO| skipping: [localhost] => (item=1)  => {"ansible_loop_var": "item_index", "changed": false, "false_condition": "ansible_check_mode and website_test_result.results is not defined", "item_index": 1, "skip_reason": "Conditional result was False"}
+2025-08-13 22:52:25,872 p=3371 u=runner n=ansible INFO| skipping: [localhost] => (item=2)  => {"ansible_loop_var": "item_index", "changed": false, "false_condition": "ansible_check_mode and website_test_result.results is not defined", "item_index": 2, "skip_reason": "Conditional result was False"}
+2025-08-13 22:52:25,875 p=3371 u=runner n=ansible INFO| skipping: [localhost] => (item=3)  => {"ansible_loop_var": "item_index", "changed": false, "false_condition": "ansible_check_mode and website_test_result.results is not defined", "item_index": 3, "skip_reason": "Conditional result was False"}
+2025-08-13 22:52:25,876 p=3371 u=runner n=ansible INFO| skipping: [localhost] => {"changed": false, "msg": "All items skipped"}
+2025-08-13 22:52:25,882 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 计算代理成功率] **********************************************************************************
+2025-08-13 22:52:25,900 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"proxy_success_rate": "0.0"}, "changed": false}
+2025-08-13 22:52:25,906 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 判断代理整体状态] ********************************************************************************
+2025-08-13 22:52:25,922 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"proxy_status": "UNHEALTHY"}, "changed": false}
+2025-08-13 22:52:25,928 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 存储代理测试结果] ********************************************************************************
+2025-08-13 22:52:25,948 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"proxy_test_results": {"proxy1": {"failed_tests": "4", "proxy_name": "proxy1", "proxy_url": "http://proxy1.example.com:8080", "status": "UNHEALTHY", "success_rate": "0.0", "successful_tests": "0", "test_details": [{"error_msg": "", "response_time": "1.2", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.google.com", "website": "google"}, {"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://github.com", "website": "github"}, {"error_msg": "", "response_time": "1.37", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.baidu.com", "website": "baidu"}, {"error_msg": "", "response_time": "1.48", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://httpbin.org/status/200", "website": "httpbin"}], "timestamp": "2025-08-13T22:52:23Z", "total_tests": 4}}}, "changed": false}
+2025-08-13 22:52:25,956 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 初始化代理测试结果] ******************************************************************************
+2025-08-13 22:52:25,967 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"failed_count": 0, "proxy_name": "proxy2", "proxy_tests": [], "successful_count": 0}, "changed": false}
+2025-08-13 22:52:25,973 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 测试代理对各网站的连通性] ************************************************************************
+2025-08-13 22:52:26,172 p=3371 u=runner n=ansible INFO| changed: [localhost] => (item=google) => {"ansible_loop_var": "website_item", "changed": true, "cmd": "# 使用带认证的代理\ncurl -x \"http://user2:pass2@proxy2.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 10     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://www.google.com\"\n", "delta": "0:00:00.010193", "end": "2025-08-13 22:52:26.151288", "failed_when_result": false, "msg": "non-zero return code", "rc": 5, "start": "2025-08-13 22:52:26.141095", "stderr": "", "stderr_lines": [], "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001156", "stdout_lines": ["CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001156"], "website_item": {"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "google", "inventory_hostname_short": "google", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 10, "test_url": "https://www.google.com"}}
+2025-08-13 22:52:26,348 p=3371 u=runner n=ansible INFO| changed: [localhost] => (item=github) => {"ansible_loop_var": "website_item", "changed": true, "cmd": "# 使用带认证的代理\ncurl -x \"http://user2:pass2@proxy2.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 15     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://github.com\"\n", "delta": "0:00:00.010333", "end": "2025-08-13 22:52:26.328274", "failed_when_result": false, "msg": "non-zero return code", "rc": 5, "start": "2025-08-13 22:52:26.317941", "stderr": "", "stderr_lines": [], "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001154", "stdout_lines": ["CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001154"], "website_item": {"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "github", "inventory_hostname_short": "github", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 15, "test_url": "https://github.com"}}
+2025-08-13 22:52:26,528 p=3371 u=runner n=ansible INFO| changed: [localhost] => (item=baidu) => {"ansible_loop_var": "website_item", "changed": true, "cmd": "# 使用带认证的代理\ncurl -x \"http://user2:pass2@proxy2.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 10     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://www.baidu.com\"\n", "delta": "0:00:00.010532", "end": "2025-08-13 22:52:26.508242", "failed_when_result": false, "msg": "non-zero return code", "rc": 5, "start": "2025-08-13 22:52:26.497710", "stderr": "", "stderr_lines": [], "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001178", "stdout_lines": ["CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001178"], "website_item": {"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "baidu", "inventory_hostname_short": "baidu", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 10, "test_url": "https://www.baidu.com"}}
+2025-08-13 22:52:26,706 p=3371 u=runner n=ansible INFO| changed: [localhost] => (item=httpbin) => {"ansible_loop_var": "website_item", "changed": true, "cmd": "# 使用带认证的代理\ncurl -x \"http://user2:pass2@proxy2.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 5     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://httpbin.org/status/200\"\n", "delta": "0:00:00.010185", "end": "2025-08-13 22:52:26.685729", "failed_when_result": false, "msg": "non-zero return code", "rc": 5, "start": "2025-08-13 22:52:26.675544", "stderr": "", "stderr_lines": [], "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001159", "stdout_lines": ["CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001159"], "website_item": {"ansible_check_mode": false, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "httpbin", "inventory_hostname_short": "httpbin", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 5, "test_url": "https://httpbin.org/status/200"}}
+2025-08-13 22:52:26,713 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 处理每个网站的测试结果] **************************************************************************
+2025-08-13 22:52:26,814 p=3371 u=runner n=ansible INFO| ok: [localhost] => (item=0) => {"ansible_facts": {"failed_count": "1", "proxy_tests": [{"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.google.com", "website": "google"}], "successful_count": "0"}, "ansible_loop_var": "item_index", "changed": false, "item_index": 0}
+2025-08-13 22:52:26,897 p=3371 u=runner n=ansible INFO| ok: [localhost] => (item=1) => {"ansible_facts": {"failed_count": "2", "proxy_tests": [{"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.google.com", "website": "google"}, {"error_msg": "", "response_time": "1.15", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://github.com", "website": "github"}], "successful_count": "0"}, "ansible_loop_var": "item_index", "changed": false, "item_index": 1}
+2025-08-13 22:52:26,979 p=3371 u=runner n=ansible INFO| ok: [localhost] => (item=2) => {"ansible_facts": {"failed_count": "3", "proxy_tests": [{"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.google.com", "website": "google"}, {"error_msg": "", "response_time": "1.15", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://github.com", "website": "github"}, {"error_msg": "", "response_time": "1.18", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.baidu.com", "website": "baidu"}], "successful_count": "0"}, "ansible_loop_var": "item_index", "changed": false, "item_index": 2}
+2025-08-13 22:52:27,059 p=3371 u=runner n=ansible INFO| ok: [localhost] => (item=3) => {"ansible_facts": {"failed_count": "4", "proxy_tests": [{"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.google.com", "website": "google"}, {"error_msg": "", "response_time": "1.15", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://github.com", "website": "github"}, {"error_msg": "", "response_time": "1.18", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.baidu.com", "website": "baidu"}, {"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://httpbin.org/status/200", "website": "httpbin"}], "successful_count": "0"}, "ansible_loop_var": "item_index", "changed": false, "item_index": 3}
+2025-08-13 22:52:27,067 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 处理检查模式的测试结果] **************************************************************************
+2025-08-13 22:52:27,087 p=3371 u=runner n=ansible INFO| skipping: [localhost] => (item=0)  => {"ansible_loop_var": "item_index", "changed": false, "false_condition": "ansible_check_mode and website_test_result.results is not defined", "item_index": 0, "skip_reason": "Conditional result was False"}
+2025-08-13 22:52:27,089 p=3371 u=runner n=ansible INFO| skipping: [localhost] => (item=1)  => {"ansible_loop_var": "item_index", "changed": false, "false_condition": "ansible_check_mode and website_test_result.results is not defined", "item_index": 1, "skip_reason": "Conditional result was False"}
+2025-08-13 22:52:27,092 p=3371 u=runner n=ansible INFO| skipping: [localhost] => (item=2)  => {"ansible_loop_var": "item_index", "changed": false, "false_condition": "ansible_check_mode and website_test_result.results is not defined", "item_index": 2, "skip_reason": "Conditional result was False"}
+2025-08-13 22:52:27,094 p=3371 u=runner n=ansible INFO| skipping: [localhost] => (item=3)  => {"ansible_loop_var": "item_index", "changed": false, "false_condition": "ansible_check_mode and website_test_result.results is not defined", "item_index": 3, "skip_reason": "Conditional result was False"}
+2025-08-13 22:52:27,095 p=3371 u=runner n=ansible INFO| skipping: [localhost] => {"changed": false, "msg": "All items skipped"}
+2025-08-13 22:52:27,100 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 计算代理成功率] **********************************************************************************
+2025-08-13 22:52:27,118 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"proxy_success_rate": "0.0"}, "changed": false}
+2025-08-13 22:52:27,123 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 判断代理整体状态] ********************************************************************************
+2025-08-13 22:52:27,139 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"proxy_status": "UNHEALTHY"}, "changed": false}
+2025-08-13 22:52:27,144 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 存储代理测试结果] ********************************************************************************
+2025-08-13 22:52:27,162 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"proxy_test_results": {"proxy1": {"failed_tests": "4", "proxy_name": "proxy1", "proxy_url": "http://proxy1.example.com:8080", "status": "UNHEALTHY", "success_rate": "0.0", "successful_tests": "0", "test_details": [{"error_msg": "", "response_time": "1.2", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.google.com", "website": "google"}, {"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://github.com", "website": "github"}, {"error_msg": "", "response_time": "1.37", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.baidu.com", "website": "baidu"}, {"error_msg": "", "response_time": "1.48", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://httpbin.org/status/200", "website": "httpbin"}], "timestamp": "2025-08-13T22:52:23Z", "total_tests": 4}, "proxy2": {"failed_tests": "4", "proxy_name": "proxy2", "proxy_url": "http://proxy2.example.com:8080", "status": "UNHEALTHY", "success_rate": "0.0", "successful_tests": "0", "test_details": [{"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.google.com", "website": "google"}, {"error_msg": "", "response_time": "1.15", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://github.com", "website": "github"}, {"error_msg": "", "response_time": "1.18", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.baidu.com", "website": "baidu"}, {"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://httpbin.org/status/200", "website": "httpbin"}], "timestamp": "2025-08-13T22:52:23Z", "total_tests": 4}}}, "changed": false}
+2025-08-13 22:52:27,168 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 生成监控日志] ************************************************************************************
+2025-08-13 22:52:27,708 p=3371 u=runner n=ansible INFO| changed: [localhost] => {"changed": true, "checksum": "702fb3ee80ecf4ae8b3881db3df0aef6b0d06aaa", "dest": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs/proxy_monitor.log", "gid": 118, "group": "docker", "md5sum": "3cedac3a22c07c45188c2339ffd84f01", "mode": "0644", "owner": "runner", "size": 1935, "src": "/home/runner/.ansible/tmp/ansible-tmp-1755125547.1804092-3730-13098078661333/.source.log", "state": "file", "uid": 1001}
+2025-08-13 22:52:27,713 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 更新全局监控结果] ********************************************************************************
+2025-08-13 22:52:27,746 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"failed_proxies": [], "monitoring_results": [{"proxy1": {"failed_tests": "4", "proxy_name": "proxy1", "proxy_url": "http://proxy1.example.com:8080", "status": "UNHEALTHY", "success_rate": "0.0", "successful_tests": "0", "test_details": [{"error_msg": "", "response_time": "1.2", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.google.com", "website": "google"}, {"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://github.com", "website": "github"}, {"error_msg": "", "response_time": "1.37", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.baidu.com", "website": "baidu"}, {"error_msg": "", "response_time": "1.48", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://httpbin.org/status/200", "website": "httpbin"}], "timestamp": "2025-08-13T22:52:23Z", "total_tests": 4}, "proxy2": {"failed_tests": "4", "proxy_name": "proxy2", "proxy_url": "http://proxy2.example.com:8080", "status": "UNHEALTHY", "success_rate": "0.0", "successful_tests": "0", "test_details": [{"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.google.com", "website": "google"}, {"error_msg": "", "response_time": "1.15", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://github.com", "website": "github"}, {"error_msg": "", "response_time": "1.18", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://www.baidu.com", "website": "baidu"}, {"error_msg": "", "response_time": "1.16", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T22:52:23Z", "url": "https://httpbin.org/status/200", "website": "httpbin"}], "timestamp": "2025-08-13T22:52:23Z", "total_tests": 4}}], "successful_tests": "NotImplemented", "total_tests": "8"}, "changed": false}
+2025-08-13 22:52:27,758 p=3371 u=runner n=ansible INFO| TASK [计算总体统计信息] ************************************************************************************************
+2025-08-13 22:52:27,777 p=3371 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"overall_success_rate": "0.0", "total_failed_proxies": "0"}, "changed": false}
+2025-08-13 22:52:27,783 p=3371 u=runner n=ansible INFO| TASK [显示监控汇总] ****************************************************************************************************
+2025-08-13 22:52:27,796 p=3371 u=runner n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "监控完成时间: 2025-08-13T22:52:23Z",
+        "总测试次数: 8",
+        "成功测试: NotImplemented",
+        "总体成功率: 0.0%",
+        "失败代理数量: 0"
+    ]
+}
+2025-08-13 22:52:27,801 p=3371 u=runner n=ansible INFO| TASK [发送告警邮件] ****************************************************************************************************
+2025-08-13 22:52:27,910 p=3371 u=runner n=ansible INFO| included: proxy-monitor for localhost
+2025-08-13 22:52:27,917 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 生成HTML告警邮件] ********************************************************************************
+2025-08-13 22:52:28,268 p=3371 u=runner n=ansible INFO| changed: [localhost] => {"changed": true, "checksum": "e27ff13b465014b5ef86f8d20bfaeea04385fa36", "dest": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs/alert_email.html", "gid": 118, "group": "docker", "md5sum": "0b6167b307a372b74bea0b5320f66b9e", "mode": "0644", "owner": "runner", "size": 8362, "src": "/home/runner/.ansible/tmp/ansible-tmp-1755125547.9296649-3772-94554667220561/.source.html", "state": "file", "uid": 1001}
+2025-08-13 22:52:28,274 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 发送告警邮件] ************************************************************************************
+2025-08-13 22:52:28,616 p=3371 u=runner n=ansible INFO| An exception occurred during task execution. To see the full traceback, use -vvv. The error was: socket.gaierror: [Errno -5] No address associated with hostname
+2025-08-13 22:52:28,617 p=3371 u=runner n=ansible INFO| fatal: [localhost]: FAILED! => {"changed": false, "module_stderr": "Traceback (most recent call last):\n  File \"/home/runner/.ansible/tmp/ansible-tmp-1755125548.3296854-3809-174205926519779/AnsiballZ_mail.py\", line 107, in <module>\n    _ansiballz_main()\n  File \"/home/runner/.ansible/tmp/ansible-tmp-1755125548.3296854-3809-174205926519779/AnsiballZ_mail.py\", line 99, in _ansiballz_main\n    invoke_module(zipped_mod, temp_path, ANSIBALLZ_PARAMS)\n  File \"/home/runner/.ansible/tmp/ansible-tmp-1755125548.3296854-3809-174205926519779/AnsiballZ_mail.py\", line 47, in invoke_module\n    runpy.run_module(mod_name='ansible_collections.community.general.plugins.modules.mail', init_globals=dict(_module_fqn='ansible_collections.community.general.plugins.modules.mail', _modlib_path=modlib_path),\n  File \"<frozen runpy>\", line 226, in run_module\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/tmp/ansible_mail_payload_oaruw3aq/ansible_mail_payload.zip/ansible_collections/community/general/plugins/modules/mail.py\", line 428, in <module>\n  File \"/tmp/ansible_mail_payload_oaruw3aq/ansible_mail_payload.zip/ansible_collections/community/general/plugins/modules/mail.py\", line 307, in main\n  File \"/usr/lib/python3.12/smtplib.py\", line 255, in __init__\n    (code, msg) = self.connect(host, port)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/smtplib.py\", line 341, in connect\n    self.sock = self._get_socket(host, port, self.timeout)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/smtplib.py\", line 312, in _get_socket\n    return socket.create_connection((host, port), timeout,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/socket.py\", line 828, in create_connection\n    for res in getaddrinfo(host, port, 0, SOCK_STREAM):\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/socket.py\", line 963, in getaddrinfo\n    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsocket.gaierror: [Errno -5] No address associated with hostname\n", "module_stdout": "", "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error", "rc": 1}
+2025-08-13 22:52:28,617 p=3371 u=runner n=ansible INFO| ...ignoring
+2025-08-13 22:52:28,622 p=3371 u=runner n=ansible INFO| TASK [proxy-monitor : 记录邮件发送结果] ********************************************************************************
+2025-08-13 22:52:28,641 p=3371 u=runner n=ansible INFO| ok: [localhost] => {
+    "msg": "告警邮件发送失败: MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error"
+}
+2025-08-13 22:52:28,651 p=3371 u=runner n=ansible INFO| TASK [监控状态总结] ****************************************************************************************************
+2025-08-13 22:52:28,662 p=3371 u=runner n=ansible INFO| ok: [localhost] => {
+    "msg": "代理监控周期已完成。详细日志请查看: /home/runner/work/monitor-webhtml/monitor-webhtml/logs/proxy_monitor.log"
+}
+2025-08-13 22:52:28,663 p=3371 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
+2025-08-13 22:52:28,664 p=3371 u=runner n=ansible INFO| localhost                  : ok=30   changed=4    unreachable=0    failed=0    skipped=2    rescued=0    ignored=1   
+2025-08-13 22:52:52,647 p=3840 u=runner n=ansible INFO| ansible-playbook [core 2.18.7]
+  config file = /home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg
+  configured module search path = ['/home/runner/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible
+  ansible collection location = /home/runner/.ansible/collections:/usr/share/ansible/collections
+  executable location = /opt/pipx_bin/ansible-playbook
+  python version = 3.12.3 (main, Jun 18 2025, 17:59:45) [GCC 13.3.0] (/opt/pipx/venvs/ansible-core/bin/python)
+  jinja version = 3.1.6
+  libyaml = True
+2025-08-13 22:52:52,647 p=3840 u=runner n=ansible INFO| Using /home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg as config file
+2025-08-13 22:52:52,733 p=3840 u=runner n=ansible INFO| host_list declined parsing /home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml as it did not pass its verify_file() method
+2025-08-13 22:52:52,734 p=3840 u=runner n=ansible INFO| script declined parsing /home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml as it did not pass its verify_file() method
+2025-08-13 22:52:52,736 p=3840 u=runner n=ansible INFO| Parsed /home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml inventory source with yaml plugin
+2025-08-13 22:52:52,798 p=3840 u=runner n=ansible INFO| Skipping callback 'default', as we already have a stdout callback.
+2025-08-13 22:52:52,798 p=3840 u=runner n=ansible INFO| Skipping callback 'minimal', as we already have a stdout callback.
+2025-08-13 22:52:52,798 p=3840 u=runner n=ansible INFO| Skipping callback 'oneline', as we already have a stdout callback.
+2025-08-13 22:52:52,798 p=3840 u=runner n=ansible INFO| PLAYBOOK: monitor-proxies.yml **************************************************
+2025-08-13 22:52:52,798 p=3840 u=runner n=ansible INFO| 1 plays in playbooks/monitor-proxies.yml
+2025-08-13 22:52:52,799 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:52,800 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:52,800 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:52,801 p=3840 u=runner n=ansible INFO| PLAY [代理状态和网站连通性监控] ************************************************
+2025-08-13 22:52:52,806 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:52,806 p=3840 u=runner n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2025-08-13 22:52:52,806 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/playbooks/monitor-proxies.yml:3
+2025-08-13 22:52:52,814 p=3840 u=runner n=ansible INFO| <127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: runner
+2025-08-13 22:52:52,814 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'echo ~runner && sleep 0'
+2025-08-13 22:52:52,817 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/runner/.ansible/tmp `"&& mkdir "` echo /home/runner/.ansible/tmp/ansible-tmp-1755125572.8171003-3845-219652068894534 `" && echo ansible-tmp-1755125572.8171003-3845-219652068894534="` echo /home/runner/.ansible/tmp/ansible-tmp-1755125572.8171003-3845-219652068894534 `" ) && sleep 0'
+2025-08-13 22:52:53,010 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/setup.py
+2025-08-13 22:52:53,011 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmpu7k3s9yu TO /home/runner/.ansible/tmp/ansible-tmp-1755125572.8171003-3845-219652068894534/AnsiballZ_setup.py
+2025-08-13 22:52:53,011 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125572.8171003-3845-219652068894534/ /home/runner/.ansible/tmp/ansible-tmp-1755125572.8171003-3845-219652068894534/AnsiballZ_setup.py && sleep 0'
+2025-08-13 22:52:53,015 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125572.8171003-3845-219652068894534/AnsiballZ_setup.py && sleep 0'
+2025-08-13 22:52:53,663 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'rm -f -r /home/runner/.ansible/tmp/ansible-tmp-1755125572.8171003-3845-219652068894534/ > /dev/null 2>&1 && sleep 0'
+2025-08-13 22:52:53,693 p=3840 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 22:52:53,698 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:53,698 p=3840 u=runner n=ansible INFO| TASK [创建日志目录] ************************************************************
+2025-08-13 22:52:53,698 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/playbooks/monitor-proxies.yml:12
+2025-08-13 22:52:53,708 p=3840 u=runner n=ansible INFO| <127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: runner
+2025-08-13 22:52:53,709 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'echo ~runner && sleep 0'
+2025-08-13 22:52:53,712 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/runner/.ansible/tmp `"&& mkdir "` echo /home/runner/.ansible/tmp/ansible-tmp-1755125573.7118077-3947-226530178152386 `" && echo ansible-tmp-1755125573.7118077-3947-226530178152386="` echo /home/runner/.ansible/tmp/ansible-tmp-1755125573.7118077-3947-226530178152386 `" ) && sleep 0'
+2025-08-13 22:52:53,805 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/file.py
+2025-08-13 22:52:53,806 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmpqlyw4318 TO /home/runner/.ansible/tmp/ansible-tmp-1755125573.7118077-3947-226530178152386/AnsiballZ_file.py
+2025-08-13 22:52:53,806 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125573.7118077-3947-226530178152386/ /home/runner/.ansible/tmp/ansible-tmp-1755125573.7118077-3947-226530178152386/AnsiballZ_file.py && sleep 0'
+2025-08-13 22:52:53,810 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125573.7118077-3947-226530178152386/AnsiballZ_file.py && sleep 0'
+2025-08-13 22:52:53,971 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'rm -f -r /home/runner/.ansible/tmp/ansible-tmp-1755125573.7118077-3947-226530178152386/ > /dev/null 2>&1 && sleep 0'
+2025-08-13 22:52:53,976 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "changed": false,
+    "diff": {
+        "after": {
+            "path": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs"
+        },
+        "before": {
+            "path": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs"
+        }
+    },
+    "gid": 118,
+    "group": "docker",
+    "invocation": {
+        "module_args": {
+            "_diff_peek": null,
+            "_original_basename": null,
+            "access_time": null,
+            "access_time_format": "%Y%m%d%H%M.%S",
+            "attributes": null,
+            "follow": true,
+            "force": false,
+            "group": null,
+            "mode": "0755",
+            "modification_time": null,
+            "modification_time_format": "%Y%m%d%H%M.%S",
+            "owner": null,
+            "path": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs",
+            "recurse": false,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "src": null,
+            "state": "directory",
+            "unsafe_writes": false
+        }
+    },
+    "mode": "0755",
+    "owner": "runner",
+    "path": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs",
+    "size": 4096,
+    "state": "directory",
+    "uid": 1001
+}
+2025-08-13 22:52:53,982 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:53,982 p=3840 u=runner n=ansible INFO| TASK [初始化监控结果变量] ******************************************************
+2025-08-13 22:52:53,982 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/playbooks/monitor-proxies.yml:18
+2025-08-13 22:52:53,990 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "failed_proxies": [],
+        "monitoring_results": [],
+        "successful_tests": 0,
+        "total_tests": 0
+    },
+    "changed": false
+}
+2025-08-13 22:52:53,995 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:53,995 p=3840 u=runner n=ansible INFO| TASK [执行代理监控任务] ********************************************************
+2025-08-13 22:52:53,995 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/playbooks/monitor-proxies.yml:25
+2025-08-13 22:52:54,005 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,008 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,009 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,012 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,014 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,015 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,015 p=3840 u=runner n=ansible INFO| included: proxy-monitor for localhost
+2025-08-13 22:52:54,020 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,020 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 获取已启用的代理服务器列表] ******************************
+2025-08-13 22:52:54,020 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/main.yml:4
+2025-08-13 22:52:54,044 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "enabled_proxies": [
+            {
+                "ansible_check_mode": false,
+                "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+                "ansible_diff_mode": false,
+                "ansible_facts": {},
+                "ansible_forks": 5,
+                "ansible_host": "localhost",
+                "ansible_inventory_sources": [
+                    "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+                ],
+                "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+                "ansible_run_tags": [
+                    "all"
+                ],
+                "ansible_skip_tags": [],
+                "ansible_verbosity": 3,
+                "ansible_version": {
+                    "full": "2.18.7",
+                    "major": 2,
+                    "minor": 18,
+                    "revision": 7,
+                    "string": "2.18.7"
+                },
+                "enabled": true,
+                "group_names": [
+                    "proxy_servers"
+                ],
+                "groups": {
+                    "all": [
+                        "proxy1",
+                        "proxy2",
+                        "proxy3",
+                        "google",
+                        "github",
+                        "baidu",
+                        "httpbin"
+                    ],
+                    "proxy_servers": [
+                        "proxy1",
+                        "proxy2",
+                        "proxy3"
+                    ],
+                    "test_websites": [
+                        "google",
+                        "github",
+                        "baidu",
+                        "httpbin"
+                    ],
+                    "ungrouped": []
+                },
+                "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+                "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+                "inventory_hostname": "proxy1",
+                "inventory_hostname_short": "proxy1",
+                "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+                "proxy_password": "pass1",
+                "proxy_url": "http://proxy1.example.com:8080",
+                "proxy_username": "user1"
+            },
+            {
+                "ansible_check_mode": false,
+                "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+                "ansible_diff_mode": false,
+                "ansible_facts": {},
+                "ansible_forks": 5,
+                "ansible_host": "localhost",
+                "ansible_inventory_sources": [
+                    "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+                ],
+                "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+                "ansible_run_tags": [
+                    "all"
+                ],
+                "ansible_skip_tags": [],
+                "ansible_verbosity": 3,
+                "ansible_version": {
+                    "full": "2.18.7",
+                    "major": 2,
+                    "minor": 18,
+                    "revision": 7,
+                    "string": "2.18.7"
+                },
+                "enabled": true,
+                "group_names": [
+                    "proxy_servers"
+                ],
+                "groups": {
+                    "all": [
+                        "proxy1",
+                        "proxy2",
+                        "proxy3",
+                        "google",
+                        "github",
+                        "baidu",
+                        "httpbin"
+                    ],
+                    "proxy_servers": [
+                        "proxy1",
+                        "proxy2",
+                        "proxy3"
+                    ],
+                    "test_websites": [
+                        "google",
+                        "github",
+                        "baidu",
+                        "httpbin"
+                    ],
+                    "ungrouped": []
+                },
+                "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+                "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+                "inventory_hostname": "proxy2",
+                "inventory_hostname_short": "proxy2",
+                "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+                "proxy_password": "pass2",
+                "proxy_url": "http://proxy2.example.com:8080",
+                "proxy_username": "user2"
+            }
+        ]
+    },
+    "changed": false
+}
+2025-08-13 22:52:54,049 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,050 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 获取测试网站列表] ****************************************
+2025-08-13 22:52:54,050 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/main.yml:8
+2025-08-13 22:52:54,072 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "test_websites": [
+            {
+                "ansible_check_mode": false,
+                "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+                "ansible_diff_mode": false,
+                "ansible_facts": {},
+                "ansible_forks": 5,
+                "ansible_inventory_sources": [
+                    "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+                ],
+                "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+                "ansible_run_tags": [
+                    "all"
+                ],
+                "ansible_skip_tags": [],
+                "ansible_verbosity": 3,
+                "ansible_version": {
+                    "full": "2.18.7",
+                    "major": 2,
+                    "minor": 18,
+                    "revision": 7,
+                    "string": "2.18.7"
+                },
+                "expected_status": 200,
+                "group_names": [
+                    "test_websites"
+                ],
+                "groups": {
+                    "all": [
+                        "proxy1",
+                        "proxy2",
+                        "proxy3",
+                        "google",
+                        "github",
+                        "baidu",
+                        "httpbin"
+                    ],
+                    "proxy_servers": [
+                        "proxy1",
+                        "proxy2",
+                        "proxy3"
+                    ],
+                    "test_websites": [
+                        "google",
+                        "github",
+                        "baidu",
+                        "httpbin"
+                    ],
+                    "ungrouped": []
+                },
+                "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+                "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+                "inventory_hostname": "google",
+                "inventory_hostname_short": "google",
+                "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+                "request_timeout": 10,
+                "test_url": "https://www.google.com"
+            },
+            {
+                "ansible_check_mode": false,
+                "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+                "ansible_diff_mode": false,
+                "ansible_facts": {},
+                "ansible_forks": 5,
+                "ansible_inventory_sources": [
+                    "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+                ],
+                "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+                "ansible_run_tags": [
+                    "all"
+                ],
+                "ansible_skip_tags": [],
+                "ansible_verbosity": 3,
+                "ansible_version": {
+                    "full": "2.18.7",
+                    "major": 2,
+                    "minor": 18,
+                    "revision": 7,
+                    "string": "2.18.7"
+                },
+                "expected_status": 200,
+                "group_names": [
+                    "test_websites"
+                ],
+                "groups": {
+                    "all": [
+                        "proxy1",
+                        "proxy2",
+                        "proxy3",
+                        "google",
+                        "github",
+                        "baidu",
+                        "httpbin"
+                    ],
+                    "proxy_servers": [
+                        "proxy1",
+                        "proxy2",
+                        "proxy3"
+                    ],
+                    "test_websites": [
+                        "google",
+                        "github",
+                        "baidu",
+                        "httpbin"
+                    ],
+                    "ungrouped": []
+                },
+                "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+                "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+                "inventory_hostname": "github",
+                "inventory_hostname_short": "github",
+                "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+                "request_timeout": 15,
+                "test_url": "https://github.com"
+            },
+            {
+                "ansible_check_mode": false,
+                "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+                "ansible_diff_mode": false,
+                "ansible_facts": {},
+                "ansible_forks": 5,
+                "ansible_inventory_sources": [
+                    "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+                ],
+                "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+                "ansible_run_tags": [
+                    "all"
+                ],
+                "ansible_skip_tags": [],
+                "ansible_verbosity": 3,
+                "ansible_version": {
+                    "full": "2.18.7",
+                    "major": 2,
+                    "minor": 18,
+                    "revision": 7,
+                    "string": "2.18.7"
+                },
+                "expected_status": 200,
+                "group_names": [
+                    "test_websites"
+                ],
+                "groups": {
+                    "all": [
+                        "proxy1",
+                        "proxy2",
+                        "proxy3",
+                        "google",
+                        "github",
+                        "baidu",
+                        "httpbin"
+                    ],
+                    "proxy_servers": [
+                        "proxy1",
+                        "proxy2",
+                        "proxy3"
+                    ],
+                    "test_websites": [
+                        "google",
+                        "github",
+                        "baidu",
+                        "httpbin"
+                    ],
+                    "ungrouped": []
+                },
+                "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+                "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+                "inventory_hostname": "baidu",
+                "inventory_hostname_short": "baidu",
+                "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+                "request_timeout": 10,
+                "test_url": "https://www.baidu.com"
+            },
+            {
+                "ansible_check_mode": false,
+                "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+                "ansible_diff_mode": false,
+                "ansible_facts": {},
+                "ansible_forks": 5,
+                "ansible_inventory_sources": [
+                    "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+                ],
+                "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+                "ansible_run_tags": [
+                    "all"
+                ],
+                "ansible_skip_tags": [],
+                "ansible_verbosity": 3,
+                "ansible_version": {
+                    "full": "2.18.7",
+                    "major": 2,
+                    "minor": 18,
+                    "revision": 7,
+                    "string": "2.18.7"
+                },
+                "expected_status": 200,
+                "group_names": [
+                    "test_websites"
+                ],
+                "groups": {
+                    "all": [
+                        "proxy1",
+                        "proxy2",
+                        "proxy3",
+                        "google",
+                        "github",
+                        "baidu",
+                        "httpbin"
+                    ],
+                    "proxy_servers": [
+                        "proxy1",
+                        "proxy2",
+                        "proxy3"
+                    ],
+                    "test_websites": [
+                        "google",
+                        "github",
+                        "baidu",
+                        "httpbin"
+                    ],
+                    "ungrouped": []
+                },
+                "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+                "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+                "inventory_hostname": "httpbin",
+                "inventory_hostname_short": "httpbin",
+                "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+                "request_timeout": 5,
+                "test_url": "https://httpbin.org/status/200"
+            }
+        ]
+    },
+    "changed": false
+}
+2025-08-13 22:52:54,077 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,078 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 初始化测试结果] ******************************************
+2025-08-13 22:52:54,078 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/main.yml:12
+2025-08-13 22:52:54,089 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "current_timestamp": "2025-08-13T22:52:53Z",
+        "proxy_test_results": {}
+    },
+    "changed": false
+}
+2025-08-13 22:52:54,094 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,094 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 对每个代理执行网站连通性测试] ****************************
+2025-08-13 22:52:54,094 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/main.yml:17
+2025-08-13 22:52:54,116 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,121 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,121 p=3840 u=runner n=ansible INFO| included: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml for localhost => (item=proxy1)
+2025-08-13 22:52:54,125 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,125 p=3840 u=runner n=ansible INFO| included: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml for localhost => (item=proxy2)
+2025-08-13 22:52:54,130 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,131 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 初始化代理测试结果] **************************************
+2025-08-13 22:52:54,131 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:4
+2025-08-13 22:52:54,142 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "failed_count": 0,
+        "proxy_name": "proxy1",
+        "proxy_tests": [],
+        "successful_count": 0
+    },
+    "changed": false
+}
+2025-08-13 22:52:54,147 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,148 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 测试代理对各网站的连通性] ********************************
+2025-08-13 22:52:54,148 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:11
+2025-08-13 22:52:54,171 p=3840 u=runner n=ansible INFO| <127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: runner
+2025-08-13 22:52:54,171 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'echo ~runner && sleep 0'
+2025-08-13 22:52:54,174 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/runner/.ansible/tmp `"&& mkdir "` echo /home/runner/.ansible/tmp/ansible-tmp-1755125574.1740406-3979-183924210037753 `" && echo ansible-tmp-1755125574.1740406-3979-183924210037753="` echo /home/runner/.ansible/tmp/ansible-tmp-1755125574.1740406-3979-183924210037753 `" ) && sleep 0'
+2025-08-13 22:52:54,253 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/command.py
+2025-08-13 22:52:54,254 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmp6wk30o91 TO /home/runner/.ansible/tmp/ansible-tmp-1755125574.1740406-3979-183924210037753/AnsiballZ_command.py
+2025-08-13 22:52:54,254 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125574.1740406-3979-183924210037753/ /home/runner/.ansible/tmp/ansible-tmp-1755125574.1740406-3979-183924210037753/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:54,258 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125574.1740406-3979-183924210037753/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:54,415 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'rm -f -r /home/runner/.ansible/tmp/ansible-tmp-1755125574.1740406-3979-183924210037753/ > /dev/null 2>&1 && sleep 0'
+2025-08-13 22:52:54,421 p=3840 u=runner n=ansible INFO| changed: [localhost] => (item=google) => {
+    "ansible_loop_var": "website_item",
+    "changed": true,
+    "cmd": "# 使用带认证的代理\ncurl -x \"http://user1:pass1@proxy1.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 10     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://www.google.com\"\n",
+    "delta": "0:00:00.010370",
+    "end": "2025-08-13 22:52:54.399560",
+    "failed_when_result": false,
+    "invocation": {
+        "module_args": {
+            "_raw_params": "# 使用带认证的代理\ncurl -x \"http://user1:pass1@proxy1.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 10     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://www.google.com\"\n",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "expand_argument_vars": true,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 5,
+    "start": "2025-08-13 22:52:54.389190",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001145",
+    "stdout_lines": [
+        "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001145"
+    ],
+    "website_item": {
+        "ansible_check_mode": false,
+        "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+        "ansible_diff_mode": false,
+        "ansible_facts": {},
+        "ansible_forks": 5,
+        "ansible_inventory_sources": [
+            "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+        ],
+        "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+        "ansible_run_tags": [
+            "all"
+        ],
+        "ansible_skip_tags": [],
+        "ansible_verbosity": 3,
+        "ansible_version": {
+            "full": "2.18.7",
+            "major": 2,
+            "minor": 18,
+            "revision": 7,
+            "string": "2.18.7"
+        },
+        "expected_status": 200,
+        "group_names": [
+            "test_websites"
+        ],
+        "groups": {
+            "all": [
+                "proxy1",
+                "proxy2",
+                "proxy3",
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "proxy_servers": [
+                "proxy1",
+                "proxy2",
+                "proxy3"
+            ],
+            "test_websites": [
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "ungrouped": []
+        },
+        "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+        "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+        "inventory_hostname": "google",
+        "inventory_hostname_short": "google",
+        "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+        "request_timeout": 10,
+        "test_url": "https://www.google.com"
+    }
+}
+2025-08-13 22:52:54,427 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'echo ~runner && sleep 0'
+2025-08-13 22:52:54,430 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/runner/.ansible/tmp `"&& mkdir "` echo /home/runner/.ansible/tmp/ansible-tmp-1755125574.4303532-3979-257983838507843 `" && echo ansible-tmp-1755125574.4303532-3979-257983838507843="` echo /home/runner/.ansible/tmp/ansible-tmp-1755125574.4303532-3979-257983838507843 `" ) && sleep 0'
+2025-08-13 22:52:54,436 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/command.py
+2025-08-13 22:52:54,436 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmpehmck0jl TO /home/runner/.ansible/tmp/ansible-tmp-1755125574.4303532-3979-257983838507843/AnsiballZ_command.py
+2025-08-13 22:52:54,437 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125574.4303532-3979-257983838507843/ /home/runner/.ansible/tmp/ansible-tmp-1755125574.4303532-3979-257983838507843/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:54,440 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125574.4303532-3979-257983838507843/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:54,596 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'rm -f -r /home/runner/.ansible/tmp/ansible-tmp-1755125574.4303532-3979-257983838507843/ > /dev/null 2>&1 && sleep 0'
+2025-08-13 22:52:54,602 p=3840 u=runner n=ansible INFO| changed: [localhost] => (item=github) => {
+    "ansible_loop_var": "website_item",
+    "changed": true,
+    "cmd": "# 使用带认证的代理\ncurl -x \"http://user1:pass1@proxy1.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 15     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://github.com\"\n",
+    "delta": "0:00:00.010444",
+    "end": "2025-08-13 22:52:54.581415",
+    "failed_when_result": false,
+    "invocation": {
+        "module_args": {
+            "_raw_params": "# 使用带认证的代理\ncurl -x \"http://user1:pass1@proxy1.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 15     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://github.com\"\n",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "expand_argument_vars": true,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 5,
+    "start": "2025-08-13 22:52:54.570971",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001165",
+    "stdout_lines": [
+        "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001165"
+    ],
+    "website_item": {
+        "ansible_check_mode": false,
+        "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+        "ansible_diff_mode": false,
+        "ansible_facts": {},
+        "ansible_forks": 5,
+        "ansible_inventory_sources": [
+            "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+        ],
+        "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+        "ansible_run_tags": [
+            "all"
+        ],
+        "ansible_skip_tags": [],
+        "ansible_verbosity": 3,
+        "ansible_version": {
+            "full": "2.18.7",
+            "major": 2,
+            "minor": 18,
+            "revision": 7,
+            "string": "2.18.7"
+        },
+        "expected_status": 200,
+        "group_names": [
+            "test_websites"
+        ],
+        "groups": {
+            "all": [
+                "proxy1",
+                "proxy2",
+                "proxy3",
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "proxy_servers": [
+                "proxy1",
+                "proxy2",
+                "proxy3"
+            ],
+            "test_websites": [
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "ungrouped": []
+        },
+        "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+        "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+        "inventory_hostname": "github",
+        "inventory_hostname_short": "github",
+        "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+        "request_timeout": 15,
+        "test_url": "https://github.com"
+    }
+}
+2025-08-13 22:52:54,608 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'echo ~runner && sleep 0'
+2025-08-13 22:52:54,610 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/runner/.ansible/tmp `"&& mkdir "` echo /home/runner/.ansible/tmp/ansible-tmp-1755125574.6106439-3979-6427222455050 `" && echo ansible-tmp-1755125574.6106439-3979-6427222455050="` echo /home/runner/.ansible/tmp/ansible-tmp-1755125574.6106439-3979-6427222455050 `" ) && sleep 0'
+2025-08-13 22:52:54,616 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/command.py
+2025-08-13 22:52:54,616 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmprmlffhsq TO /home/runner/.ansible/tmp/ansible-tmp-1755125574.6106439-3979-6427222455050/AnsiballZ_command.py
+2025-08-13 22:52:54,617 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125574.6106439-3979-6427222455050/ /home/runner/.ansible/tmp/ansible-tmp-1755125574.6106439-3979-6427222455050/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:54,620 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125574.6106439-3979-6427222455050/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:54,774 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'rm -f -r /home/runner/.ansible/tmp/ansible-tmp-1755125574.6106439-3979-6427222455050/ > /dev/null 2>&1 && sleep 0'
+2025-08-13 22:52:54,780 p=3840 u=runner n=ansible INFO| changed: [localhost] => (item=baidu) => {
+    "ansible_loop_var": "website_item",
+    "changed": true,
+    "cmd": "# 使用带认证的代理\ncurl -x \"http://user1:pass1@proxy1.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 10     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://www.baidu.com\"\n",
+    "delta": "0:00:00.010363",
+    "end": "2025-08-13 22:52:54.759912",
+    "failed_when_result": false,
+    "invocation": {
+        "module_args": {
+            "_raw_params": "# 使用带认证的代理\ncurl -x \"http://user1:pass1@proxy1.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 10     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://www.baidu.com\"\n",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "expand_argument_vars": true,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 5,
+    "start": "2025-08-13 22:52:54.749549",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001177",
+    "stdout_lines": [
+        "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001177"
+    ],
+    "website_item": {
+        "ansible_check_mode": false,
+        "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+        "ansible_diff_mode": false,
+        "ansible_facts": {},
+        "ansible_forks": 5,
+        "ansible_inventory_sources": [
+            "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+        ],
+        "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+        "ansible_run_tags": [
+            "all"
+        ],
+        "ansible_skip_tags": [],
+        "ansible_verbosity": 3,
+        "ansible_version": {
+            "full": "2.18.7",
+            "major": 2,
+            "minor": 18,
+            "revision": 7,
+            "string": "2.18.7"
+        },
+        "expected_status": 200,
+        "group_names": [
+            "test_websites"
+        ],
+        "groups": {
+            "all": [
+                "proxy1",
+                "proxy2",
+                "proxy3",
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "proxy_servers": [
+                "proxy1",
+                "proxy2",
+                "proxy3"
+            ],
+            "test_websites": [
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "ungrouped": []
+        },
+        "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+        "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+        "inventory_hostname": "baidu",
+        "inventory_hostname_short": "baidu",
+        "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+        "request_timeout": 10,
+        "test_url": "https://www.baidu.com"
+    }
+}
+2025-08-13 22:52:54,786 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'echo ~runner && sleep 0'
+2025-08-13 22:52:54,789 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/runner/.ansible/tmp `"&& mkdir "` echo /home/runner/.ansible/tmp/ansible-tmp-1755125574.789236-3979-249865392463923 `" && echo ansible-tmp-1755125574.789236-3979-249865392463923="` echo /home/runner/.ansible/tmp/ansible-tmp-1755125574.789236-3979-249865392463923 `" ) && sleep 0'
+2025-08-13 22:52:54,795 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/command.py
+2025-08-13 22:52:54,795 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmpmwglcoiu TO /home/runner/.ansible/tmp/ansible-tmp-1755125574.789236-3979-249865392463923/AnsiballZ_command.py
+2025-08-13 22:52:54,795 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125574.789236-3979-249865392463923/ /home/runner/.ansible/tmp/ansible-tmp-1755125574.789236-3979-249865392463923/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:54,799 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125574.789236-3979-249865392463923/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:54,961 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'rm -f -r /home/runner/.ansible/tmp/ansible-tmp-1755125574.789236-3979-249865392463923/ > /dev/null 2>&1 && sleep 0'
+2025-08-13 22:52:54,966 p=3840 u=runner n=ansible INFO| changed: [localhost] => (item=httpbin) => {
+    "ansible_loop_var": "website_item",
+    "changed": true,
+    "cmd": "# 使用带认证的代理\ncurl -x \"http://user1:pass1@proxy1.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 5     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://httpbin.org/status/200\"\n",
+    "delta": "0:00:00.011997",
+    "end": "2025-08-13 22:52:54.944528",
+    "failed_when_result": false,
+    "invocation": {
+        "module_args": {
+            "_raw_params": "# 使用带认证的代理\ncurl -x \"http://user1:pass1@proxy1.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 5     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://httpbin.org/status/200\"\n",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "expand_argument_vars": true,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 5,
+    "start": "2025-08-13 22:52:54.932531",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.002012",
+    "stdout_lines": [
+        "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.002012"
+    ],
+    "website_item": {
+        "ansible_check_mode": false,
+        "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+        "ansible_diff_mode": false,
+        "ansible_facts": {},
+        "ansible_forks": 5,
+        "ansible_inventory_sources": [
+            "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+        ],
+        "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+        "ansible_run_tags": [
+            "all"
+        ],
+        "ansible_skip_tags": [],
+        "ansible_verbosity": 3,
+        "ansible_version": {
+            "full": "2.18.7",
+            "major": 2,
+            "minor": 18,
+            "revision": 7,
+            "string": "2.18.7"
+        },
+        "expected_status": 200,
+        "group_names": [
+            "test_websites"
+        ],
+        "groups": {
+            "all": [
+                "proxy1",
+                "proxy2",
+                "proxy3",
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "proxy_servers": [
+                "proxy1",
+                "proxy2",
+                "proxy3"
+            ],
+            "test_websites": [
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "ungrouped": []
+        },
+        "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+        "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+        "inventory_hostname": "httpbin",
+        "inventory_hostname_short": "httpbin",
+        "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+        "request_timeout": 5,
+        "test_url": "https://httpbin.org/status/200"
+    }
+}
+2025-08-13 22:52:54,973 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:54,974 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 处理每个网站的测试结果] **********************************
+2025-08-13 22:52:54,974 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:43
+2025-08-13 22:52:55,078 p=3840 u=runner n=ansible INFO| ok: [localhost] => (item=0) => {
+    "ansible_facts": {
+        "failed_count": "1",
+        "proxy_tests": [
+            {
+                "error_msg": "",
+                "response_time": "1.15",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://www.google.com",
+                "website": "google"
+            }
+        ],
+        "successful_count": "0"
+    },
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "item_index": 0
+}
+2025-08-13 22:52:55,160 p=3840 u=runner n=ansible INFO| ok: [localhost] => (item=1) => {
+    "ansible_facts": {
+        "failed_count": "2",
+        "proxy_tests": [
+            {
+                "error_msg": "",
+                "response_time": "1.15",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://www.google.com",
+                "website": "google"
+            },
+            {
+                "error_msg": "",
+                "response_time": "1.17",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://github.com",
+                "website": "github"
+            }
+        ],
+        "successful_count": "0"
+    },
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "item_index": 1
+}
+2025-08-13 22:52:55,241 p=3840 u=runner n=ansible INFO| ok: [localhost] => (item=2) => {
+    "ansible_facts": {
+        "failed_count": "3",
+        "proxy_tests": [
+            {
+                "error_msg": "",
+                "response_time": "1.15",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://www.google.com",
+                "website": "google"
+            },
+            {
+                "error_msg": "",
+                "response_time": "1.17",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://github.com",
+                "website": "github"
+            },
+            {
+                "error_msg": "",
+                "response_time": "1.18",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://www.baidu.com",
+                "website": "baidu"
+            }
+        ],
+        "successful_count": "0"
+    },
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "item_index": 2
+}
+2025-08-13 22:52:55,323 p=3840 u=runner n=ansible INFO| ok: [localhost] => (item=3) => {
+    "ansible_facts": {
+        "failed_count": "4",
+        "proxy_tests": [
+            {
+                "error_msg": "",
+                "response_time": "1.15",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://www.google.com",
+                "website": "google"
+            },
+            {
+                "error_msg": "",
+                "response_time": "1.17",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://github.com",
+                "website": "github"
+            },
+            {
+                "error_msg": "",
+                "response_time": "1.18",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://www.baidu.com",
+                "website": "baidu"
+            },
+            {
+                "error_msg": "",
+                "response_time": "2.01",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://httpbin.org/status/200",
+                "website": "httpbin"
+            }
+        ],
+        "successful_count": "0"
+    },
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "item_index": 3
+}
+2025-08-13 22:52:55,329 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:55,330 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 处理检查模式的测试结果] **********************************
+2025-08-13 22:52:55,330 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:68
+2025-08-13 22:52:55,350 p=3840 u=runner n=ansible INFO| skipping: [localhost] => (item=0)  => {
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "false_condition": "ansible_check_mode and website_test_result.results is not defined",
+    "item_index": 0,
+    "skip_reason": "Conditional result was False"
+}
+2025-08-13 22:52:55,352 p=3840 u=runner n=ansible INFO| skipping: [localhost] => (item=1)  => {
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "false_condition": "ansible_check_mode and website_test_result.results is not defined",
+    "item_index": 1,
+    "skip_reason": "Conditional result was False"
+}
+2025-08-13 22:52:55,355 p=3840 u=runner n=ansible INFO| skipping: [localhost] => (item=2)  => {
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "false_condition": "ansible_check_mode and website_test_result.results is not defined",
+    "item_index": 2,
+    "skip_reason": "Conditional result was False"
+}
+2025-08-13 22:52:55,357 p=3840 u=runner n=ansible INFO| skipping: [localhost] => (item=3)  => {
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "false_condition": "ansible_check_mode and website_test_result.results is not defined",
+    "item_index": 3,
+    "skip_reason": "Conditional result was False"
+}
+2025-08-13 22:52:55,359 p=3840 u=runner n=ansible INFO| skipping: [localhost] => {
+    "changed": false,
+    "msg": "All items skipped"
+}
+2025-08-13 22:52:55,363 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:55,364 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 计算代理成功率] ******************************************
+2025-08-13 22:52:55,364 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:86
+2025-08-13 22:52:55,381 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "proxy_success_rate": "0.0"
+    },
+    "changed": false
+}
+2025-08-13 22:52:55,386 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:55,387 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 判断代理整体状态] ****************************************
+2025-08-13 22:52:55,387 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:90
+2025-08-13 22:52:55,404 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "proxy_status": "UNHEALTHY"
+    },
+    "changed": false
+}
+2025-08-13 22:52:55,410 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:55,411 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 存储代理测试结果] ****************************************
+2025-08-13 22:52:55,411 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:94
+2025-08-13 22:52:55,429 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "proxy_test_results": {
+            "proxy1": {
+                "failed_tests": "4",
+                "proxy_name": "proxy1",
+                "proxy_url": "http://proxy1.example.com:8080",
+                "status": "UNHEALTHY",
+                "success_rate": "0.0",
+                "successful_tests": "0",
+                "test_details": [
+                    {
+                        "error_msg": "",
+                        "response_time": "1.15",
+                        "status": "FAILED",
+                        "status_code": "-1",
+                        "timestamp": "2025-08-13T22:52:53Z",
+                        "url": "https://www.google.com",
+                        "website": "google"
+                    },
+                    {
+                        "error_msg": "",
+                        "response_time": "1.17",
+                        "status": "FAILED",
+                        "status_code": "-1",
+                        "timestamp": "2025-08-13T22:52:53Z",
+                        "url": "https://github.com",
+                        "website": "github"
+                    },
+                    {
+                        "error_msg": "",
+                        "response_time": "1.18",
+                        "status": "FAILED",
+                        "status_code": "-1",
+                        "timestamp": "2025-08-13T22:52:53Z",
+                        "url": "https://www.baidu.com",
+                        "website": "baidu"
+                    },
+                    {
+                        "error_msg": "",
+                        "response_time": "2.01",
+                        "status": "FAILED",
+                        "status_code": "-1",
+                        "timestamp": "2025-08-13T22:52:53Z",
+                        "url": "https://httpbin.org/status/200",
+                        "website": "httpbin"
+                    }
+                ],
+                "timestamp": "2025-08-13T22:52:53Z",
+                "total_tests": 4
+            }
+        }
+    },
+    "changed": false
+}
+2025-08-13 22:52:55,434 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:55,434 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 初始化代理测试结果] **************************************
+2025-08-13 22:52:55,435 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:4
+2025-08-13 22:52:55,446 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "failed_count": 0,
+        "proxy_name": "proxy2",
+        "proxy_tests": [],
+        "successful_count": 0
+    },
+    "changed": false
+}
+2025-08-13 22:52:55,451 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:55,451 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 测试代理对各网站的连通性] ********************************
+2025-08-13 22:52:55,451 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:11
+2025-08-13 22:52:55,474 p=3840 u=runner n=ansible INFO| <127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: runner
+2025-08-13 22:52:55,474 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'echo ~runner && sleep 0'
+2025-08-13 22:52:55,476 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/runner/.ansible/tmp `"&& mkdir "` echo /home/runner/.ansible/tmp/ansible-tmp-1755125575.47675-4090-275774590122627 `" && echo ansible-tmp-1755125575.47675-4090-275774590122627="` echo /home/runner/.ansible/tmp/ansible-tmp-1755125575.47675-4090-275774590122627 `" ) && sleep 0'
+2025-08-13 22:52:55,483 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/command.py
+2025-08-13 22:52:55,483 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmpevbi3vlt TO /home/runner/.ansible/tmp/ansible-tmp-1755125575.47675-4090-275774590122627/AnsiballZ_command.py
+2025-08-13 22:52:55,484 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125575.47675-4090-275774590122627/ /home/runner/.ansible/tmp/ansible-tmp-1755125575.47675-4090-275774590122627/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:55,487 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125575.47675-4090-275774590122627/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:55,645 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'rm -f -r /home/runner/.ansible/tmp/ansible-tmp-1755125575.47675-4090-275774590122627/ > /dev/null 2>&1 && sleep 0'
+2025-08-13 22:52:55,651 p=3840 u=runner n=ansible INFO| changed: [localhost] => (item=google) => {
+    "ansible_loop_var": "website_item",
+    "changed": true,
+    "cmd": "# 使用带认证的代理\ncurl -x \"http://user2:pass2@proxy2.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 10     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://www.google.com\"\n",
+    "delta": "0:00:00.010877",
+    "end": "2025-08-13 22:52:55.631521",
+    "failed_when_result": false,
+    "invocation": {
+        "module_args": {
+            "_raw_params": "# 使用带认证的代理\ncurl -x \"http://user2:pass2@proxy2.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 10     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://www.google.com\"\n",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "expand_argument_vars": true,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 5,
+    "start": "2025-08-13 22:52:55.620644",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001172",
+    "stdout_lines": [
+        "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001172"
+    ],
+    "website_item": {
+        "ansible_check_mode": false,
+        "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+        "ansible_diff_mode": false,
+        "ansible_facts": {},
+        "ansible_forks": 5,
+        "ansible_inventory_sources": [
+            "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+        ],
+        "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+        "ansible_run_tags": [
+            "all"
+        ],
+        "ansible_skip_tags": [],
+        "ansible_verbosity": 3,
+        "ansible_version": {
+            "full": "2.18.7",
+            "major": 2,
+            "minor": 18,
+            "revision": 7,
+            "string": "2.18.7"
+        },
+        "expected_status": 200,
+        "group_names": [
+            "test_websites"
+        ],
+        "groups": {
+            "all": [
+                "proxy1",
+                "proxy2",
+                "proxy3",
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "proxy_servers": [
+                "proxy1",
+                "proxy2",
+                "proxy3"
+            ],
+            "test_websites": [
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "ungrouped": []
+        },
+        "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+        "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+        "inventory_hostname": "google",
+        "inventory_hostname_short": "google",
+        "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+        "request_timeout": 10,
+        "test_url": "https://www.google.com"
+    }
+}
+2025-08-13 22:52:55,657 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'echo ~runner && sleep 0'
+2025-08-13 22:52:55,660 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/runner/.ansible/tmp `"&& mkdir "` echo /home/runner/.ansible/tmp/ansible-tmp-1755125575.6601205-4090-139477832573057 `" && echo ansible-tmp-1755125575.6601205-4090-139477832573057="` echo /home/runner/.ansible/tmp/ansible-tmp-1755125575.6601205-4090-139477832573057 `" ) && sleep 0'
+2025-08-13 22:52:55,666 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/command.py
+2025-08-13 22:52:55,666 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmpdtd27ax2 TO /home/runner/.ansible/tmp/ansible-tmp-1755125575.6601205-4090-139477832573057/AnsiballZ_command.py
+2025-08-13 22:52:55,667 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125575.6601205-4090-139477832573057/ /home/runner/.ansible/tmp/ansible-tmp-1755125575.6601205-4090-139477832573057/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:55,670 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125575.6601205-4090-139477832573057/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:55,836 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'rm -f -r /home/runner/.ansible/tmp/ansible-tmp-1755125575.6601205-4090-139477832573057/ > /dev/null 2>&1 && sleep 0'
+2025-08-13 22:52:55,842 p=3840 u=runner n=ansible INFO| changed: [localhost] => (item=github) => {
+    "ansible_loop_var": "website_item",
+    "changed": true,
+    "cmd": "# 使用带认证的代理\ncurl -x \"http://user2:pass2@proxy2.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 15     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://github.com\"\n",
+    "delta": "0:00:00.012623",
+    "end": "2025-08-13 22:52:55.815357",
+    "failed_when_result": false,
+    "invocation": {
+        "module_args": {
+            "_raw_params": "# 使用带认证的代理\ncurl -x \"http://user2:pass2@proxy2.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 15     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://github.com\"\n",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "expand_argument_vars": true,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 5,
+    "start": "2025-08-13 22:52:55.802734",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.003277",
+    "stdout_lines": [
+        "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.003277"
+    ],
+    "website_item": {
+        "ansible_check_mode": false,
+        "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+        "ansible_diff_mode": false,
+        "ansible_facts": {},
+        "ansible_forks": 5,
+        "ansible_inventory_sources": [
+            "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+        ],
+        "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+        "ansible_run_tags": [
+            "all"
+        ],
+        "ansible_skip_tags": [],
+        "ansible_verbosity": 3,
+        "ansible_version": {
+            "full": "2.18.7",
+            "major": 2,
+            "minor": 18,
+            "revision": 7,
+            "string": "2.18.7"
+        },
+        "expected_status": 200,
+        "group_names": [
+            "test_websites"
+        ],
+        "groups": {
+            "all": [
+                "proxy1",
+                "proxy2",
+                "proxy3",
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "proxy_servers": [
+                "proxy1",
+                "proxy2",
+                "proxy3"
+            ],
+            "test_websites": [
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "ungrouped": []
+        },
+        "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+        "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+        "inventory_hostname": "github",
+        "inventory_hostname_short": "github",
+        "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+        "request_timeout": 15,
+        "test_url": "https://github.com"
+    }
+}
+2025-08-13 22:52:55,848 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'echo ~runner && sleep 0'
+2025-08-13 22:52:55,851 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/runner/.ansible/tmp `"&& mkdir "` echo /home/runner/.ansible/tmp/ansible-tmp-1755125575.8510926-4090-245457671353667 `" && echo ansible-tmp-1755125575.8510926-4090-245457671353667="` echo /home/runner/.ansible/tmp/ansible-tmp-1755125575.8510926-4090-245457671353667 `" ) && sleep 0'
+2025-08-13 22:52:55,857 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/command.py
+2025-08-13 22:52:55,857 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmpz7dmky4y TO /home/runner/.ansible/tmp/ansible-tmp-1755125575.8510926-4090-245457671353667/AnsiballZ_command.py
+2025-08-13 22:52:55,857 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125575.8510926-4090-245457671353667/ /home/runner/.ansible/tmp/ansible-tmp-1755125575.8510926-4090-245457671353667/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:55,861 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125575.8510926-4090-245457671353667/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:56,017 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'rm -f -r /home/runner/.ansible/tmp/ansible-tmp-1755125575.8510926-4090-245457671353667/ > /dev/null 2>&1 && sleep 0'
+2025-08-13 22:52:56,022 p=3840 u=runner n=ansible INFO| changed: [localhost] => (item=baidu) => {
+    "ansible_loop_var": "website_item",
+    "changed": true,
+    "cmd": "# 使用带认证的代理\ncurl -x \"http://user2:pass2@proxy2.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 10     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://www.baidu.com\"\n",
+    "delta": "0:00:00.010746",
+    "end": "2025-08-13 22:52:56.002539",
+    "failed_when_result": false,
+    "invocation": {
+        "module_args": {
+            "_raw_params": "# 使用带认证的代理\ncurl -x \"http://user2:pass2@proxy2.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 10     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://www.baidu.com\"\n",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "expand_argument_vars": true,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 5,
+    "start": "2025-08-13 22:52:55.991793",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001164",
+    "stdout_lines": [
+        "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001164"
+    ],
+    "website_item": {
+        "ansible_check_mode": false,
+        "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+        "ansible_diff_mode": false,
+        "ansible_facts": {},
+        "ansible_forks": 5,
+        "ansible_inventory_sources": [
+            "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+        ],
+        "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+        "ansible_run_tags": [
+            "all"
+        ],
+        "ansible_skip_tags": [],
+        "ansible_verbosity": 3,
+        "ansible_version": {
+            "full": "2.18.7",
+            "major": 2,
+            "minor": 18,
+            "revision": 7,
+            "string": "2.18.7"
+        },
+        "expected_status": 200,
+        "group_names": [
+            "test_websites"
+        ],
+        "groups": {
+            "all": [
+                "proxy1",
+                "proxy2",
+                "proxy3",
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "proxy_servers": [
+                "proxy1",
+                "proxy2",
+                "proxy3"
+            ],
+            "test_websites": [
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "ungrouped": []
+        },
+        "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+        "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+        "inventory_hostname": "baidu",
+        "inventory_hostname_short": "baidu",
+        "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+        "request_timeout": 10,
+        "test_url": "https://www.baidu.com"
+    }
+}
+2025-08-13 22:52:56,028 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'echo ~runner && sleep 0'
+2025-08-13 22:52:56,031 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/runner/.ansible/tmp `"&& mkdir "` echo /home/runner/.ansible/tmp/ansible-tmp-1755125576.0313234-4090-104258439411286 `" && echo ansible-tmp-1755125576.0313234-4090-104258439411286="` echo /home/runner/.ansible/tmp/ansible-tmp-1755125576.0313234-4090-104258439411286 `" ) && sleep 0'
+2025-08-13 22:52:56,037 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/command.py
+2025-08-13 22:52:56,037 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmph8h73k6m TO /home/runner/.ansible/tmp/ansible-tmp-1755125576.0313234-4090-104258439411286/AnsiballZ_command.py
+2025-08-13 22:52:56,038 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125576.0313234-4090-104258439411286/ /home/runner/.ansible/tmp/ansible-tmp-1755125576.0313234-4090-104258439411286/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:56,041 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125576.0313234-4090-104258439411286/AnsiballZ_command.py && sleep 0'
+2025-08-13 22:52:56,197 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'rm -f -r /home/runner/.ansible/tmp/ansible-tmp-1755125576.0313234-4090-104258439411286/ > /dev/null 2>&1 && sleep 0'
+2025-08-13 22:52:56,203 p=3840 u=runner n=ansible INFO| changed: [localhost] => (item=httpbin) => {
+    "ansible_loop_var": "website_item",
+    "changed": true,
+    "cmd": "# 使用带认证的代理\ncurl -x \"http://user2:pass2@proxy2.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 5     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://httpbin.org/status/200\"\n",
+    "delta": "0:00:00.010573",
+    "end": "2025-08-13 22:52:56.183460",
+    "failed_when_result": false,
+    "invocation": {
+        "module_args": {
+            "_raw_params": "# 使用带认证的代理\ncurl -x \"http://user2:pass2@proxy2.example.com:8080\"     -I -s     --connect-timeout 5     --max-time 5     -A \"Ansible-Proxy-Monitor/1.0\"     --insecure     -w \"CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\\n\"     -o /dev/null     \"https://httpbin.org/status/200\"\n",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "expand_argument_vars": true,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 5,
+    "start": "2025-08-13 22:52:56.172887",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001181",
+    "stdout_lines": [
+        "CURL_STATUS_CODE:000;CURL_TIME_TOTAL:0.001181"
+    ],
+    "website_item": {
+        "ansible_check_mode": false,
+        "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg",
+        "ansible_diff_mode": false,
+        "ansible_facts": {},
+        "ansible_forks": 5,
+        "ansible_inventory_sources": [
+            "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"
+        ],
+        "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python",
+        "ansible_run_tags": [
+            "all"
+        ],
+        "ansible_skip_tags": [],
+        "ansible_verbosity": 3,
+        "ansible_version": {
+            "full": "2.18.7",
+            "major": 2,
+            "minor": 18,
+            "revision": 7,
+            "string": "2.18.7"
+        },
+        "expected_status": 200,
+        "group_names": [
+            "test_websites"
+        ],
+        "groups": {
+            "all": [
+                "proxy1",
+                "proxy2",
+                "proxy3",
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "proxy_servers": [
+                "proxy1",
+                "proxy2",
+                "proxy3"
+            ],
+            "test_websites": [
+                "google",
+                "github",
+                "baidu",
+                "httpbin"
+            ],
+            "ungrouped": []
+        },
+        "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory",
+        "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml",
+        "inventory_hostname": "httpbin",
+        "inventory_hostname_short": "httpbin",
+        "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks",
+        "request_timeout": 5,
+        "test_url": "https://httpbin.org/status/200"
+    }
+}
+2025-08-13 22:52:56,209 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:56,209 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 处理每个网站的测试结果] **********************************
+2025-08-13 22:52:56,210 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:43
+2025-08-13 22:52:56,310 p=3840 u=runner n=ansible INFO| ok: [localhost] => (item=0) => {
+    "ansible_facts": {
+        "failed_count": "1",
+        "proxy_tests": [
+            {
+                "error_msg": "",
+                "response_time": "1.17",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://www.google.com",
+                "website": "google"
+            }
+        ],
+        "successful_count": "0"
+    },
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "item_index": 0
+}
+2025-08-13 22:52:56,391 p=3840 u=runner n=ansible INFO| ok: [localhost] => (item=1) => {
+    "ansible_facts": {
+        "failed_count": "2",
+        "proxy_tests": [
+            {
+                "error_msg": "",
+                "response_time": "1.17",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://www.google.com",
+                "website": "google"
+            },
+            {
+                "error_msg": "",
+                "response_time": "3.28",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://github.com",
+                "website": "github"
+            }
+        ],
+        "successful_count": "0"
+    },
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "item_index": 1
+}
+2025-08-13 22:52:56,477 p=3840 u=runner n=ansible INFO| ok: [localhost] => (item=2) => {
+    "ansible_facts": {
+        "failed_count": "3",
+        "proxy_tests": [
+            {
+                "error_msg": "",
+                "response_time": "1.17",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://www.google.com",
+                "website": "google"
+            },
+            {
+                "error_msg": "",
+                "response_time": "3.28",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://github.com",
+                "website": "github"
+            },
+            {
+                "error_msg": "",
+                "response_time": "1.16",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://www.baidu.com",
+                "website": "baidu"
+            }
+        ],
+        "successful_count": "0"
+    },
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "item_index": 2
+}
+2025-08-13 22:52:56,559 p=3840 u=runner n=ansible INFO| ok: [localhost] => (item=3) => {
+    "ansible_facts": {
+        "failed_count": "4",
+        "proxy_tests": [
+            {
+                "error_msg": "",
+                "response_time": "1.17",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://www.google.com",
+                "website": "google"
+            },
+            {
+                "error_msg": "",
+                "response_time": "3.28",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://github.com",
+                "website": "github"
+            },
+            {
+                "error_msg": "",
+                "response_time": "1.16",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://www.baidu.com",
+                "website": "baidu"
+            },
+            {
+                "error_msg": "",
+                "response_time": "1.18",
+                "status": "FAILED",
+                "status_code": "-1",
+                "timestamp": "2025-08-13T22:52:53Z",
+                "url": "https://httpbin.org/status/200",
+                "website": "httpbin"
+            }
+        ],
+        "successful_count": "0"
+    },
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "item_index": 3
+}
+2025-08-13 22:52:56,565 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:56,566 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 处理检查模式的测试结果] **********************************
+2025-08-13 22:52:56,566 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:68
+2025-08-13 22:52:56,586 p=3840 u=runner n=ansible INFO| skipping: [localhost] => (item=0)  => {
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "false_condition": "ansible_check_mode and website_test_result.results is not defined",
+    "item_index": 0,
+    "skip_reason": "Conditional result was False"
+}
+2025-08-13 22:52:56,588 p=3840 u=runner n=ansible INFO| skipping: [localhost] => (item=1)  => {
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "false_condition": "ansible_check_mode and website_test_result.results is not defined",
+    "item_index": 1,
+    "skip_reason": "Conditional result was False"
+}
+2025-08-13 22:52:56,590 p=3840 u=runner n=ansible INFO| skipping: [localhost] => (item=2)  => {
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "false_condition": "ansible_check_mode and website_test_result.results is not defined",
+    "item_index": 2,
+    "skip_reason": "Conditional result was False"
+}
+2025-08-13 22:52:56,593 p=3840 u=runner n=ansible INFO| skipping: [localhost] => (item=3)  => {
+    "ansible_loop_var": "item_index",
+    "changed": false,
+    "false_condition": "ansible_check_mode and website_test_result.results is not defined",
+    "item_index": 3,
+    "skip_reason": "Conditional result was False"
+}
+2025-08-13 22:52:56,593 p=3840 u=runner n=ansible INFO| skipping: [localhost] => {
+    "changed": false,
+    "msg": "All items skipped"
+}
+2025-08-13 22:52:56,598 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:56,599 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 计算代理成功率] ******************************************
+2025-08-13 22:52:56,599 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:86
+2025-08-13 22:52:56,616 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "proxy_success_rate": "0.0"
+    },
+    "changed": false
+}
+2025-08-13 22:52:56,621 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:56,621 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 判断代理整体状态] ****************************************
+2025-08-13 22:52:56,621 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:90
+2025-08-13 22:52:56,637 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "proxy_status": "UNHEALTHY"
+    },
+    "changed": false
+}
+2025-08-13 22:52:56,642 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:56,642 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 存储代理测试结果] ****************************************
+2025-08-13 22:52:56,642 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml:94
+2025-08-13 22:52:56,661 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "proxy_test_results": {
+            "proxy1": {
+                "failed_tests": "4",
+                "proxy_name": "proxy1",
+                "proxy_url": "http://proxy1.example.com:8080",
+                "status": "UNHEALTHY",
+                "success_rate": "0.0",
+                "successful_tests": "0",
+                "test_details": [
+                    {
+                        "error_msg": "",
+                        "response_time": "1.15",
+                        "status": "FAILED",
+                        "status_code": "-1",
+                        "timestamp": "2025-08-13T22:52:53Z",
+                        "url": "https://www.google.com",
+                        "website": "google"
+                    },
+                    {
+                        "error_msg": "",
+                        "response_time": "1.17",
+                        "status": "FAILED",
+                        "status_code": "-1",
+                        "timestamp": "2025-08-13T22:52:53Z",
+                        "url": "https://github.com",
+                        "website": "github"
+                    },
+                    {
+                        "error_msg": "",
+                        "response_time": "1.18",
+                        "status": "FAILED",
+                        "status_code": "-1",
+                        "timestamp": "2025-08-13T22:52:53Z",
+                        "url": "https://www.baidu.com",
+                        "website": "baidu"
+                    },
+                    {
+                        "error_msg": "",
+                        "response_time": "2.01",
+                        "status": "FAILED",
+                        "status_code": "-1",
+                        "timestamp": "2025-08-13T22:52:53Z",
+                        "url": "https://httpbin.org/status/200",
+                        "website": "httpbin"
+                    }
+                ],
+                "timestamp": "2025-08-13T22:52:53Z",
+                "total_tests": 4
+            },
+            "proxy2": {
+                "failed_tests": "4",
+                "proxy_name": "proxy2",
+                "proxy_url": "http://proxy2.example.com:8080",
+                "status": "UNHEALTHY",
+                "success_rate": "0.0",
+                "successful_tests": "0",
+                "test_details": [
+                    {
+                        "error_msg": "",
+                        "response_time": "1.17",
+                        "status": "FAILED",
+                        "status_code": "-1",
+                        "timestamp": "2025-08-13T22:52:53Z",
+                        "url": "https://www.google.com",
+                        "website": "google"
+                    },
+                    {
+                        "error_msg": "",
+                        "response_time": "3.28",
+                        "status": "FAILED",
+                        "status_code": "-1",
+                        "timestamp": "2025-08-13T22:52:53Z",
+                        "url": "https://github.com",
+                        "website": "github"
+                    },
+                    {
+                        "error_msg": "",
+                        "response_time": "1.16",
+                        "status": "FAILED",
+                        "status_code": "-1",
+                        "timestamp": "2025-08-13T22:52:53Z",
+                        "url": "https://www.baidu.com",
+                        "website": "baidu"
+                    },
+                    {
+                        "error_msg": "",
+                        "response_time": "1.18",
+                        "status": "FAILED",
+                        "status_code": "-1",
+                        "timestamp": "2025-08-13T22:52:53Z",
+                        "url": "https://httpbin.org/status/200",
+                        "website": "httpbin"
+                    }
+                ],
+                "timestamp": "2025-08-13T22:52:53Z",
+                "total_tests": 4
+            }
+        }
+    },
+    "changed": false
+}
+2025-08-13 22:52:56,666 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:56,666 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 生成监控日志] ********************************************
+2025-08-13 22:52:56,666 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/main.yml:24
+2025-08-13 22:52:56,676 p=3840 u=runner n=ansible INFO| <127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: runner
+2025-08-13 22:52:56,676 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'echo ~runner && sleep 0'
+2025-08-13 22:52:56,679 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/runner/.ansible/tmp `"&& mkdir "` echo /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210 `" && echo ansible-tmp-1755125576.6795285-4200-61109810455210="` echo /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210 `" ) && sleep 0'
+2025-08-13 22:52:56,803 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/stat.py
+2025-08-13 22:52:56,803 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmpcd39or_n TO /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/AnsiballZ_stat.py
+2025-08-13 22:52:56,803 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/ /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/AnsiballZ_stat.py && sleep 0'
+2025-08-13 22:52:56,807 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/AnsiballZ_stat.py && sleep 0'
+2025-08-13 22:52:57,073 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmpsivkphpw/log-format.j2 TO /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/.source.log
+2025-08-13 22:52:57,074 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/ /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/.source.log && sleep 0'
+2025-08-13 22:52:57,156 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/copy.py
+2025-08-13 22:52:57,156 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmp8c2tgpau TO /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/AnsiballZ_copy.py
+2025-08-13 22:52:57,156 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/ /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/AnsiballZ_copy.py && sleep 0'
+2025-08-13 22:52:57,160 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/AnsiballZ_copy.py && sleep 0'
+2025-08-13 22:52:57,317 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'rm -f -r /home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/ > /dev/null 2>&1 && sleep 0'
+2025-08-13 22:52:57,323 p=3840 u=runner n=ansible INFO| changed: [localhost] => {
+    "changed": true,
+    "checksum": "469a9aae0d51b7e2d3d1122fa9bf5fd02e7324c5",
+    "dest": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs/proxy_monitor.log",
+    "diff": [],
+    "gid": 118,
+    "group": "docker",
+    "invocation": {
+        "module_args": {
+            "_original_basename": "log-format.j2",
+            "attributes": null,
+            "backup": false,
+            "checksum": "469a9aae0d51b7e2d3d1122fa9bf5fd02e7324c5",
+            "content": null,
+            "dest": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs/proxy_monitor.log",
+            "directory_mode": null,
+            "follow": false,
+            "force": true,
+            "group": null,
+            "local_follow": null,
+            "mode": "0644",
+            "owner": null,
+            "remote_src": null,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "src": "/home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/.source.log",
+            "unsafe_writes": false,
+            "validate": null
+        }
+    },
+    "md5sum": "330557631d36777aee68336416c771d1",
+    "mode": "0644",
+    "owner": "runner",
+    "size": 1936,
+    "src": "/home/runner/.ansible/tmp/ansible-tmp-1755125576.6795285-4200-61109810455210/.source.log",
+    "state": "file",
+    "uid": 1001
+}
+2025-08-13 22:52:57,330 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:57,330 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 更新全局监控结果] ****************************************
+2025-08-13 22:52:57,330 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/main.yml:33
+2025-08-13 22:52:57,360 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "failed_proxies": [],
+        "monitoring_results": [
+            {
+                "proxy1": {
+                    "failed_tests": "4",
+                    "proxy_name": "proxy1",
+                    "proxy_url": "http://proxy1.example.com:8080",
+                    "status": "UNHEALTHY",
+                    "success_rate": "0.0",
+                    "successful_tests": "0",
+                    "test_details": [
+                        {
+                            "error_msg": "",
+                            "response_time": "1.15",
+                            "status": "FAILED",
+                            "status_code": "-1",
+                            "timestamp": "2025-08-13T22:52:53Z",
+                            "url": "https://www.google.com",
+                            "website": "google"
+                        },
+                        {
+                            "error_msg": "",
+                            "response_time": "1.17",
+                            "status": "FAILED",
+                            "status_code": "-1",
+                            "timestamp": "2025-08-13T22:52:53Z",
+                            "url": "https://github.com",
+                            "website": "github"
+                        },
+                        {
+                            "error_msg": "",
+                            "response_time": "1.18",
+                            "status": "FAILED",
+                            "status_code": "-1",
+                            "timestamp": "2025-08-13T22:52:53Z",
+                            "url": "https://www.baidu.com",
+                            "website": "baidu"
+                        },
+                        {
+                            "error_msg": "",
+                            "response_time": "2.01",
+                            "status": "FAILED",
+                            "status_code": "-1",
+                            "timestamp": "2025-08-13T22:52:53Z",
+                            "url": "https://httpbin.org/status/200",
+                            "website": "httpbin"
+                        }
+                    ],
+                    "timestamp": "2025-08-13T22:52:53Z",
+                    "total_tests": 4
+                },
+                "proxy2": {
+                    "failed_tests": "4",
+                    "proxy_name": "proxy2",
+                    "proxy_url": "http://proxy2.example.com:8080",
+                    "status": "UNHEALTHY",
+                    "success_rate": "0.0",
+                    "successful_tests": "0",
+                    "test_details": [
+                        {
+                            "error_msg": "",
+                            "response_time": "1.17",
+                            "status": "FAILED",
+                            "status_code": "-1",
+                            "timestamp": "2025-08-13T22:52:53Z",
+                            "url": "https://www.google.com",
+                            "website": "google"
+                        },
+                        {
+                            "error_msg": "",
+                            "response_time": "3.28",
+                            "status": "FAILED",
+                            "status_code": "-1",
+                            "timestamp": "2025-08-13T22:52:53Z",
+                            "url": "https://github.com",
+                            "website": "github"
+                        },
+                        {
+                            "error_msg": "",
+                            "response_time": "1.16",
+                            "status": "FAILED",
+                            "status_code": "-1",
+                            "timestamp": "2025-08-13T22:52:53Z",
+                            "url": "https://www.baidu.com",
+                            "website": "baidu"
+                        },
+                        {
+                            "error_msg": "",
+                            "response_time": "1.18",
+                            "status": "FAILED",
+                            "status_code": "-1",
+                            "timestamp": "2025-08-13T22:52:53Z",
+                            "url": "https://httpbin.org/status/200",
+                            "website": "httpbin"
+                        }
+                    ],
+                    "timestamp": "2025-08-13T22:52:53Z",
+                    "total_tests": 4
+                }
+            }
+        ],
+        "successful_tests": "NotImplemented",
+        "total_tests": "8"
+    },
+    "changed": false
+}
+2025-08-13 22:52:57,366 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:57,370 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:57,370 p=3840 u=runner n=ansible INFO| TASK [计算总体统计信息] ********************************************************
+2025-08-13 22:52:57,370 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/playbooks/monitor-proxies.yml:29
+2025-08-13 22:52:57,389 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "ansible_facts": {
+        "overall_success_rate": "0.0",
+        "total_failed_proxies": "0"
+    },
+    "changed": false
+}
+2025-08-13 22:52:57,394 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:57,394 p=3840 u=runner n=ansible INFO| TASK [显示监控汇总] ************************************************************
+2025-08-13 22:52:57,394 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/playbooks/monitor-proxies.yml:34
+2025-08-13 22:52:57,407 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "监控完成时间: 2025-08-13T22:52:53Z",
+        "总测试次数: 8",
+        "成功测试: NotImplemented",
+        "总体成功率: 0.0%",
+        "失败代理数量: 0"
+    ]
+}
+2025-08-13 22:52:57,413 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:57,413 p=3840 u=runner n=ansible INFO| TASK [发送告警邮件] ************************************************************
+2025-08-13 22:52:57,413 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/playbooks/monitor-proxies.yml:43
+2025-08-13 22:52:57,436 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:57,439 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:57,440 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:57,443 p=3840 u=runner n=ansible INFO| redirecting (type: modules) ansible.builtin.mail to community.general.mail
+2025-08-13 22:52:57,454 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:57,455 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:57,455 p=3840 u=runner n=ansible INFO| included: proxy-monitor for localhost
+2025-08-13 22:52:57,461 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:57,462 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 生成HTML告警邮件] ****************************************
+2025-08-13 22:52:57,462 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/send_alerts.yml:4
+2025-08-13 22:52:57,472 p=3840 u=runner n=ansible INFO| <127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: runner
+2025-08-13 22:52:57,472 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'echo ~runner && sleep 0'
+2025-08-13 22:52:57,475 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/runner/.ansible/tmp `"&& mkdir "` echo /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795 `" && echo ansible-tmp-1755125577.475268-4243-194461593527795="` echo /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795 `" ) && sleep 0'
+2025-08-13 22:52:57,504 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/stat.py
+2025-08-13 22:52:57,504 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmppfvh7iab TO /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/AnsiballZ_stat.py
+2025-08-13 22:52:57,505 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/ /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/AnsiballZ_stat.py && sleep 0'
+2025-08-13 22:52:57,508 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/AnsiballZ_stat.py && sleep 0'
+2025-08-13 22:52:57,669 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmpi9w6c4_g/email-alert.html.j2 TO /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/.source.html
+2025-08-13 22:52:57,669 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/ /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/.source.html && sleep 0'
+2025-08-13 22:52:57,673 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible/modules/copy.py
+2025-08-13 22:52:57,674 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmpuk39bnv0 TO /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/AnsiballZ_copy.py
+2025-08-13 22:52:57,674 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/ /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/AnsiballZ_copy.py && sleep 0'
+2025-08-13 22:52:57,677 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/AnsiballZ_copy.py && sleep 0'
+2025-08-13 22:52:57,834 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'rm -f -r /home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/ > /dev/null 2>&1 && sleep 0'
+2025-08-13 22:52:57,839 p=3840 u=runner n=ansible INFO| changed: [localhost] => {
+    "changed": true,
+    "checksum": "68ae9a326983d2f9aa371950ca6dd1dbb5a9fcd8",
+    "dest": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs/alert_email.html",
+    "diff": [],
+    "gid": 118,
+    "group": "docker",
+    "invocation": {
+        "module_args": {
+            "_original_basename": "email-alert.html.j2",
+            "attributes": null,
+            "backup": false,
+            "checksum": "68ae9a326983d2f9aa371950ca6dd1dbb5a9fcd8",
+            "content": null,
+            "dest": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs/alert_email.html",
+            "directory_mode": null,
+            "follow": false,
+            "force": true,
+            "group": null,
+            "local_follow": null,
+            "mode": "0644",
+            "owner": null,
+            "remote_src": null,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "src": "/home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/.source.html",
+            "unsafe_writes": false,
+            "validate": null
+        }
+    },
+    "md5sum": "c04b0ed4903f7904be55c35d95c1c30e",
+    "mode": "0644",
+    "owner": "runner",
+    "size": 8363,
+    "src": "/home/runner/.ansible/tmp/ansible-tmp-1755125577.475268-4243-194461593527795/.source.html",
+    "state": "file",
+    "uid": 1001
+}
+2025-08-13 22:52:57,844 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:57,845 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 发送告警邮件] ********************************************
+2025-08-13 22:52:57,845 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/send_alerts.yml:13
+2025-08-13 22:52:57,862 p=3840 u=runner n=ansible INFO| redirecting (type: modules) ansible.builtin.mail to community.general.mail
+2025-08-13 22:52:57,863 p=3840 u=runner n=ansible INFO| <127.0.0.1> ESTABLISH LOCAL CONNECTION FOR USER: runner
+2025-08-13 22:52:57,864 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'echo ~runner && sleep 0'
+2025-08-13 22:52:57,867 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/runner/.ansible/tmp `"&& mkdir "` echo /home/runner/.ansible/tmp/ansible-tmp-1755125577.8668838-4283-174917061022515 `" && echo ansible-tmp-1755125577.8668838-4283-174917061022515="` echo /home/runner/.ansible/tmp/ansible-tmp-1755125577.8668838-4283-174917061022515 `" ) && sleep 0'
+2025-08-13 22:52:57,872 p=3840 u=runner n=ansible INFO| redirecting (type: modules) ansible.builtin.mail to community.general.mail
+2025-08-13 22:52:57,947 p=3840 u=runner n=ansible INFO| Using module file /opt/pipx/venvs/ansible-core/lib/python3.12/site-packages/ansible_collections/community/general/plugins/modules/mail.py
+2025-08-13 22:52:57,948 p=3840 u=runner n=ansible INFO| <127.0.0.1> PUT /home/runner/.ansible/tmp/ansible-local-3840jff4on96/tmp9d8kxcsf TO /home/runner/.ansible/tmp/ansible-tmp-1755125577.8668838-4283-174917061022515/AnsiballZ_mail.py
+2025-08-13 22:52:57,948 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'chmod u+rwx /home/runner/.ansible/tmp/ansible-tmp-1755125577.8668838-4283-174917061022515/ /home/runner/.ansible/tmp/ansible-tmp-1755125577.8668838-4283-174917061022515/AnsiballZ_mail.py && sleep 0'
+2025-08-13 22:52:57,952 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c '/opt/pipx/venvs/ansible-core/bin/python /home/runner/.ansible/tmp/ansible-tmp-1755125577.8668838-4283-174917061022515/AnsiballZ_mail.py && sleep 0'
+2025-08-13 22:52:58,121 p=3840 u=runner n=ansible INFO| <127.0.0.1> EXEC /bin/sh -c 'rm -f -r /home/runner/.ansible/tmp/ansible-tmp-1755125577.8668838-4283-174917061022515/ > /dev/null 2>&1 && sleep 0'
+2025-08-13 22:52:58,126 p=3840 u=runner n=ansible INFO| The full traceback is:
+Traceback (most recent call last):
+  File "/home/runner/.ansible/tmp/ansible-tmp-1755125577.8668838-4283-174917061022515/AnsiballZ_mail.py", line 107, in <module>
+    _ansiballz_main()
+  File "/home/runner/.ansible/tmp/ansible-tmp-1755125577.8668838-4283-174917061022515/AnsiballZ_mail.py", line 99, in _ansiballz_main
+    invoke_module(zipped_mod, temp_path, ANSIBALLZ_PARAMS)
+  File "/home/runner/.ansible/tmp/ansible-tmp-1755125577.8668838-4283-174917061022515/AnsiballZ_mail.py", line 47, in invoke_module
+    runpy.run_module(mod_name='ansible_collections.community.general.plugins.modules.mail', init_globals=dict(_module_fqn='ansible_collections.community.general.plugins.modules.mail', _modlib_path=modlib_path),
+  File "<frozen runpy>", line 226, in run_module
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/tmp/ansible_mail_payload_sme08c8v/ansible_mail_payload.zip/ansible_collections/community/general/plugins/modules/mail.py", line 428, in <module>
+  File "/tmp/ansible_mail_payload_sme08c8v/ansible_mail_payload.zip/ansible_collections/community/general/plugins/modules/mail.py", line 307, in main
+  File "/usr/lib/python3.12/smtplib.py", line 255, in __init__
+    (code, msg) = self.connect(host, port)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/smtplib.py", line 341, in connect
+    self.sock = self._get_socket(host, port, self.timeout)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/smtplib.py", line 312, in _get_socket
+    return socket.create_connection((host, port), timeout,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 828, in create_connection
+    for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 963, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno -5] No address associated with hostname
+
+2025-08-13 22:52:58,126 p=3840 u=runner n=ansible INFO| fatal: [localhost]: FAILED! => {
+    "changed": false,
+    "module_stderr": "Traceback (most recent call last):\n  File \"/home/runner/.ansible/tmp/ansible-tmp-1755125577.8668838-4283-174917061022515/AnsiballZ_mail.py\", line 107, in <module>\n    _ansiballz_main()\n  File \"/home/runner/.ansible/tmp/ansible-tmp-1755125577.8668838-4283-174917061022515/AnsiballZ_mail.py\", line 99, in _ansiballz_main\n    invoke_module(zipped_mod, temp_path, ANSIBALLZ_PARAMS)\n  File \"/home/runner/.ansible/tmp/ansible-tmp-1755125577.8668838-4283-174917061022515/AnsiballZ_mail.py\", line 47, in invoke_module\n    runpy.run_module(mod_name='ansible_collections.community.general.plugins.modules.mail', init_globals=dict(_module_fqn='ansible_collections.community.general.plugins.modules.mail', _modlib_path=modlib_path),\n  File \"<frozen runpy>\", line 226, in run_module\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/tmp/ansible_mail_payload_sme08c8v/ansible_mail_payload.zip/ansible_collections/community/general/plugins/modules/mail.py\", line 428, in <module>\n  File \"/tmp/ansible_mail_payload_sme08c8v/ansible_mail_payload.zip/ansible_collections/community/general/plugins/modules/mail.py\", line 307, in main\n  File \"/usr/lib/python3.12/smtplib.py\", line 255, in __init__\n    (code, msg) = self.connect(host, port)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/smtplib.py\", line 341, in connect\n    self.sock = self._get_socket(host, port, self.timeout)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/smtplib.py\", line 312, in _get_socket\n    return socket.create_connection((host, port), timeout,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/socket.py\", line 828, in create_connection\n    for res in getaddrinfo(host, port, 0, SOCK_STREAM):\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/socket.py\", line 963, in getaddrinfo\n    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsocket.gaierror: [Errno -5] No address associated with hostname\n",
+    "module_stdout": "",
+    "msg": "MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error",
+    "rc": 1
+}
+2025-08-13 22:52:58,126 p=3840 u=runner n=ansible INFO| ...ignoring
+2025-08-13 22:52:58,132 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:58,132 p=3840 u=runner n=ansible INFO| TASK [proxy-monitor : 记录邮件发送结果] ****************************************
+2025-08-13 22:52:58,132 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/send_alerts.yml:28
+2025-08-13 22:52:58,150 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "msg": "告警邮件发送失败: MODULE FAILURE: No start of json char found\nSee stdout/stderr for the exact error"
+}
+2025-08-13 22:52:58,155 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:58,160 p=3840 u=runner n=ansible INFO| Read vars_file '../group_vars/all.yml'
+2025-08-13 22:52:58,160 p=3840 u=runner n=ansible INFO| TASK [监控状态总结] ************************************************************
+2025-08-13 22:52:58,160 p=3840 u=runner n=ansible INFO| task path: /home/runner/work/monitor-webhtml/monitor-webhtml/playbooks/monitor-proxies.yml:51
+2025-08-13 22:52:58,170 p=3840 u=runner n=ansible INFO| ok: [localhost] => {
+    "msg": "代理监控周期已完成。详细日志请查看: /home/runner/work/monitor-webhtml/monitor-webhtml/logs/proxy_monitor.log"
+}
+2025-08-13 22:52:58,171 p=3840 u=runner n=ansible INFO| PLAY RECAP *********************************************************************
+2025-08-13 22:52:58,171 p=3840 u=runner n=ansible INFO| localhost                  : ok=30   changed=4    unreachable=0    failed=0    skipped=2    rescued=0    ignored=1   
