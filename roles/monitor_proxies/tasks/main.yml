@@ -1,0 +1,74 @@
+---
+- name: Initialize monitoring results
+  set_fact:
+    monitoring_results: []
+    monitoring_summary:
+      total_tests: 0
+      passed_tests: 0
+      failed_tests: 0
+      start_time: "{{ ansible_date_time.epoch }}"
+
+- name: Calculate total number of tests
+  set_fact:
+    total_tests: "{{ (monitor_config.proxies | selectattr('enabled', 'equalto', true) | list | length) * (monitor_config.sites | length) }}"
+
+- name: Update monitoring summary with total tests
+  set_fact:
+    monitoring_summary: "{{ monitoring_summary | combine({'total_tests': total_tests | int}) }}"
+
+- name: Perform monitoring tests for each enabled proxy and site combination
+  include_tasks: monitor_single_test.yml
+  vars:
+    current_proxy: "{{ item[0] }}"
+    current_site: "{{ item[1] }}"
+  loop: "{{ monitor_config.proxies | selectattr('enabled', 'equalto', true) | list | product(monitor_config.sites) | list }}"
+
+- name: Calculate final monitoring summary
+  set_fact:
+    monitoring_summary: "{{ monitoring_summary | combine({
+      'end_time': ansible_date_time.epoch,
+      'duration_seconds': (ansible_date_time.epoch | int) - (monitoring_summary.start_time | int),
+      'success_rate': ((monitoring_summary.passed_tests | int) / (monitoring_summary.total_tests | int) * 100) | round(2) if monitoring_summary.total_tests | int > 0 else 0
+    }) }}"
+
+- name: Generate JSON log file
+  copy:
+    content: |
+      {
+        "summary": {{ monitoring_summary | to_nice_json }},
+        "results": {{ monitoring_results | to_nice_json }},
+        "generated_at": "{{ ansible_date_time.iso8601 }}"
+      }
+    dest: "{{ output_settings.json_log_path }}"
+  delegate_to: localhost
+
+- name: Generate HTML report
+  template:
+    src: report.html.j2
+    dest: "{{ output_settings.html_report_path }}"
+  delegate_to: localhost
+
+- name: Display monitoring summary
+  debug:
+    msg: |
+      Monitoring Summary:
+      Total Tests: {{ monitoring_summary.total_tests }}
+      Passed: {{ monitoring_summary.passed_tests }}
+      Failed: {{ monitoring_summary.failed_tests }}
+      Success Rate: {{ monitoring_summary.success_rate }}%
+      Duration: {{ monitoring_summary.duration_seconds }}s
+      Reports generated:
+      - JSON: {{ output_settings.json_log_path }}
+      - HTML: {{ output_settings.html_report_path }}
+
+- name: Send email notification (if enabled)
+  mail:
+    host: "{{ output_settings.email_settings.smtp_server }}"
+    port: "{{ output_settings.email_settings.smtp_port }}"
+    from: "{{ output_settings.email_settings.from_email }}"
+    to: "{{ output_settings.email_settings.to_emails }}"
+    subject: "{{ output_settings.email_settings.subject }}"
+    body: "{{ lookup('file', output_settings.html_report_path) }}"
+    subtype: html
+  when: output_settings.send_email | default(false)
+  delegate_to: localhost

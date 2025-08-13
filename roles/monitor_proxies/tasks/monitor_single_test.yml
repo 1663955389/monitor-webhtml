@@ -1,0 +1,95 @@
+---
+- name: Record test start time
+  set_fact:
+    test_start_time: "{{ ansible_date_time.epoch }}"
+
+- name: Determine proxy settings for HTTP/HTTPS
+  set_fact:
+    proxy_env: "{{ 
+      {
+        'http_proxy': current_proxy.http if current_proxy.http else '',
+        'https_proxy': current_proxy.https | default(current_proxy.http) if current_proxy.http else '',
+        'HTTP_PROXY': current_proxy.http if current_proxy.http else '',
+        'HTTPS_PROXY': current_proxy.https | default(current_proxy.http) if current_proxy.http else ''
+      } if current_proxy.http else {}
+    }}"
+
+- name: Determine site-specific settings
+  set_fact:
+    site_timeout: "{{ current_site.timeout_seconds | default(monitor_settings.timeout_seconds) }}"
+    site_validate_certs: "{{ current_site.validate_certs | default(true) }}"
+    site_max_latency: "{{ current_site.max_latency_ms | default(monitor_settings.max_latency_ms) }}"
+    site_allowed_codes: "{{ current_site.allowed_status_codes | default(monitor_settings.allowed_status_codes) }}"
+    site_retries: "{{ current_site.retries | default(monitor_settings.retries) }}"
+
+- name: Perform HTTP request with proxy and retries
+  uri:
+    url: "{{ current_site.url }}"
+    method: GET
+    timeout: "{{ site_timeout }}"
+    validate_certs: "{{ site_validate_certs }}"
+    status_code: -1  # Accept any status code to avoid failures
+    return_content: no
+  environment: "{{ proxy_env }}"
+  register: http_result
+  failed_when: false
+  retries: "{{ site_retries }}"
+  delay: 1
+
+- name: Record test end time and calculate metrics
+  set_fact:
+    test_end_time: "{{ ansible_date_time.epoch }}"
+    test_duration_ms: "{{ ((ansible_date_time.epoch | float) - (test_start_time | float)) * 1000 }}"
+
+- name: Determine test results
+  set_fact:
+    test_status_ok: "{{ http_result.status is defined and (http_result.status | int) in (site_allowed_codes | map('int') | list) }}"
+    test_latency_ok: "{{ (test_duration_ms | float) <= (site_max_latency | float) }}"
+    actual_retries: "{{ http_result.attempts | default(1) }}"
+
+- name: Create test result record
+  set_fact:
+    test_result:
+      proxy:
+        name: "{{ current_proxy.name }}"
+        http: "{{ current_proxy.http | default('direct') }}"
+        https: "{{ current_proxy.https | default(current_proxy.http) | default('direct') }}"
+      site:
+        name: "{{ current_site.name }}"
+        url: "{{ current_site.url }}"
+      test_info:
+        timestamp: "{{ ansible_date_time.iso8601 }}"
+        start_time: "{{ test_start_time }}"
+        end_time: "{{ test_end_time }}"
+        duration_ms: "{{ test_duration_ms | float | round(2) }}"
+        retries_attempted: "{{ actual_retries }}"
+      results:
+        status_code: "{{ http_result.status | default('ERROR') }}"
+        status_ok: "{{ test_status_ok }}"
+        latency_ok: "{{ test_latency_ok }}"
+        overall_success: "{{ test_status_ok and test_latency_ok }}"
+        error_message: "{{ http_result.msg | default('') }}"
+      thresholds:
+        max_latency_ms: "{{ site_max_latency }}"
+        allowed_status_codes: "{{ site_allowed_codes }}"
+        timeout_seconds: "{{ site_timeout }}"
+
+- name: Add result to monitoring results list
+  set_fact:
+    monitoring_results: "{{ monitoring_results + [test_result] }}"
+
+- name: Update monitoring summary counters
+  set_fact:
+    monitoring_summary: "{{ monitoring_summary | combine({
+      'passed_tests': (monitoring_summary.passed_tests | int) + (1 if test_result.results.overall_success else 0),
+      'failed_tests': (monitoring_summary.failed_tests | int) + (0 if test_result.results.overall_success else 1)
+    }) }}"
+
+- name: Display test result
+  debug:
+    msg: |
+      Test: {{ current_proxy.name }} -> {{ current_site.name }}
+      Status: {{ test_result.results.status_code }} ({{ 'OK' if test_result.results.status_ok else 'FAIL' }})
+      Latency: {{ test_result.test_info.duration_ms }}ms ({{ 'OK' if test_result.results.latency_ok else 'FAIL' }})
+      Overall: {{ 'PASS' if test_result.results.overall_success else 'FAIL' }}
+      {{ test_result.results.error_message if test_result.results.error_message else '' }}
