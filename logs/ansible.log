@@ -405,3 +405,15 @@
 2025-08-13 14:24:55,798 p=3563 u=runner n=ansible INFO| fatal: [localhost]: FAILED! => {"msg": "The task includes an option with an undefined variable.. {'website': '{{ website_test_result.results[item_index].website_item.inventory_hostname }}', 'url': '{{ website_test_result.results[item_index].website_item.test_url }}', 'status': \"{{ 'SUCCESS' if website_test_result.results[item_index].status in status_codes.success else 'FAILED' }}\", 'status_code': '{{ website_test_result.results[item_index].status | default(-1) }}', 'response_time': '{{ (website_test_result.results[item_index].elapsed * 1000) | round(2) if website_test_result.results[item_index].elapsed is defined else -1 }}', 'error_msg': \"{{ website_test_result.results[item_index].msg | default('') }}\", 'timestamp': '{{ current_timestamp }}'}: 'dict object' has no attribute 'status'\n\nThe error appears to be in '/home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml': line 31, column 3, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n- name: Process test results for each website\n  ^ here\n"}
 2025-08-13 14:24:55,798 p=3563 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
 2025-08-13 14:24:55,799 p=3563 u=runner n=ansible INFO| localhost                  : ok=11   changed=0    unreachable=0    failed=1    skipped=1    rescued=0    ignored=0   
+2025-08-13 14:26:28,150 p=3740 u=runner n=ansible INFO| playbook: playbooks/monitor-proxies.yml
+2025-08-13 14:26:28,150 p=3740 u=runner n=ansible INFO|   play #1 (localhost): Monitor Proxy Status and Website Connectivity	TAGS: []
+2025-08-13 14:26:28,152 p=3740 u=runner n=ansible INFO|     tasks:
+      Display monitoring start information	TAGS: []
+      Ensure log directory exists	TAGS: []
+      Initialize monitoring results	TAGS: []
+      Execute proxy monitoring role	TAGS: []
+      Calculate overall statistics	TAGS: []
+      Display monitoring summary	TAGS: []
+      Send alert email if failures detected	TAGS: []
+      Final monitoring status	TAGS: []
+
