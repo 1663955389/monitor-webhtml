@@ -1,0 +1,43 @@
+---
+# Comprehensive test showcasing all enhanced features
+monitor_config:
+  proxies:
+    - name: "success_proxy"
+      http: ""  # Direct connection (simulates working proxy)
+      enabled: true
+    - name: "mixed_proxy"  
+      http: ""  # Direct connection with mixed results
+      enabled: true
+    - name: "failing_proxy"
+      http: "http://non-existent-proxy:8080"
+      enabled: true
+  sites:
+    - name: "Fast Response Test"
+      url: "http://localhost:80"
+      validate_certs: false
+      max_latency_ms: 5000  # Generous latency
+      allowed_status_codes: [200, 301, 302, 403, 404, 500, 502, 503]
+    - name: "Strict Latency Test"
+      url: "http://localhost:80"
+      validate_certs: false
+      max_latency_ms: 1  # Very strict latency to show "slow" responses
+      allowed_status_codes: [200, 301, 302, 403, 404, 500, 502, 503]
+    - name: "Success Rate Test"
+      url: "http://localhost:80"
+      validate_certs: false
+      max_latency_ms: 3000
+      allowed_status_codes: [200, 301, 302, 403, 404, 500, 502, 503]
+
+monitor:
+  timezone: "Asia/Shanghai"
+
+monitor_settings:
+  retries: 1
+  timeout_seconds: 5
+  max_latency_ms: 10000
+  allowed_status_codes: [200, 301, 302, 403, 404, 500, 502, 503]
+
+output_settings:
+  html_report_path: "/tmp/final_demo_report.html"
+  json_log_path: "/tmp/final_demo_results.json"
+  send_email: false
