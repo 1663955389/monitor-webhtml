@@ -1,0 +1,32 @@
+---
+# 代理监控角色主任务
+
+- name: 获取已启用的代理服务器列表
+  set_fact:
+    enabled_proxies: "{{ groups['proxy_servers'] | map('extract', hostvars) | selectattr('enabled', 'equalto', true) | list }}"
+
+- name: 获取测试网站列表
+  set_fact:
+    test_websites: "{{ groups['test_websites'] | map('extract', hostvars) | list }}"
+
+- name: 初始化测试结果
+  set_fact:
+    proxy_test_results: {}
+    current_timestamp: "{{ ansible_date_time.iso8601 }}"
+
+- name: 对每个代理执行网站连通性测试
+  include_tasks: test_proxy.yml
+  loop: "{{ enabled_proxies }}"
+  loop_control:
+    loop_var: proxy_item
+    label: "{{ proxy_item.inventory_hostname }}"
+
+- name: 生成监控日志
+  template:
+    src: log-format.j2
+    dest: "{{ monitoring.logging.log_dir }}/{{ monitoring.logging.log_file }}"
+    mode: '0644'
+  vars:
+    log_timestamp: "{{ current_timestamp }}"
+    test_results: "{{ proxy_test_results }}"
+

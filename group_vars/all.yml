@@ -1,0 +1,48 @@
+---
+# 代理监控系统全局变量配置
+
+# 监控配置
+monitoring:
+  # 告警阈值设置
+  thresholds:
+    max_response_time: 5000  # 最大响应时间(毫秒)
+    max_failure_rate: 30     # 最大失败率(百分比)
+    min_success_rate: 70     # 最小成功率(百分比)
+  
+  # 测试配置
+  test_config:
+    retry_count: 3          # 重试次数
+    retry_delay: 2          # 重试延迟(秒)
+    parallel_tests: true    # 是否并行测试
+  
+  # 日志配置
+  logging:
+    log_dir: "/home/runner/work/monitor-webhtml/monitor-webhtml/logs"
+    log_file: "proxy_monitor.log"
+    log_level: "INFO"
+    log_format: "detailed"  # 日志格式: simple, detailed, json
+  
+  # 监控计划
+  schedule:
+    check_interval: 300   # 检查间隔(秒) - 5分钟
+    report_interval: 3600 # 报告间隔(秒) - 1小时
+
+# 邮件通知配置
+email_config:
+  enabled: true
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  smtp_use_tls: true
+  smtp_username: "monitor@example.com"
+  smtp_password: "your_email_password"
+  from_email: "monitor@example.com"
+  to_emails:
+    - "admin@example.com"
+    - "ops@example.com"
+  subject_prefix: "[代理监控告警]"  # 邮件主题前缀
+  
+# 报告配置
+report_config:
+  generate_html_report: true  # 生成HTML报告
+  include_charts: false       # 是否包含图表
+  report_retention_days: 30   # 报告保留天数
