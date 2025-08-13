@@ -1,0 +1,38 @@
+---
+# Test configuration with multiple proxies and sites
+monitor_config:
+  proxies:
+    - name: "direct_connection"
+      http: ""  # Direct connection
+      enabled: true
+    - name: "simulated_proxy"
+      http: ""  # Simulated proxy (also direct for testing)
+      enabled: true
+    - name: "failing_proxy"
+      http: "http://non-existent-proxy:8080"
+      enabled: true
+  sites:
+    - name: "Localhost Test"
+      url: "http://localhost:80"
+      validate_certs: false
+      max_latency_ms: 3000
+      allowed_status_codes: [200, 301, 302, 403, 404, 500, 502, 503]
+    - name: "Fast Local Test"
+      url: "http://localhost:80"
+      validate_certs: false
+      max_latency_ms: 1000  # Tighter latency requirement
+      allowed_status_codes: [200, 301, 302, 403, 404, 500, 502, 503]
+
+monitor:
+  timezone: "Asia/Shanghai"
+
+monitor_settings:
+  retries: 1
+  timeout_seconds: 5
+  max_latency_ms: 10000
+  allowed_status_codes: [200, 301, 302, 403, 404, 500, 502, 503]
+
+output_settings:
+  html_report_path: "/tmp/enhanced_monitoring_report.html"
+  json_log_path: "/tmp/enhanced_monitoring_results.json"
+  send_email: false

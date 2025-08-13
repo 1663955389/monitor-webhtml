@@ -1,0 +1,27 @@
+---
+# Test configuration with UTC timezone
+monitor_config:
+  proxies:
+    - name: "test_proxy"
+      http: ""  # Direct connection
+      enabled: true
+  sites:
+    - name: "Localhost Test"
+      url: "http://localhost:80"
+      validate_certs: false
+      max_latency_ms: 5000
+      allowed_status_codes: [200, 301, 302, 403, 404, 500, 502, 503]
+
+monitor:
+  timezone: "UTC"
+
+monitor_settings:
+  retries: 1
+  timeout_seconds: 5
+  max_latency_ms: 10000
+  allowed_status_codes: [200, 301, 302, 403, 404, 500, 502, 503]
+
+output_settings:
+  html_report_path: "/tmp/utc_monitoring_report.html"
+  json_log_path: "/tmp/utc_monitoring_results.json"
+  send_email: false

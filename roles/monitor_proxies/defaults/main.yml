@@ -21,6 +21,10 @@ monitor_settings:
   allowed_status_codes: [200, 201, 202, 301, 302]
   parallel_limit: 10
 
+# Timezone configuration
+monitor:
+  timezone: "Asia/Shanghai"
+
 # Output settings
 output_settings:
   html_report_path: "/tmp/monitoring_report.html"

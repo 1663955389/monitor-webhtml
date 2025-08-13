@@ -103,6 +103,15 @@
             color: #dc3545;
             font-style: italic;
         }
+        .proxy-row-failure {
+            background-color: #f8d7da !important;
+        }
+        .proxy-row-slow {
+            background-color: #fff3cd !important;
+        }
+        .proxy-row-success {
+            background-color: #d1edda !important;
+        }
     </style>
 </head>
 <body>
@@ -110,6 +119,7 @@
         <div class="header">
             <h1>Proxy & Website Monitoring Report</h1>
             <p>Generated on {{ ansible_date_time.date }} at {{ ansible_date_time.time }}</p>
+            <p>时间 (本地 {{ monitor_timezone }}): {{ local_timestamp_iso }}</p>
         </div>
 
         <div class="summary">
@@ -134,6 +144,45 @@
                 <div class="value">{{ monitoring_summary.duration_seconds }}s</div>
             </div>
         </div>
+
+        <!-- 代理汇总表 -->
+        <h2>代理汇总</h2>
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>代理</th>
+                    <th>总检查数</th>
+                    <th>失败数</th>
+                    <th>慢响应数</th>
+                    <th>平均延迟 (ms)</th>
+                    <th>成功率</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proxy in proxy_summary %}
+                <tr class="{% if proxy.failures > 0 %}proxy-row-failure{% elif proxy.slow > 0 %}proxy-row-slow{% else %}proxy-row-success{% endif %}">
+                    <td>{{ proxy.proxy }}</td>
+                    <td>{{ proxy.total }}</td>
+                    <td>
+                        <span class="{% if proxy.failures > 0 %}status-failed{% else %}status-success{% endif %}">
+                            {{ proxy.failures }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="{% if proxy.slow > 0 %}status-warning{% else %}status-success{% endif %}">
+                            {{ proxy.slow }}
+                        </span>
+                    </td>
+                    <td>{{ proxy.avg_latency_ms }}</td>
+                    <td>
+                        <span class="{% if proxy.success_rate == 100 %}status-success{% else %}status-failed{% endif %}">
+                            {{ proxy.success_rate }}%
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <h2>Detailed Results</h2>
         <table class="results-table">

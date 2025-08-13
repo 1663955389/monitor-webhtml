@@ -1,4 +1,22 @@
 ---
+# 设置默认时区为 Asia/Shanghai（如果未配置 monitor.timezone）
+- name: Set default timezone if not configured
+  set_fact:
+    monitor_timezone: "{{ monitor.timezone | default('Asia/Shanghai') }}"
+
+# 生成本地时区的时间戳（用于文件名和JSON内容）
+- name: Generate local timezone timestamps
+  shell: |
+    export TZ="{{ monitor_timezone }}"
+    echo "compact=$(date +%Y%m%d_%H%M%S)"
+    echo "iso=$(date +%Y-%m-%dT%H:%M:%S)"
+  register: local_timestamp_result
+
+- name: Parse local timestamps
+  set_fact:
+    local_timestamp_compact: "{{ local_timestamp_result.stdout_lines | select('match', '^compact=.*') | first | regex_replace('^compact=', '') }}"
+    local_timestamp_iso: "{{ local_timestamp_result.stdout_lines | select('match', '^iso=.*') | first | regex_replace('^iso=', '') }}"
+
 - name: Initialize monitoring results
   set_fact:
     monitoring_results: []
@@ -23,6 +41,17 @@
     current_site: "{{ item[1] }}"
   loop: "{{ monitor_config.proxies | selectattr('enabled', 'equalto', true) | list | product(monitor_config.sites) | list }}"
 
+# 计算每个代理的汇总统计信息
+- name: Build proxy summary statistics
+  set_fact:
+    proxy_summary: []
+
+- name: Calculate summary for each enabled proxy
+  include_tasks: calculate_proxy_summary.yml
+  vars:
+    current_proxy_name: "{{ item.name }}"
+  loop: "{{ monitor_config.proxies | selectattr('enabled', 'equalto', true) | list }}"
+
 - name: Calculate final monitoring summary
   set_fact:
     monitoring_summary: "{{ monitoring_summary | combine({
@@ -31,15 +60,30 @@
       'success_rate': ((monitoring_summary.passed_tests | int) / (monitoring_summary.total_tests | int) * 100) | round(2) if monitoring_summary.total_tests | int > 0 else 0
     }) }}"
 
-- name: Generate JSON log file
+# 设置 results 目录（如果不存在）
+- name: Ensure results directory exists
+  file:
+    path: "{{ output_settings.json_log_path | dirname }}"
+    state: directory
+  delegate_to: localhost
+
+# 使用本地时区时间戳生成文件名
+- name: Set JSON filename with local timezone
+  set_fact:
+    json_filename: "{{ (output_settings.json_log_path | dirname) }}/proxy_monitor_{{ local_timestamp_compact }}_local.json"
+
+- name: Generate JSON log file with enhanced structure
   copy:
     content: |
       {
+        "generated_at_local": "{{ local_timestamp_iso }}",
+        "timezone": "{{ monitor_timezone }}",
         "summary": {{ monitoring_summary | to_nice_json }},
+        "proxy_summary": {{ proxy_summary | to_nice_json }},
         "results": {{ monitoring_results | to_nice_json }},
         "generated_at": "{{ ansible_date_time.iso8601 }}"
       }
-    dest: "{{ output_settings.json_log_path }}"
+    dest: "{{ json_filename }}"
   delegate_to: localhost
 
 - name: Generate HTML report
@@ -57,8 +101,10 @@
       Failed: {{ monitoring_summary.failed_tests }}
       Success Rate: {{ monitoring_summary.success_rate }}%
       Duration: {{ monitoring_summary.duration_seconds }}s
+      Local Timezone: {{ monitor_timezone }}
+      Local Time: {{ local_timestamp_iso }}
       Reports generated:
-      - JSON: {{ output_settings.json_log_path }}
+      - JSON: {{ json_filename }}
       - HTML: {{ output_settings.html_report_path }}
 
 - name: Send email notification (if enabled)

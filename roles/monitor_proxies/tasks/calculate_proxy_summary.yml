@@ -1,0 +1,29 @@
+---
+# 计算单个代理的汇总统计信息
+- name: Get results for current proxy
+  set_fact:
+    proxy_results: "{{ monitoring_results | selectattr('proxy.name', 'equalto', current_proxy_name) | list }}"
+
+- name: Calculate proxy statistics
+  set_fact:
+    proxy_total: "{{ proxy_results | length }}"
+    proxy_failures: "{{ proxy_results | selectattr('results.overall_success', 'equalto', false) | list | length }}"
+    proxy_slow_results: "{{ proxy_results | selectattr('results.latency_ok', 'equalto', false) | list }}"
+    proxy_valid_latencies: "{{ proxy_results | selectattr('test_info.duration_ms', 'defined') | map(attribute='test_info.duration_ms') | map('float') | select('>=', 0) | list }}"
+
+- name: Calculate additional proxy metrics
+  set_fact:
+    proxy_slow: "{{ proxy_slow_results | length }}"
+    proxy_avg_latency_ms: "{{ (proxy_valid_latencies | sum / proxy_valid_latencies | length) | round(2) if proxy_valid_latencies | length > 0 else 0 }}"
+    proxy_success_rate: "{{ (((proxy_total | int) - (proxy_failures | int)) / (proxy_total | int) * 100) | round(2) if proxy_total | int > 0 else 0 }}"
+
+- name: Add proxy summary to list
+  set_fact:
+    proxy_summary: "{{ proxy_summary + [{
+      'proxy': current_proxy_name,
+      'total': proxy_total | int,
+      'failures': proxy_failures | int,
+      'slow': proxy_slow | int,
+      'avg_latency_ms': proxy_avg_latency_ms | float,
+      'success_rate': proxy_success_rate | float
+    }] }}"
