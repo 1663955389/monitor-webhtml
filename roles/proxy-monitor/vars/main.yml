@@ -1,0 +1,31 @@
+---
+# Variables for proxy-monitor role
+
+# Default timeout values (in seconds)
+default_timeout: 10
+connection_timeout: 5
+
+# HTTP request configuration
+http_config:
+  user_agent: "Ansible-Proxy-Monitor/1.0"
+  follow_redirects: true
+  validate_certs: false
+  max_redirects: 3
+
+# Status code definitions
+status_codes:
+  success: [200, 201, 202, 204, 301, 302, 304]
+  warning: [400, 401, 403, 404]
+  error: [500, 502, 503, 504, 505]
+
+# Proxy authentication types
+auth_types:
+  basic: "basic"
+  digest: "digest"
+  none: "none"
+
+# Test patterns
+test_patterns:
+  connectivity: "basic_http_check"
+  performance: "response_time_check"
+  content: "content_validation"

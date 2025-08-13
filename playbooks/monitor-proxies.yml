@@ -1,0 +1,60 @@
+---
+# Main playbook for proxy monitoring
+- name: Monitor Proxy Status and Website Connectivity
+  hosts: localhost
+  gather_facts: true
+  vars_files:
+    - ../group_vars/all.yml
+  vars:
+    start_time: "{{ ansible_date_time.iso8601 }}"
+    
+  tasks:
+    - name: Display monitoring start information
+      debug:
+        msg: 
+          - "Starting proxy monitoring at {{ start_time }}"
+          - "Log directory: {{ monitoring.logging.log_dir }}"
+          - "Alert thresholds: Response time < {{ monitoring.thresholds.max_response_time }}ms, Success rate > {{ monitoring.thresholds.min_success_rate }}%"
+
+    - name: Ensure log directory exists
+      file:
+        path: "{{ monitoring.logging.log_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Initialize monitoring results
+      set_fact:
+        monitoring_results: []
+        failed_proxies: []
+        total_tests: 0
+        successful_tests: 0
+
+    - name: Execute proxy monitoring role
+      include_role:
+        name: proxy-monitor
+
+    - name: Calculate overall statistics
+      set_fact:
+        overall_success_rate: "{{ (successful_tests | int * 100 / total_tests | int) | round(2) if total_tests | int > 0 else 0 }}"
+        total_failed_proxies: "{{ failed_proxies | length }}"
+
+    - name: Display monitoring summary
+      debug:
+        msg:
+          - "Monitoring completed at {{ ansible_date_time.iso8601 }}"
+          - "Total tests performed: {{ total_tests }}"
+          - "Successful tests: {{ successful_tests }}"
+          - "Overall success rate: {{ overall_success_rate }}%"
+          - "Failed proxies: {{ total_failed_proxies }}"
+
+    - name: Send alert email if failures detected
+      include_role:
+        name: proxy-monitor
+        tasks_from: send_alerts
+      when: 
+        - email_config.enabled | default(false)
+        - (overall_success_rate | float < monitoring.thresholds.min_success_rate | float) or (failed_proxies | length > 0)
+
+    - name: Final monitoring status
+      debug:
+        msg: "Proxy monitoring cycle completed. Check {{ monitoring.logging.log_dir }}/{{ monitoring.logging.log_file }} for detailed logs."
