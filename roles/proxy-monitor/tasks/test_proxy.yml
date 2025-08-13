@@ -20,7 +20,6 @@
     proxy_url: "{{ proxy_item.proxy_url }}"
     proxy_username: "{{ proxy_item.proxy_username if proxy_item.proxy_username != '' else omit }}"
     proxy_password: "{{ proxy_item.proxy_password if proxy_item.proxy_password != '' else omit }}"
-    status_code: "{{ status_codes.success + status_codes.warning }}"
   register: website_test_result
   failed_when: false
   loop: "{{ test_websites }}"
@@ -34,11 +33,13 @@
     successful_count: "{{ successful_count | int + (1 if test_result.status == 'SUCCESS' else 0) }}"
     failed_count: "{{ failed_count | int + (1 if test_result.status == 'FAILED' else 0) }}"
   vars:
+    # 简化的状态判断逻辑：检查HTTP状态码是否在200-399范围内
+    http_status: "{{ website_test_result.results[item_index].status | default(-1) if website_test_result.results is defined else -1 }}"
     test_result:
       website: "{{ website_test_result.results[item_index].website_item.inventory_hostname if website_test_result.results is defined else test_websites[item_index].inventory_hostname }}"
       url: "{{ website_test_result.results[item_index].website_item.test_url if website_test_result.results is defined else test_websites[item_index].test_url }}"
-      status: "{{ 'SUCCESS' if website_test_result.results is defined and website_test_result.results[item_index].status is defined and website_test_result.results[item_index].status in status_codes.success else 'FAILED' }}"
-      status_code: "{{ website_test_result.results[item_index].status | default(-1) if website_test_result.results is defined else -1 }}"
+      status: "{{ 'SUCCESS' if (website_test_result.results is defined and http_status | int >= 200 and http_status | int < 400) else 'FAILED' }}"
+      status_code: "{{ http_status }}"
       response_time: "{{ (website_test_result.results[item_index].elapsed * 1000) | round(2) if website_test_result.results is defined and website_test_result.results[item_index].elapsed is defined else -1 }}"
       error_msg: "{{ website_test_result.results[item_index].msg | default('') if website_test_result.results is defined else '检查模式 - 测试未执行' }}"
       timestamp: "{{ current_timestamp }}"
@@ -64,21 +65,15 @@
     loop_var: item_index
   when: ansible_check_mode and website_test_result.results is not defined
 
-- name: 计算代理成功率
-  set_fact:
-    proxy_success_rate: "{{ (successful_count | int * 100 / (successful_count | int + failed_count | int)) | round(2) if (successful_count | int + failed_count | int) > 0 else 0 }}"
-
-- name: 判断代理整体状态
-  set_fact:
-    proxy_status: "{{ 'HEALTHY' if proxy_success_rate | float >= monitoring.thresholds.min_success_rate | float else 'UNHEALTHY' }}"
-
 - name: 存储代理测试结果
   set_fact:
+    proxy_success_rate: "{{ (successful_count | int * 100 / (successful_count | int + failed_count | int)) | round(2) if (successful_count | int + failed_count | int) > 0 else 0 }}"
+    proxy_status: "{{ 'HEALTHY' if (successful_count | int * 100 / (successful_count | int + failed_count | int)) >= monitoring.thresholds.min_success_rate | float else 'UNHEALTHY' }}"
     proxy_test_results: "{{ proxy_test_results | combine({proxy_name: {
       'proxy_name': proxy_name,
       'proxy_url': proxy_item.proxy_url,
-      'status': proxy_status,
-      'success_rate': proxy_success_rate,
+      'status': ('HEALTHY' if (successful_count | int * 100 / (successful_count | int + failed_count | int)) >= monitoring.thresholds.min_success_rate | float else 'UNHEALTHY'),
+      'success_rate': ((successful_count | int * 100 / (successful_count | int + failed_count | int)) | round(2) if (successful_count | int + failed_count | int) > 0 else 0),
       'successful_tests': successful_count,
       'failed_tests': failed_count,
       'total_tests': (successful_count | int + failed_count | int),

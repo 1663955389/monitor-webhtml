@@ -17,28 +17,11 @@
 
     - name: 初始化监控结果变量
       set_fact:
-        monitoring_results: []
-        failed_proxies: []
-        total_tests: 0
-        successful_tests: 0
+        proxy_test_results: {}
 
     - name: 执行代理监控任务
       include_role:
         name: proxy-monitor
-
-    - name: 计算总体统计信息
-      set_fact:
-        overall_success_rate: "{{ (successful_tests | int * 100 / total_tests | int) | round(2) if total_tests | int > 0 else 0 }}"
-        total_failed_proxies: "{{ failed_proxies | length }}"
-
-    - name: 显示监控汇总
-      debug:
-        msg:
-          - "监控完成时间: {{ ansible_date_time.iso8601 }}"
-          - "总测试次数: {{ total_tests }}"
-          - "成功测试: {{ successful_tests }}"
-          - "总体成功率: {{ overall_success_rate }}%"
-          - "失败代理数量: {{ total_failed_proxies }}"
 
     - name: 发送告警邮件
       include_role:
@@ -46,7 +29,8 @@
         tasks_from: send_alerts
       when: 
         - email_config.enabled | default(false)
-        - (overall_success_rate | float < monitoring.thresholds.min_success_rate | float) or (failed_proxies | length > 0)
+        # 简化告警条件：直接检查代理状态
+        - proxy_test_results.values() | selectattr('status', 'equalto', 'UNHEALTHY') | list | length > 0
 
     - name: 监控状态总结
       debug:
