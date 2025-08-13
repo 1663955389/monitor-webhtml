@@ -1,0 +1,30 @@
+---
+# Send alert emails for failed proxies
+
+- name: Generate HTML alert email
+  template:
+    src: email-alert.html.j2
+    dest: "{{ monitoring.logging.log_dir }}/alert_email.html"
+    mode: '0644'
+  vars:
+    alert_timestamp: "{{ ansible_date_time.iso8601 }}"
+    alert_results: "{{ proxy_test_results }}"
+
+- name: Send alert email
+  mail:
+    to: "{{ email_config.to_emails }}"
+    from: "{{ email_config.from_email }}"
+    subject: "{{ email_config.subject_prefix }} Proxy Monitoring Alert - {{ ansible_date_time.iso8601 }}"
+    body: "{{ lookup('file', monitoring.logging.log_dir + '/alert_email.html') }}"
+    subtype: html
+    host: "{{ email_config.smtp_server }}"
+    port: "{{ email_config.smtp_port }}"
+    username: "{{ email_config.smtp_username }}"
+    password: "{{ email_config.smtp_password }}"
+    secure: "{{ 'starttls' if email_config.smtp_use_tls else 'never' }}"
+  ignore_errors: true
+  register: email_result
+
+- name: Log email sending result
+  debug:
+    msg: "Alert email {{ 'sent successfully' if email_result is succeeded else 'failed to send: ' + (email_result.msg | default('Unknown error')) }}"

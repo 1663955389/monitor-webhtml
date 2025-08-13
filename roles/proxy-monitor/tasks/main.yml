@@ -1,0 +1,38 @@
+---
+# Main tasks for proxy monitoring role
+
+- name: Get list of enabled proxy servers
+  set_fact:
+    enabled_proxies: "{{ groups['proxy_servers'] | map('extract', hostvars) | selectattr('enabled', 'equalto', true) | list }}"
+
+- name: Get list of test websites
+  set_fact:
+    test_websites: "{{ groups['test_websites'] | map('extract', hostvars) | list }}"
+
+- name: Initialize test results
+  set_fact:
+    proxy_test_results: {}
+    current_timestamp: "{{ ansible_date_time.iso8601 }}"
+
+- name: Test each proxy against all websites
+  include_tasks: test_proxy.yml
+  loop: "{{ enabled_proxies }}"
+  loop_control:
+    loop_var: proxy_item
+    label: "{{ proxy_item.inventory_hostname }}"
+
+- name: Generate monitoring log
+  template:
+    src: log-format.j2
+    dest: "{{ monitoring.logging.log_dir }}/{{ monitoring.logging.log_file }}"
+    mode: '0644'
+  vars:
+    log_timestamp: "{{ current_timestamp }}"
+    test_results: "{{ proxy_test_results }}"
+
+- name: Update global monitoring results
+  set_fact:
+    monitoring_results: "{{ monitoring_results + [proxy_test_results] }}"
+    total_tests: "{{ total_tests | int + (enabled_proxies | length * test_websites | length) }}"
+    successful_tests: "{{ successful_tests | int + proxy_test_results.values() | map(attribute='successful_tests') | sum }}"
+    failed_proxies: "{{ failed_proxies + proxy_test_results.keys() | select('match', '.*') | map('extract', proxy_test_results) | selectattr('status', 'equalto', 'FAILED') | map(attribute='proxy_name') | list }}"

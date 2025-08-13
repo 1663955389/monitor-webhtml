@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Monitoring Alert</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #d32f2f;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+        }
+        .summary {
+            background-color: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #2196f3;
+        }
+        .proxy-item {
+            background-color: #fff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ff9800;
+        }
+        .proxy-healthy {
+            border-left-color: #4caf50;
+        }
+        .proxy-unhealthy {
+            border-left-color: #f44336;
+        }
+        .test-details {
+            margin-top: 10px;
+        }
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .status-success {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .status-failed {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚨 Proxy Monitoring Alert</h1>
+        <p>Alert generated at: {{ alert_timestamp }}</p>
+    </div>
+    
+    <div class="content">
+        <div class="summary">
+            <h2>📊 Monitoring Summary</h2>
+            <p><strong>Total Proxies Monitored:</strong> {{ alert_results | length }}</p>
+            <p><strong>Failed Proxies:</strong> {{ alert_results.values() | selectattr('status', 'equalto', 'UNHEALTHY') | list | length }}</p>
+            <p><strong>Healthy Proxies:</strong> {{ alert_results.values() | selectattr('status', 'equalto', 'HEALTHY') | list | length }}</p>
+            <p><strong>Alert Threshold:</strong> Success rate below {{ monitoring.thresholds.min_success_rate }}%</p>
+        </div>
+
+        <h2>🔍 Proxy Status Details</h2>
+        {% for proxy_name, proxy_data in alert_results.items() %}
+        <div class="proxy-item {{ 'proxy-healthy' if proxy_data.status == 'HEALTHY' else 'proxy-unhealthy' }}">
+            <h3>
+                {% if proxy_data.status == 'HEALTHY' %}
+                    ✅ {{ proxy_name }}
+                {% else %}
+                    ❌ {{ proxy_name }}
+                {% endif %}
+            </h3>
+            <p><strong>Proxy URL:</strong> {{ proxy_data.proxy_url }}</p>
+            <p><strong>Status:</strong> 
+                <span class="{{ 'status-success' if proxy_data.status == 'HEALTHY' else 'status-failed' }}">
+                    {{ proxy_data.status }}
+                </span>
+            </p>
+            <p><strong>Success Rate:</strong> {{ proxy_data.success_rate }}%</p>
+            <p><strong>Tests:</strong> {{ proxy_data.successful_tests }}/{{ proxy_data.total_tests }} successful</p>
+            
+            <div class="test-details">
+                <h4>📋 Test Results:</h4>
+                <table>
+                    <tr>
+                        <th>Website</th>
+                        <th>URL</th>
+                        <th>Status</th>
+                        <th>Response Time (ms)</th>
+                        <th>HTTP Code</th>
+                    </tr>
+                    {% for test in proxy_data.test_details %}
+                    <tr>
+                        <td>{{ test.website }}</td>
+                        <td>{{ test.url }}</td>
+                        <td class="{{ 'status-success' if test.status == 'SUCCESS' else 'status-failed' }}">
+                            {{ test.status }}
+                        </td>
+                        <td>{{ test.response_time if test.response_time != -1 else 'N/A' }}</td>
+                        <td>{{ test.status_code if test.status_code != -1 else 'N/A' }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="summary">
+            <h2>🔧 Recommended Actions</h2>
+            <ul>
+                {% for proxy_name, proxy_data in alert_results.items() %}
+                    {% if proxy_data.status == 'UNHEALTHY' %}
+                <li><strong>{{ proxy_name }}:</strong> Check proxy server connectivity and configuration</li>
+                    {% endif %}
+                {% endfor %}
+                <li>Review proxy server logs for detailed error information</li>
+                <li>Verify network connectivity between monitoring system and proxy servers</li>
+                <li>Check if proxy authentication credentials are valid</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>This alert was generated automatically by the Ansible Proxy Monitoring System</p>
+        <p>For more details, check the monitoring logs at: {{ monitoring.logging.log_dir }}/{{ monitoring.logging.log_file }}</p>
+    </div>
+</body>
+</html>

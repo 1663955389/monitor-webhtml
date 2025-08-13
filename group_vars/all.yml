@@ -1,0 +1,48 @@
+---
+# Global variables for proxy monitoring
+
+# Monitoring configuration
+monitoring:
+  # Alert thresholds
+  thresholds:
+    max_response_time: 5000  # milliseconds
+    max_failure_rate: 30     # percentage
+    min_success_rate: 70     # percentage
+  
+  # Test configuration
+  test_config:
+    retry_count: 3
+    retry_delay: 2  # seconds
+    parallel_tests: true
+  
+  # Logging configuration
+  logging:
+    log_dir: "/home/runner/work/monitor-webhtml/monitor-webhtml/logs"
+    log_file: "proxy_monitor.log"
+    log_level: "INFO"
+    log_format: "detailed"  # options: simple, detailed, json
+  
+  # Monitoring schedule
+  schedule:
+    check_interval: 300  # seconds (5 minutes)
+    report_interval: 3600  # seconds (1 hour)
+
+# Email notification configuration
+email_config:
+  enabled: true
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  smtp_use_tls: true
+  smtp_username: "monitor@example.com"
+  smtp_password: "your_email_password"
+  from_email: "monitor@example.com"
+  to_emails:
+    - "admin@example.com"
+    - "ops@example.com"
+  subject_prefix: "[Proxy Monitor Alert]"
+  
+# Report configuration
+report_config:
+  generate_html_report: true
+  include_charts: false
+  report_retention_days: 30
