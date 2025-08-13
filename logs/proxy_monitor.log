@@ -1,0 +1,119 @@
+===============================================================================
+代理监控报告
+===============================================================================
+时间: 2025-08-13T23:03:05Z
+系统: Ansible 代理监控系统
+
+汇总信息:
+--------
+监控代理总数: 3
+健康代理数量: 0
+异常代理数量: 3
+总体成功率: 0.0%
+
+详细结果:
+---------
+
+[UNHEALTHY] proxy1
+---------------------
+代理地址: http://proxy1.example.com:8080
+状态: UNHEALTHY
+成功率: 0.0%
+测试结果: 0/4 成功
+检测时间: 2025-08-13T23:03:05Z
+
+网站测试结果:
+  • google (https://www.google.com)
+    状态: FAILED
+    响应时间: -1ms
+    HTTP状态码: -1
+    错误信息: curl执行失败 (返回码: 5)
+  • github (https://github.com)
+    状态: FAILED
+    响应时间: -1ms
+    HTTP状态码: -1
+    错误信息: curl执行失败 (返回码: 5)
+  • baidu (https://www.baidu.com)
+    状态: FAILED
+    响应时间: -1ms
+    HTTP状态码: -1
+    错误信息: curl执行失败 (返回码: 5)
+  • httpbin (https://httpbin.org/status/200)
+    状态: FAILED
+    响应时间: -1ms
+    HTTP状态码: -1
+    错误信息: curl执行失败 (返回码: 5)
+
+[UNHEALTHY] proxy2
+---------------------
+代理地址: http://proxy2.example.com:8080
+状态: UNHEALTHY
+成功率: 0.0%
+测试结果: 0/4 成功
+检测时间: 2025-08-13T23:03:05Z
+
+网站测试结果:
+  • google (https://www.google.com)
+    状态: FAILED
+    响应时间: -1ms
+    HTTP状态码: -1
+    错误信息: curl执行失败 (返回码: 5)
+  • github (https://github.com)
+    状态: FAILED
+    响应时间: -1ms
+    HTTP状态码: -1
+    错误信息: curl执行失败 (返回码: 5)
+  • baidu (https://www.baidu.com)
+    状态: FAILED
+    响应时间: -1ms
+    HTTP状态码: -1
+    错误信息: curl执行失败 (返回码: 5)
+  • httpbin (https://httpbin.org/status/200)
+    状态: FAILED
+    响应时间: -1ms
+    HTTP状态码: -1
+    错误信息: curl执行失败 (返回码: 5)
+
+[UNHEALTHY] direct_test
+--------------------------
+代理地址: 
+状态: UNHEALTHY
+成功率: 25.0%
+测试结果: 1/4 成功
+检测时间: 2025-08-13T23:03:05Z
+
+网站测试结果:
+  • google (https://www.google.com)
+    状态: FAILED
+    响应时间: -1ms
+    HTTP状态码: -1
+    错误信息: curl执行失败 (返回码: 6)
+  • github (https://github.com)
+    状态: SUCCESS
+    响应时间: 318.72ms
+    HTTP状态码: 200
+  • baidu (https://www.baidu.com)
+    状态: FAILED
+    响应时间: -1ms
+    HTTP状态码: -1
+    错误信息: curl执行失败 (返回码: 6)
+  • httpbin (https://httpbin.org/status/200)
+    状态: FAILED
+    响应时间: -1ms
+    HTTP状态码: -1
+    错误信息: curl执行失败 (返回码: 6)
+
+阈值设置:
+---------
+最大响应时间: 5000ms
+最小成功率: 70%
+最大失败率: 30%
+
+告警信息:
+---------
+以下代理需要关注:
+- proxy1: 成功率 0.0% (低于阈值 70%)
+- proxy2: 成功率 0.0% (低于阈值 70%)
+- direct_test: 成功率 25.0% (低于阈值 70%)
+
+===============================================================================

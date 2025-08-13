@@ -78,6 +78,12 @@
         th {
             background-color: #f2f2f2;
         }
+        .error-msg {
+            font-size: 0.9em;
+            color: #d32f2f;
+            max-width: 200px;
+            word-wrap: break-word;
+        }
     </style>
 </head>
 <body>
@@ -123,6 +129,7 @@
                         <th>状态</th>
                         <th>响应时间(ms)</th>
                         <th>HTTP状态码</th>
+                        <th>错误信息</th>
                     </tr>
                     {% for test in proxy_data.test_details %}
                     <tr>
@@ -133,6 +140,7 @@
                         </td>
                         <td>{{ test.response_time if test.response_time != -1 else '无' }}</td>
                         <td>{{ test.status_code if test.status_code != -1 else '无' }}</td>
+                        <td class="error-msg">{{ test.error_msg if test.error_msg else '无' }}</td>
                     </tr>
                     {% endfor %}
                 </table>
