@@ -66,7 +66,8 @@
     状态: {{ test.status }}
     响应时间: {{ test.response_time if test.response_time != -1 else '无' }}ms
     HTTP状态码: {{ test.status_code if test.status_code != -1 else '无' }}
-{% if test.error_msg %}    错误信息: {{ test.error_msg }}{% endif %}
+{% if test.error_msg %}    错误信息: {{ test.error_msg }}
+{% endif %}
 {% endfor %}
 {% endfor %}
 

@@ -8,9 +8,26 @@
     successful_count: 0
     failed_count: 0
 
+- name: 显示代理测试状态
+  debug:
+    msg:
+      - "正在测试代理: {{ proxy_item.inventory_hostname }} ({{ proxy_item.proxy_url }})"
+      - "代理启用状态: {{ proxy_item.enabled }}"
+      - "待测试网站数量: {{ test_websites | length }}"
+
 - name: 测试代理对各网站的连通性
   shell: |
-    {% if proxy_item.proxy_username != '' and proxy_item.proxy_password != '' %}
+    {% if proxy_item.proxy_url == '' %}
+    # 直连测试（无代理）
+    curl -I -s \
+         --connect-timeout {{ connection_timeout }} \
+         --max-time {{ website_item.request_timeout | default(default_timeout) }} \
+         -A "{{ http_config.user_agent }}" \
+         {% if not http_config.validate_certs %}--insecure{% endif %} \
+         -w "CURL_STATUS_CODE:%{http_code};CURL_TIME_TOTAL:%{time_total}\n" \
+         -o /dev/null \
+         "{{ website_item.test_url }}"
+    {% elif proxy_item.proxy_username != '' and proxy_item.proxy_password != '' %}
     # 使用带认证的代理
     curl -x "{{ proxy_item.proxy_url | regex_replace('^http://', 'http://' + proxy_item.proxy_username + ':' + proxy_item.proxy_password + '@') }}" \
          -I -s \
@@ -53,13 +70,37 @@
     curl_time_total: "{{ curl_time_match[0] if curl_time_match else '0' }}"
     curl_return_code: "{{ website_test_result.results[item_index].rc if website_test_result.results is defined and website_test_result.results[item_index].rc is defined else 1 }}"
     curl_stderr: "{{ website_test_result.results[item_index].stderr if website_test_result.results is defined and website_test_result.results[item_index].stderr is defined else '' }}"
+    # 修正状态判断逻辑：curl返回码不为0时，总是标记为失败
+    is_curl_success: "{{ curl_return_code | int == 0 }}"
+    # 只有在curl成功时才检查HTTP状态码
+    is_http_success: "{{ is_curl_success and curl_status_code | int in status_codes.success }}"
     test_result:
       website: "{{ website_test_result.results[item_index].website_item.inventory_hostname if website_test_result.results is defined else test_websites[item_index].inventory_hostname }}"
       url: "{{ website_test_result.results[item_index].website_item.test_url if website_test_result.results is defined else test_websites[item_index].test_url }}"
-      status: "{{ 'SUCCESS' if website_test_result.results is defined and curl_return_code == 0 and curl_status_code | int in status_codes.success else 'FAILED' }}"
-      status_code: "{{ curl_status_code | int if curl_status_code != '000' else -1 }}"
-      response_time: "{{ (curl_time_total | float * 1000) | round(2) if curl_time_total != '0' else -1 }}"
-      error_msg: "{{ curl_stderr if curl_return_code != 0 else ('HTTP状态: ' + curl_status_code if curl_status_code | int not in status_codes.success else '') }}"
+      status: "{{ 'SUCCESS' if website_test_result.results is defined and is_http_success else 'FAILED' }}"
+      status_code: "{{ curl_status_code | int if is_curl_success and curl_status_code != '000' else -1 }}"
+      response_time: "{{ (curl_time_total | float * 1000) | round(2) if is_curl_success and curl_time_total != '0' else -1 }}"
+      error_msg: >-
+        {%- if not website_test_result.results is defined -%}
+          测试未执行
+        {%- elif curl_return_code | int != 0 -%}
+          {%- if curl_return_code == 5 -%}
+            代理连接失败：无法解析代理服务器地址 (curl返回码: {{ curl_return_code }})
+          {%- elif curl_return_code == 6 -%}
+            DNS解析失败：无法解析目标主机名 (curl返回码: {{ curl_return_code }})
+          {%- elif curl_return_code == 7 -%}
+            连接失败：无法连接到代理服务器 (curl返回码: {{ curl_return_code }})
+          {%- elif curl_return_code == 28 -%}
+            连接超时：请求在指定时间内未完成 (curl返回码: {{ curl_return_code }})
+          {%- else -%}
+            curl执行失败 (返回码: {{ curl_return_code }})
+          {%- endif -%}
+          {%- if curl_stderr -%}. 错误信息: {{ curl_stderr }}{%- endif -%}
+        {%- elif is_curl_success and not (curl_status_code | int in status_codes.success) -%}
+          HTTP状态异常: {{ curl_status_code }}
+        {%- else -%}
+          
+        {%- endif -%}
       timestamp: "{{ current_timestamp }}"
   loop: "{{ range(0, test_websites | length) | list }}"
   loop_control:
