@@ -358,3 +358,61 @@ BrokenPipeError: [Errno 32] Broken pipe
 }
 2025-08-13 16:48:46,160 p=4342 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
 2025-08-13 16:48:46,160 p=4342 u=runner n=ansible INFO| localhost                  : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-08-13 16:49:34,016 p=4373 u=runner n=ansible INFO| playbook: playbooks/monitor-proxies.yml
+2025-08-13 16:49:43,157 p=4377 u=runner n=ansible INFO| PLAY [代理状态和网站连通性监控] ****************************************************************************************
+2025-08-13 16:49:43,162 p=4377 u=runner n=ansible INFO| TASK [Gathering Facts] *************************************************************************************************
+2025-08-13 16:49:44,032 p=4377 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:49:44,036 p=4377 u=runner n=ansible INFO| TASK [创建日志目录] ****************************************************************************************************
+2025-08-13 16:49:44,299 p=4377 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:49:44,305 p=4377 u=runner n=ansible INFO| TASK [初始化监控结果变量] **********************************************************************************************
+2025-08-13 16:49:44,312 p=4377 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:49:44,317 p=4377 u=runner n=ansible INFO| TASK [执行代理监控任务] ************************************************************************************************
+2025-08-13 16:49:44,335 p=4377 u=runner n=ansible INFO| included: proxy-monitor for localhost
+2025-08-13 16:49:44,340 p=4377 u=runner n=ansible INFO| TASK [proxy-monitor : 获取已启用的代理服务器列表] **********************************************************************
+2025-08-13 16:49:44,361 p=4377 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:49:44,367 p=4377 u=runner n=ansible INFO| TASK [proxy-monitor : 获取测试网站列表] ********************************************************************************
+2025-08-13 16:49:44,386 p=4377 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:49:44,392 p=4377 u=runner n=ansible INFO| TASK [proxy-monitor : 初始化测试结果] **********************************************************************************
+2025-08-13 16:49:44,401 p=4377 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:49:44,406 p=4377 u=runner n=ansible INFO| TASK [proxy-monitor : 对每个代理执行网站连通性测试] ********************************************************************
+2025-08-13 16:49:44,426 p=4377 u=runner n=ansible INFO| included: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml for localhost => (item=proxy1)
+2025-08-13 16:49:44,431 p=4377 u=runner n=ansible INFO| TASK [proxy-monitor : 初始化代理测试结果] ******************************************************************************
+2025-08-13 16:49:44,441 p=4377 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:49:44,446 p=4377 u=runner n=ansible INFO| TASK [proxy-monitor : 测试代理对各网站的连通性] ************************************************************************
+2025-08-13 16:49:44,469 p=4377 u=runner n=ansible INFO| skipping: [localhost] => (item=google) 
+2025-08-13 16:49:44,476 p=4377 u=runner n=ansible INFO| skipping: [localhost] => (item=github) 
+2025-08-13 16:49:44,483 p=4377 u=runner n=ansible INFO| skipping: [localhost] => (item=baidu) 
+2025-08-13 16:49:44,490 p=4377 u=runner n=ansible INFO| skipping: [localhost] => (item=httpbin) 
+2025-08-13 16:49:44,491 p=4377 u=runner n=ansible INFO| skipping: [localhost]
+2025-08-13 16:49:44,496 p=4377 u=runner n=ansible INFO| TASK [proxy-monitor : 处理每个网站的测试结果] **************************************************************************
+2025-08-13 16:49:44,557 p=4377 u=runner n=ansible INFO| ok: [localhost] => (item=0)
+2025-08-13 16:49:44,597 p=4377 u=runner n=ansible INFO| ok: [localhost] => (item=1)
+2025-08-13 16:49:44,639 p=4377 u=runner n=ansible INFO| ok: [localhost] => (item=2)
+2025-08-13 16:49:44,684 p=4377 u=runner n=ansible INFO| ok: [localhost] => (item=3)
+2025-08-13 16:49:44,692 p=4377 u=runner n=ansible INFO| TASK [proxy-monitor : 处理检查模式的测试结果] **************************************************************************
+2025-08-13 16:49:44,712 p=4377 u=runner n=ansible INFO| skipping: [localhost] => (item=0) 
+2025-08-13 16:49:44,715 p=4377 u=runner n=ansible INFO| skipping: [localhost] => (item=1) 
+2025-08-13 16:49:44,717 p=4377 u=runner n=ansible INFO| skipping: [localhost] => (item=2) 
+2025-08-13 16:49:44,719 p=4377 u=runner n=ansible INFO| skipping: [localhost] => (item=3) 
+2025-08-13 16:49:44,720 p=4377 u=runner n=ansible INFO| skipping: [localhost]
+2025-08-13 16:49:44,726 p=4377 u=runner n=ansible INFO| TASK [proxy-monitor : 存储代理测试结果] ********************************************************************************
+2025-08-13 16:49:44,751 p=4377 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:49:44,757 p=4377 u=runner n=ansible INFO| TASK [proxy-monitor : 生成监控日志] ************************************************************************************
+2025-08-13 16:49:45,039 p=4377 u=runner n=ansible INFO| changed: [localhost]
+2025-08-13 16:49:45,049 p=4377 u=runner n=ansible INFO| TASK [发送告警邮件] ****************************************************************************************************
+2025-08-13 16:49:45,096 p=4377 u=runner n=ansible INFO| included: proxy-monitor for localhost
+2025-08-13 16:49:45,102 p=4377 u=runner n=ansible INFO| TASK [proxy-monitor : 生成HTML告警邮件] ********************************************************************************
+2025-08-13 16:49:45,291 p=4377 u=runner n=ansible INFO| changed: [localhost]
+2025-08-13 16:49:45,297 p=4377 u=runner n=ansible INFO| TASK [proxy-monitor : 发送告警邮件] ************************************************************************************
+2025-08-13 16:49:45,310 p=4377 u=runner n=ansible INFO| fatal: [localhost]: FAILED! => {"msg": "The 'file' lookup had an issue accessing the file '/home/runner/work/monitor-webhtml/monitor-webhtml/logs/alert_email.html'. file not found, use -vvvvv to see paths searched"}
+2025-08-13 16:49:45,311 p=4377 u=runner n=ansible INFO| ...ignoring
+2025-08-13 16:49:45,316 p=4377 u=runner n=ansible INFO| TASK [proxy-monitor : 记录邮件发送结果] ********************************************************************************
+2025-08-13 16:49:45,333 p=4377 u=runner n=ansible INFO| ok: [localhost] => {
+    "msg": "告警邮件发送失败: The 'file' lookup had an issue accessing the file '/home/runner/work/monitor-webhtml/monitor-webhtml/logs/alert_email.html'. file not found, use -vvvvv to see paths searched"
+}
+2025-08-13 16:49:45,343 p=4377 u=runner n=ansible INFO| TASK [监控状态总结] ****************************************************************************************************
+2025-08-13 16:49:45,353 p=4377 u=runner n=ansible INFO| ok: [localhost] => {
+    "msg": "代理监控周期已完成。详细日志请查看: /home/runner/work/monitor-webhtml/monitor-webhtml/logs/proxy_monitor.log"
+}
+2025-08-13 16:49:45,354 p=4377 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
+2025-08-13 16:49:45,354 p=4377 u=runner n=ansible INFO| localhost                  : ok=17   changed=2    unreachable=0    failed=0    skipped=2    rescued=0    ignored=1   
