@@ -42,3 +42,15 @@ Traceback (most recent call last):
            ^^^^^^^^^^^^^^^^^^
 BrokenPipeError: [Errno 32] Broken pipe
 
+2025-08-13 15:12:52,932 p=4382 u=runner n=ansible INFO| playbook: playbooks/monitor-proxies.yml
+2025-08-13 15:12:52,932 p=4382 u=runner n=ansible INFO|   play #1 (localhost): 代理状态和网站连通性监控	TAGS: []
+2025-08-13 15:12:52,933 p=4382 u=runner n=ansible INFO|     tasks:
+      创建日志目录	TAGS: []
+      初始化监控结果变量	TAGS: []
+      执行代理监控任务	TAGS: []
+      计算总体统计信息	TAGS: []
+      显示监控汇总	TAGS: []
+      发送告警邮件	TAGS: []
+      监控状态总结	TAGS: []
+
+2025-08-13 15:13:12,703 p=4388 u=runner n=ansible INFO| playbook: playbooks/monitor-proxies.yml
