@@ -29,10 +29,3 @@
   vars:
     log_timestamp: "{{ current_timestamp }}"
     test_results: "{{ proxy_test_results }}"
-
-- name: 更新全局监控结果
-  set_fact:
-    monitoring_results: "{{ monitoring_results + [proxy_test_results] }}"
-    total_tests: "{{ total_tests | int + (enabled_proxies | length * test_websites | length) }}"
-    successful_tests: "{{ successful_tests | int + proxy_test_results.values() | map(attribute='successful_tests') | sum }}"
-    failed_proxies: "{{ failed_proxies + proxy_test_results.keys() | select('match', '.*') | map('extract', proxy_test_results) | selectattr('status', 'equalto', 'FAILED') | map(attribute='proxy_name') | list }}"
