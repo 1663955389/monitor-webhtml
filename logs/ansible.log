@@ -314,3 +314,4 @@ BrokenPipeError: [Errno 32] Broken pipe
 }
 2025-08-13 16:11:31,959 p=4622 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
 2025-08-13 16:11:31,959 p=4622 u=runner n=ansible INFO| localhost                  : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-08-13 16:12:50,356 p=4684 u=runner n=ansible INFO| playbook: playbooks/monitor-proxies.yml
