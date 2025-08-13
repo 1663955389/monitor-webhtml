@@ -29,3 +29,17 @@ test_patterns:
   connectivity: "basic_http_check"     # 连通性测试
   performance: "response_time_check"   # 性能测试
   content: "content_validation"        # 内容验证
+
+# 代理配置
+proxy_config:
+  # 代理连通性测试超时时间
+  connectivity_timeout: 5
+  # 本地地址列表 (no_proxy)
+  no_proxy_hosts:
+    - "localhost"
+    - "127.0.0.1" 
+    - "::1"
+    - "local"
+    - ".local"
+  # 代理测试URL (用于验证代理服务器本身的连通性)
+  proxy_test_url: "http://httpbin.org/ip"

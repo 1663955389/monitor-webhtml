@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代理监控告警</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #d32f2f;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+        }
+        .summary {
+            background-color: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #2196f3;
+        }
+        .proxy-item {
+            background-color: #fff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ff9800;
+        }
+        .proxy-healthy {
+            border-left-color: #4caf50;
+        }
+        .proxy-unhealthy {
+            border-left-color: #f44336;
+        }
+        .test-details {
+            margin-top: 10px;
+        }
+        .status-success {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .status-failed {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚨 代理监控告警</h1>
+        <p>告警时间: 2025-08-13T16:01:07Z</p>
+    </div>
+    
+    <div class="content">
+        <div class="summary">
+            <h2>📊 监控汇总</h2>
+            <p><strong>监控代理总数:</strong> 1</p>
+            <p><strong>异常代理:</strong> 1</p>
+            <p><strong>健康代理:</strong> 0</p>
+            <p><strong>告警阈值:</strong> 成功率低于 70%</p>
+        </div>
+
+        <h2>🔍 代理状态详情</h2>
+                <div class="proxy-item proxy-unhealthy">
+            <h3>
+                                    ❌ proxy2
+                            </h3>
+            <p><strong>代理地址:</strong> http://192.168.10.3:10810</p>
+            <p><strong>状态:</strong> 
+                <span class="status-failed">
+                    异常
+                </span>
+            </p>
+            <p><strong>成功率:</strong> 0.0%</p>
+            <p><strong>测试结果:</strong> 0/4 成功</p>
+            
+            <div class="test-details">
+                <h4>📋 测试详情:</h4>
+                <table>
+                    <tr>
+                        <th>网站</th>
+                        <th>地址</th>
+                        <th>状态</th>
+                        <th>响应时间(ms)</th>
+                        <th>HTTP状态码</th>
+                    </tr>
+                                        <tr>
+                        <td>google</td>
+                        <td>https://www.google.com</td>
+                        <td class="status-failed">
+                            失败
+                        </td>
+                        <td>10000</td>
+                        <td>-1</td>
+                    </tr>
+                                        <tr>
+                        <td>github</td>
+                        <td>https://github.com</td>
+                        <td class="status-failed">
+                            失败
+                        </td>
+                        <td>15000</td>
+                        <td>-1</td>
+                    </tr>
+                                        <tr>
+                        <td>baidu</td>
+                        <td>https://www.baidu.com</td>
+                        <td class="status-failed">
+                            失败
+                        </td>
+                        <td>10000</td>
+                        <td>-1</td>
+                    </tr>
+                                        <tr>
+                        <td>httpbin</td>
+                        <td>https://httpbin.org/status/200</td>
+                        <td class="status-failed">
+                            失败
+                        </td>
+                        <td>5000</td>
+                        <td>-1</td>
+                    </tr>
+                                    </table>
+            </div>
+        </div>
+        
+        <div class="summary">
+            <h2>🔧 建议操作</h2>
+            <ul>
+                                                    <li><strong>proxy2:</strong> 检查代理服务器连通性和配置</li>
+                                                    <li>查看代理服务器日志获取详细错误信息</li>
+                <li>验证监控系统与代理服务器之间的网络连通性</li>
+                <li>检查代理认证凭据是否有效</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>此告警由 Ansible 代理监控系统自动生成</p>
+        <p>详细信息请查看监控日志: /home/runner/work/monitor-webhtml/monitor-webhtml/logs/proxy_monitor.log</p>
+    </div>
+</body>
+</html>

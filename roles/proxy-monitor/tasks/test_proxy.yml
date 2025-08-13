@@ -8,19 +8,81 @@
     successful_count: 0
     failed_count: 0
 
+- name: 显示当前测试的代理配置
+  debug:
+    msg:
+      - "开始测试代理: {{ proxy_name }}"
+      - "代理URL: {{ proxy_item.proxy_url }}"
+      - "代理用户名: {{ proxy_item.proxy_username if proxy_item.proxy_username != '' else '(未设置)' }}"
+      - "代理状态: {{ '启用' if proxy_item.enabled else '禁用' }}"
+
+- name: 计算带认证的代理URL
+  set_fact:
+    proxy_url_with_auth: >-
+      {% if proxy_item.proxy_username is defined and proxy_item.proxy_username != '' %}
+      {{ proxy_item.proxy_url | regex_replace('^(https?://)(.*)$', '\1' + proxy_item.proxy_username + ':' + proxy_item.proxy_password + '@\2') }}
+      {% else %}
+      {{ proxy_item.proxy_url }}
+      {% endif %}
+  when: proxy_item.proxy_url is defined and proxy_item.proxy_url != ""
+
+- name: 设置代理环境变量
+  set_fact:
+    proxy_env_vars:
+      http_proxy: "{{ proxy_url_with_auth }}"
+      https_proxy: "{{ proxy_url_with_auth }}"
+      HTTP_PROXY: "{{ proxy_url_with_auth }}"
+      HTTPS_PROXY: "{{ proxy_url_with_auth }}"
+      no_proxy: "{{ proxy_config.no_proxy_hosts | join(',') }}"
+      NO_PROXY: "{{ proxy_config.no_proxy_hosts | join(',') }}"
+  when: proxy_item.proxy_url is defined and proxy_item.proxy_url != ""
+
+- name: 显示代理环境变量配置
+  debug:
+    msg:
+      - "设置的代理环境变量:"
+      - "http_proxy: {{ proxy_env_vars.http_proxy | default('未设置') }}"
+      - "https_proxy: {{ proxy_env_vars.https_proxy | default('未设置') }}"
+      - "no_proxy: {{ proxy_env_vars.no_proxy | default('未设置') }}"
+  when: proxy_env_vars is defined
+
+- name: 测试代理服务器连通性
+  uri:
+    url: "{{ proxy_config.proxy_test_url }}"
+    method: GET
+    timeout: "{{ proxy_config.connectivity_timeout }}"
+    use_proxy: true
+    validate_certs: false
+    follow_redirects: true
+    http_agent: "{{ http_config.user_agent }}"
+  environment: "{{ proxy_env_vars | default({}) }}"
+  register: proxy_connectivity_test
+  failed_when: false
+  when: proxy_item.proxy_url is defined and proxy_item.proxy_url != ""
+
+- name: 显示代理连通性测试结果
+  debug:
+    msg:
+      - "代理连通性测试结果:"
+      - "状态码: {{ proxy_connectivity_test.status | default('N/A') }}"
+      - "响应时间: {{ (proxy_connectivity_test.elapsed * 1000) | round(2) if proxy_connectivity_test.elapsed is defined else 'N/A' }} ms"
+      - "错误信息: {{ proxy_connectivity_test.msg | default('无') }}"
+  when: proxy_connectivity_test is defined
+
 - name: 测试代理对各网站的连通性
   uri:
     url: "{{ website_item.test_url }}"
     method: GET
     timeout: "{{ website_item.request_timeout | default(default_timeout) }}"
-    user_agent: "{{ http_config.user_agent }}"
+    http_agent: "{{ http_config.user_agent }}"
     follow_redirects: "{{ http_config.follow_redirects }}"
     validate_certs: "{{ http_config.validate_certs }}"
     use_proxy: true
-    proxy_url: "{{ proxy_item.proxy_url }}"
-    proxy_username: "{{ proxy_item.proxy_username if proxy_item.proxy_username != '' else omit }}"
-    proxy_password: "{{ proxy_item.proxy_password if proxy_item.proxy_password != '' else omit }}"
     status_code: "{{ status_codes.success + status_codes.warning }}"
+    headers:
+      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      Cache-Control: "no-cache"
+  environment: "{{ proxy_env_vars | default({}) }}"
   register: website_test_result
   failed_when: false
   loop: "{{ test_websites }}"
@@ -41,10 +103,26 @@
       status_code: "{{ website_test_result.results[item_index].status | default(-1) if website_test_result.results is defined else -1 }}"
       response_time: "{{ (website_test_result.results[item_index].elapsed * 1000) | round(2) if website_test_result.results is defined and website_test_result.results[item_index].elapsed is defined else -1 }}"
       error_msg: "{{ website_test_result.results[item_index].msg | default('') if website_test_result.results is defined else '检查模式 - 测试未执行' }}"
+      proxy_used: "{{ proxy_item.proxy_url }}"
       timestamp: "{{ current_timestamp }}"
   loop: "{{ range(0, test_websites | length) | list }}"
   loop_control:
     loop_var: item_index
+
+- name: 显示详细的测试结果
+  debug:
+    msg:
+      - "网站 {{ item.website }} 测试结果:"
+      - "URL: {{ item.url }}"
+      - "状态: {{ item.status }}"
+      - "状态码: {{ item.status_code }}"
+      - "响应时间: {{ item.response_time }} ms"
+      - "使用代理: {{ item.proxy_used }}"
+      - "错误信息: {{ item.error_msg if item.error_msg != '' else '无' }}"
+  loop: "{{ proxy_tests }}"
+  loop_control:
+    label: "{{ item.website }}"
+  when: proxy_tests | length > 0
 
 - name: 处理检查模式的测试结果
   set_fact:
@@ -58,6 +136,7 @@
       status_code: -1
       response_time: -1
       error_msg: "检查模式 - 测试未执行"
+      proxy_used: "{{ proxy_item.proxy_url }}"
       timestamp: "{{ current_timestamp }}"
   loop: "{{ range(0, test_websites | length) | list }}"
   loop_control:
@@ -72,6 +151,16 @@
   set_fact:
     proxy_status: "{{ 'HEALTHY' if proxy_success_rate | float >= monitoring.thresholds.min_success_rate | float else 'UNHEALTHY' }}"
 
+- name: 显示代理测试汇总
+  debug:
+    msg:
+      - "代理 {{ proxy_name }} 测试完成:"
+      - "总测试数: {{ (successful_count | int + failed_count | int) }}"
+      - "成功数: {{ successful_count }}"
+      - "失败数: {{ failed_count }}"
+      - "成功率: {{ proxy_success_rate }}%"
+      - "整体状态: {{ proxy_status }}"
+
 - name: 存储代理测试结果
   set_fact:
     proxy_test_results: "{{ proxy_test_results | combine({proxy_name: {
@@ -83,5 +172,6 @@
       'failed_tests': failed_count,
       'total_tests': (successful_count | int + failed_count | int),
       'test_details': proxy_tests,
+      'proxy_connectivity': proxy_connectivity_test.status | default('UNKNOWN') if proxy_connectivity_test is defined else 'NOT_TESTED',
       'timestamp': current_timestamp
     }}) }}"
