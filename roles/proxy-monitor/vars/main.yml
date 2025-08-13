@@ -7,7 +7,7 @@ connection_timeout: 5
 
 # HTTP请求配置
 http_config:
-  user_agent: "Ansible-Proxy-Monitor/1.0"
+  http_agent: "Ansible-Proxy-Monitor/1.0"
   follow_redirects: true    # 跟随重定向
   validate_certs: false     # 不验证SSL证书
   max_redirects: 3          # 最大重定向次数

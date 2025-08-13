@@ -173,3 +173,188 @@ BrokenPipeError: [Errno 32] Broken pipe
 }
 2025-08-13 16:44:17,426 p=3694 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
 2025-08-13 16:44:17,426 p=3694 u=runner n=ansible INFO| localhost                  : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-08-13 16:45:18,930 p=3731 u=runner n=ansible INFO| Using /home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg as config file
+2025-08-13 16:45:19,081 p=3731 u=runner n=ansible INFO| PLAY [测试无代理直接连接] **********************************************************************************************
+2025-08-13 16:45:19,086 p=3731 u=runner n=ansible INFO| TASK [Gathering Facts] *************************************************************************************************
+2025-08-13 16:45:19,959 p=3731 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:45:19,963 p=3731 u=runner n=ansible INFO| TASK [初始化测试结果] **************************************************************************************************
+2025-08-13 16:45:19,973 p=3731 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"current_timestamp": "2025-08-13T16:45:19Z", "failed_count": 0, "proxy_name": "test_direct", "proxy_tests": [], "successful_count": 0}, "changed": false}
+2025-08-13 16:45:19,978 p=3731 u=runner n=ansible INFO| TASK [测试网站连通性（无代理）] ****************************************************************************************
+2025-08-13 16:45:20,543 p=3731 u=runner n=ansible INFO| ok: [localhost] => (item=httpbin) => {"ansible_loop_var": "website_item", "changed": false, "failed_when_result": false, "msg": "Unsupported parameters for (ansible.legacy.uri) module: user_agent. Supported parameters include: attributes, body, body_format, ca_path, ciphers, client_cert, client_key, creates, decompress, dest, follow_redirects, force, force_basic_auth, group, headers, http_agent, method, mode, owner, remote_src, removes, return_content, selevel, serole, setype, seuser, src, status_code, timeout, unix_socket, unredirected_headers, unsafe_writes, url, url_password, url_username, use_gssapi, use_netrc, use_proxy, validate_certs (attr, password, user).", "website_item": {"inventory_hostname": "httpbin", "request_timeout": 10, "test_url": "https://httpbin.org/status/200"}}
+2025-08-13 16:45:20,778 p=3731 u=runner n=ansible INFO| ok: [localhost] => (item=github) => {"ansible_loop_var": "website_item", "changed": false, "failed_when_result": false, "msg": "Unsupported parameters for (ansible.legacy.uri) module: user_agent. Supported parameters include: attributes, body, body_format, ca_path, ciphers, client_cert, client_key, creates, decompress, dest, follow_redirects, force, force_basic_auth, group, headers, http_agent, method, mode, owner, remote_src, removes, return_content, selevel, serole, setype, seuser, src, status_code, timeout, unix_socket, unredirected_headers, unsafe_writes, url, url_password, url_username, use_gssapi, use_netrc, use_proxy, validate_certs (attr, password, user).", "website_item": {"inventory_hostname": "github", "request_timeout": 15, "test_url": "https://github.com"}}
+2025-08-13 16:45:20,784 p=3731 u=runner n=ansible INFO| TASK [处理测试结果] ****************************************************************************************************
+2025-08-13 16:45:20,839 p=3731 u=runner n=ansible INFO| ok: [localhost] => (item=0) => {"ansible_facts": {"failed_count": "1", "proxy_tests": [{"error_msg": "Unsupported parameters for (ansible.legacy.uri) module: user_agent. Supported parameters include: attributes, body, body_format, ca_path, ciphers, client_cert, client_key, creates, decompress, dest, follow_redirects, force, force_basic_auth, group, headers, http_agent, method, mode, owner, remote_src, removes, return_content, selevel, serole, setype, seuser, src, status_code, timeout, unix_socket, unredirected_headers, unsafe_writes, url, url_password, url_username, use_gssapi, use_netrc, use_proxy, validate_certs (attr, password, user).", "response_time": "-1", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T16:45:19Z", "url": "https://httpbin.org/status/200", "website": "httpbin"}], "successful_count": "0"}, "ansible_loop_var": "item_index", "changed": false, "item_index": 0}
+2025-08-13 16:45:20,875 p=3731 u=runner n=ansible INFO| ok: [localhost] => (item=1) => {"ansible_facts": {"failed_count": "2", "proxy_tests": [{"error_msg": "Unsupported parameters for (ansible.legacy.uri) module: user_agent. Supported parameters include: attributes, body, body_format, ca_path, ciphers, client_cert, client_key, creates, decompress, dest, follow_redirects, force, force_basic_auth, group, headers, http_agent, method, mode, owner, remote_src, removes, return_content, selevel, serole, setype, seuser, src, status_code, timeout, unix_socket, unredirected_headers, unsafe_writes, url, url_password, url_username, use_gssapi, use_netrc, use_proxy, validate_certs (attr, password, user).", "response_time": "-1", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T16:45:19Z", "url": "https://httpbin.org/status/200", "website": "httpbin"}, {"error_msg": "Unsupported parameters for (ansible.legacy.uri) module: user_agent. Supported parameters include: attributes, body, body_format, ca_path, ciphers, client_cert, client_key, creates, decompress, dest, follow_redirects, force, force_basic_auth, group, headers, http_agent, method, mode, owner, remote_src, removes, return_content, selevel, serole, setype, seuser, src, status_code, timeout, unix_socket, unredirected_headers, unsafe_writes, url, url_password, url_username, use_gssapi, use_netrc, use_proxy, validate_certs (attr, password, user).", "response_time": "-1", "status": "FAILED", "status_code": "-1", "timestamp": "2025-08-13T16:45:19Z", "url": "https://github.com", "website": "github"}], "successful_count": "0"}, "ansible_loop_var": "item_index", "changed": false, "item_index": 1}
+2025-08-13 16:45:20,881 p=3731 u=runner n=ansible INFO| TASK [计算结果] ********************************************************************************************************
+2025-08-13 16:45:20,900 p=3731 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"proxy_status": "UNHEALTHY", "proxy_success_rate": "0.0"}, "changed": false}
+2025-08-13 16:45:20,904 p=3731 u=runner n=ansible INFO| TASK [显示测试结果] ****************************************************************************************************
+2025-08-13 16:45:20,925 p=3731 u=runner n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "代理地址: 直接连接（无代理）",
+        "状态: UNHEALTHY",
+        "成功率: 0.0%",
+        "测试结果: 0/2 成功",
+        "检测时间: 2025-08-13T16:45:19Z",
+        "",
+        "网站测试结果:",
+        "  • httpbin (https://httpbin.org/status/200)  • github (https://github.com)",
+        "    状态: FAILED    状态: FAILED",
+        "    响应时间: -1ms    响应时间: -1ms",
+        "    HTTP状态码: -1    HTTP状态码: -1"
+    ]
+}
+2025-08-13 16:45:20,926 p=3731 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
+2025-08-13 16:45:20,926 p=3731 u=runner n=ansible INFO| localhost                  : ok=6    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-08-13 16:46:25,457 p=3901 u=runner n=ansible INFO| PLAY [测试无代理直接连接] **********************************************************************************************
+2025-08-13 16:46:25,463 p=3901 u=runner n=ansible INFO| TASK [Gathering Facts] *************************************************************************************************
+2025-08-13 16:46:26,350 p=3901 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:46:26,354 p=3901 u=runner n=ansible INFO| TASK [初始化测试结果] **************************************************************************************************
+2025-08-13 16:46:26,364 p=3901 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:46:26,368 p=3901 u=runner n=ansible INFO| TASK [测试网站连通性（无代理）] ****************************************************************************************
+2025-08-13 16:46:26,746 p=3901 u=runner n=ansible INFO| ok: [localhost] => (item=httpbin)
+2025-08-13 16:46:27,005 p=3901 u=runner n=ansible INFO| ok: [localhost] => (item=httpbin404)
+2025-08-13 16:46:27,007 p=3901 u=runner n=ansible INFO| [DEPRECATION WARNING]: Using 'yes' or 'no' for 'follow_redirects' parameter is deprecated. This feature will be removed
+ in version 2.22. Deprecation warnings can be disabled by setting deprecation_warnings=False in ansible.cfg.
+2025-08-13 16:46:27,012 p=3901 u=runner n=ansible INFO| TASK [处理测试结果] ****************************************************************************************************
+2025-08-13 16:46:27,067 p=3901 u=runner n=ansible INFO| ok: [localhost] => (item=0)
+2025-08-13 16:46:27,104 p=3901 u=runner n=ansible INFO| ok: [localhost] => (item=1)
+2025-08-13 16:46:27,110 p=3901 u=runner n=ansible INFO| TASK [计算结果] ********************************************************************************************************
+2025-08-13 16:46:27,128 p=3901 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:46:27,133 p=3901 u=runner n=ansible INFO| TASK [显示详细结果] ****************************************************************************************************
+2025-08-13 16:46:27,148 p=3901 u=runner n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "代理地址: 直接连接（无代理）",
+        "状态: UNHEALTHY",
+        "成功率: 0.0%",
+        "测试结果: 0/2 成功",
+        "检测时间: 2025-08-13T16:46:25Z",
+        "",
+        "网站测试结果:"
+    ]
+}
+2025-08-13 16:46:27,152 p=3901 u=runner n=ansible INFO| TASK [显示每个网站的详细结果] ******************************************************************************************
+2025-08-13 16:46:27,167 p=3901 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'httpbin', 'url': 'https://httpbin.org/status/200', 'status': 'FAILED', 'status_code': '-1', 'response_time': '0', 'error_msg': 'Status code was -1 and not [200]: Request failed: <urlopen error [Errno -5] No address associated with hostname>', 'timestamp': '2025-08-13T16:46:25Z'}) => {
+    "msg": [
+        "  • httpbin (https://httpbin.org/status/200)",
+        "    状态: FAILED",
+        "    响应时间: 0ms",
+        "    HTTP状态码: -1",
+        "    错误信息: Status code was -1 and not [200]: Request failed: <urlopen error [Errno -5] No address associated with hostname>"
+    ]
+}
+2025-08-13 16:46:27,172 p=3901 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'httpbin404', 'url': 'https://httpbin.org/status/404', 'status': 'FAILED', 'status_code': '-1', 'response_time': '0', 'error_msg': 'Status code was -1 and not [200]: Request failed: <urlopen error [Errno -5] No address associated with hostname>', 'timestamp': '2025-08-13T16:46:25Z'}) => {
+    "msg": [
+        "  • httpbin404 (https://httpbin.org/status/404)",
+        "    状态: FAILED",
+        "    响应时间: 0ms",
+        "    HTTP状态码: -1",
+        "    错误信息: Status code was -1 and not [200]: Request failed: <urlopen error [Errno -5] No address associated with hostname>"
+    ]
+}
+2025-08-13 16:46:27,173 p=3901 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
+2025-08-13 16:46:27,173 p=3901 u=runner n=ansible INFO| localhost                  : ok=7    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-08-13 16:46:40,266 p=4061 u=runner n=ansible INFO| playbook: playbooks/monitor-proxies.yml
+2025-08-13 16:47:15,405 p=4074 u=runner n=ansible INFO| PLAY [测试预期成功场景] ************************************************************************************************
+2025-08-13 16:47:15,410 p=4074 u=runner n=ansible INFO| TASK [Gathering Facts] *************************************************************************************************
+2025-08-13 16:47:16,296 p=4074 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:47:16,300 p=4074 u=runner n=ansible INFO| TASK [初始化代理测试结果] **********************************************************************************************
+2025-08-13 16:47:16,308 p=4074 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:47:16,312 p=4074 u=runner n=ansible INFO| TASK [处理模拟的测试结果] **********************************************************************************************
+2025-08-13 16:47:16,341 p=4074 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'google', 'url': 'https://www.google.com', 'status_code': 200, 'response_time': 401.6, 'error_msg': ''})
+2025-08-13 16:47:16,357 p=4074 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'github', 'url': 'https://github.com', 'status_code': 200, 'response_time': 345.58, 'error_msg': ''})
+2025-08-13 16:47:16,373 p=4074 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'baidu', 'url': 'https://www.baidu.com', 'status_code': 200, 'response_time': 123.09, 'error_msg': ''})
+2025-08-13 16:47:16,390 p=4074 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'httpbin', 'url': 'https://httpbin.org/status/200', 'status_code': 200, 'response_time': 1165.06, 'error_msg': ''})
+2025-08-13 16:47:16,395 p=4074 u=runner n=ansible INFO| TASK [存储代理测试结果] ************************************************************************************************
+2025-08-13 16:47:16,419 p=4074 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:47:16,425 p=4074 u=runner n=ansible INFO| TASK [生成监控日志] ****************************************************************************************************
+2025-08-13 16:47:16,612 p=4074 u=runner n=ansible INFO| An exception occurred during task execution. To see the full traceback, use -vvv. The error was: If you are using a module and expect the file to exist on the remote, see the remote_src option
+2025-08-13 16:47:16,613 p=4074 u=runner n=ansible INFO| fatal: [localhost]: FAILED! => {"changed": false, "msg": "Could not find or access '/tmp/../roles/proxy-monitor/templates/log-format.j2' on the Ansible Controller.\nIf you are using a module and expect the file to exist on the remote, see the remote_src option"}
+2025-08-13 16:47:16,613 p=4074 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
+2025-08-13 16:47:16,613 p=4074 u=runner n=ansible INFO| localhost                  : ok=4    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2025-08-13 16:47:38,227 p=4202 u=runner n=ansible INFO| PLAY [测试预期成功场景] ************************************************************************************************
+2025-08-13 16:47:38,232 p=4202 u=runner n=ansible INFO| TASK [Gathering Facts] *************************************************************************************************
+2025-08-13 16:47:39,128 p=4202 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:47:39,132 p=4202 u=runner n=ansible INFO| TASK [初始化代理测试结果] **********************************************************************************************
+2025-08-13 16:47:39,140 p=4202 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:47:39,144 p=4202 u=runner n=ansible INFO| TASK [处理模拟的测试结果] **********************************************************************************************
+2025-08-13 16:47:39,173 p=4202 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'google', 'url': 'https://www.google.com', 'status_code': 200, 'response_time': 401.6, 'error_msg': ''})
+2025-08-13 16:47:39,189 p=4202 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'github', 'url': 'https://github.com', 'status_code': 200, 'response_time': 345.58, 'error_msg': ''})
+2025-08-13 16:47:39,205 p=4202 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'baidu', 'url': 'https://www.baidu.com', 'status_code': 200, 'response_time': 123.09, 'error_msg': ''})
+2025-08-13 16:47:39,221 p=4202 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'httpbin', 'url': 'https://httpbin.org/status/200', 'status_code': 200, 'response_time': 1165.06, 'error_msg': ''})
+2025-08-13 16:47:39,226 p=4202 u=runner n=ansible INFO| TASK [存储代理测试结果] ************************************************************************************************
+2025-08-13 16:47:39,251 p=4202 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 16:47:39,255 p=4202 u=runner n=ansible INFO| TASK [生成监控日志] ****************************************************************************************************
+2025-08-13 16:47:39,394 p=4202 u=runner n=ansible INFO| An exception occurred during task execution. To see the full traceback, use -vvv. The error was: ansible.errors.AnsibleUndefinedVariable: 'dict object' has no attribute 'log_format'
+2025-08-13 16:47:39,394 p=4202 u=runner n=ansible INFO| fatal: [localhost]: FAILED! => {"changed": false, "msg": "AnsibleUndefinedVariable: 'dict object' has no attribute 'log_format'"}
+2025-08-13 16:47:39,395 p=4202 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
+2025-08-13 16:47:39,395 p=4202 u=runner n=ansible INFO| localhost                  : ok=4    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2025-08-13 16:48:15,425 p=4332 u=runner n=ansible INFO| PLAY [显示预期成功场景输出] ********************************************************************************************
+2025-08-13 16:48:15,430 p=4332 u=runner n=ansible INFO| TASK [显示预期的成功输出格式] ******************************************************************************************
+2025-08-13 16:48:15,467 p=4332 u=runner n=ansible INFO| fatal: [localhost]: FAILED! => {"msg": "template error while templating string: Unexpected end of template. Jinja was looking for the following tags: 'endfor' or 'else'. The innermost block that needs to be closed is 'for'.. String: {% for test in proxy_test_results.proxy1.test_details %}  • {{ test.website }} ({{ test.url }}). Unexpected end of template. Jinja was looking for the following tags: 'endfor' or 'else'. The innermost block that needs to be closed is 'for'."}
+2025-08-13 16:48:15,467 p=4332 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
+2025-08-13 16:48:15,467 p=4332 u=runner n=ansible INFO| localhost                  : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2025-08-13 16:48:46,092 p=4342 u=runner n=ansible INFO| PLAY [显示预期成功场景输出] ********************************************************************************************
+2025-08-13 16:48:46,097 p=4342 u=runner n=ansible INFO| TASK [显示预期的成功输出格式] ******************************************************************************************
+2025-08-13 16:48:46,129 p=4342 u=runner n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "===============================================================================",
+        "代理监控报告",
+        "===============================================================================",
+        "时间: 2025-08-13T16:35:48Z",
+        "系统: Ansible 代理监控系统",
+        "",
+        "汇总信息:",
+        "--------",
+        "监控代理总数: 1",
+        "健康代理数量: 1",
+        "异常代理数量: 0",
+        "总体成功率: 100.0%",
+        "",
+        "详细结果:",
+        "---------",
+        "",
+        "[HEALTHY] proxy1",
+        "代理地址: http://192.168.10.3:10810",
+        "状态: HEALTHY",
+        "成功率: 100.0%",
+        "测试结果: 4/4 成功",
+        "检测时间: 2025-08-13T16:35:48Z",
+        "",
+        "网站测试结果:"
+    ]
+}
+2025-08-13 16:48:46,130 p=4342 u=runner n=ansible INFO| TASK [显示网站测试详情] ************************************************************************************************
+2025-08-13 16:48:46,145 p=4342 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'google', 'url': 'https://www.google.com', 'status': 'SUCCESS', 'status_code': 200, 'response_time': 401.6, 'error_msg': '', 'timestamp': '2025-08-13T16:35:48Z'}) => {
+    "msg": [
+        "  • google (https://www.google.com)",
+        "    状态: SUCCESS",
+        "    响应时间: 401.6ms",
+        "    HTTP状态码: 200"
+    ]
+}
+2025-08-13 16:48:46,149 p=4342 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'github', 'url': 'https://github.com', 'status': 'SUCCESS', 'status_code': 200, 'response_time': 345.58, 'error_msg': '', 'timestamp': '2025-08-13T16:35:48Z'}) => {
+    "msg": [
+        "  • github (https://github.com)",
+        "    状态: SUCCESS",
+        "    响应时间: 345.58ms",
+        "    HTTP状态码: 200"
+    ]
+}
+2025-08-13 16:48:46,154 p=4342 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'baidu', 'url': 'https://www.baidu.com', 'status': 'SUCCESS', 'status_code': 200, 'response_time': 123.09, 'error_msg': '', 'timestamp': '2025-08-13T16:35:48Z'}) => {
+    "msg": [
+        "  • baidu (https://www.baidu.com)",
+        "    状态: SUCCESS",
+        "    响应时间: 123.09ms",
+        "    HTTP状态码: 200"
+    ]
+}
+2025-08-13 16:48:46,158 p=4342 u=runner n=ansible INFO| ok: [localhost] => (item={'website': 'httpbin', 'url': 'https://httpbin.org/status/200', 'status': 'SUCCESS', 'status_code': 200, 'response_time': 1165.06, 'error_msg': '', 'timestamp': '2025-08-13T16:35:48Z'}) => {
+    "msg": [
+        "  • httpbin (https://httpbin.org/status/200)",
+        "    状态: SUCCESS",
+        "    响应时间: 1165.06ms",
+        "    HTTP状态码: 200"
+    ]
+}
+2025-08-13 16:48:46,160 p=4342 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
+2025-08-13 16:48:46,160 p=4342 u=runner n=ansible INFO| localhost                  : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

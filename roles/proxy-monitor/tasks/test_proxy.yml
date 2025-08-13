@@ -13,7 +13,7 @@
     url: "{{ website_item.test_url }}"
     method: GET
     timeout: "{{ website_item.request_timeout | default(default_timeout) }}"
-    user_agent: "{{ http_config.user_agent }}"
+    http_agent: "{{ http_config.http_agent }}"
     follow_redirects: "{{ http_config.follow_redirects }}"
     validate_certs: "{{ http_config.validate_certs }}"
     use_proxy: true
