@@ -1,0 +1,52 @@
+---
+# 代理监控系统主playbook
+- name: 代理状态和网站连通性监控
+  hosts: localhost
+  gather_facts: true
+  vars_files:
+    - ../group_vars/all.yml
+  vars:
+    start_time: "{{ ansible_date_time.iso8601 }}"
+    
+  tasks:
+    - name: 创建日志目录
+      file:
+        path: "{{ monitoring.logging.log_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: 执行代理监控任务
+      include_role:
+        name: proxy-monitor
+
+    - name: 发送告警邮件
+      include_role:
+        name: proxy-monitor
+        tasks_from: send_alerts
+      when: 
+        - email_config.enabled | default(false)
+
+    - name: 监控状态总结
+      debug:
+        msg: "代理监控周期已完成。详细日志请查看: {{ monitoring.logging.log_dir }}/{{ monitoring.logging.log_file }}"
+
+    - name: 调试curl详细输出
+      debug:
+        msg: |
+          代理监控详细调试信息:
+          {% for proxy_name, proxy_result in proxy_test_results.items() %}
+          代理: {{ proxy_name }}
+          状态: {{ proxy_result.status }}
+          成功率: {{ proxy_result.success_rate }}%
+          测试详情:
+          {% for test in proxy_result.test_details %}
+            - 网站: {{ test.website }} ({{ test.url }})
+              状态: {{ test.status }}
+              HTTP状态码: {{ test.status_code }}
+              响应时间: {{ test.response_time }}ms
+              {% if test.debug_info is defined %}
+              调试信息: {{ test.debug_info }}
+              {% endif %}
+          {% endfor %}
+          {% endfor %}
+      when: debug_mode | default(false)
