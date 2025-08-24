@@ -1,0 +1,419 @@
+2025-08-13 14:23:38,578 p=3427 u=runner n=ansible INFO| playbook: playbooks/monitor-proxies.yml
+2025-08-13 14:23:47,943 p=3432 u=runner n=ansible WARNING| [WARNING]: Found variable using reserved name: timeout
+
+2025-08-13 14:23:47,946 p=3432 u=runner n=ansible INFO| {
+    "_meta": {
+        "hostvars": {
+            "baidu": {
+                "email_config": {
+                    "enabled": true,
+                    "from_email": "monitor@example.com",
+                    "smtp_password": "your_email_password",
+                    "smtp_port": 587,
+                    "smtp_server": "smtp.gmail.com",
+                    "smtp_use_tls": true,
+                    "smtp_username": "monitor@example.com",
+                    "subject_prefix": "[Proxy Monitor Alert]",
+                    "to_emails": [
+                        "admin@example.com",
+                        "ops@example.com"
+                    ]
+                },
+                "expected_status": 200,
+                "monitoring": {
+                    "logging": {
+                        "log_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs",
+                        "log_file": "proxy_monitor.log",
+                        "log_format": "detailed",
+                        "log_level": "INFO"
+                    },
+                    "schedule": {
+                        "check_interval": 300,
+                        "report_interval": 3600
+                    },
+                    "test_config": {
+                        "parallel_tests": true,
+                        "retry_count": 3,
+                        "retry_delay": 2
+                    },
+                    "thresholds": {
+                        "max_failure_rate": 30,
+                        "max_response_time": 5000,
+                        "min_success_rate": 70
+                    }
+                },
+                "report_config": {
+                    "generate_html_report": true,
+                    "include_charts": false,
+                    "report_retention_days": 30
+                },
+                "test_url": "https://www.baidu.com",
+                "timeout": 10
+            },
+            "github": {
+                "email_config": {
+                    "enabled": true,
+                    "from_email": "monitor@example.com",
+                    "smtp_password": "your_email_password",
+                    "smtp_port": 587,
+                    "smtp_server": "smtp.gmail.com",
+                    "smtp_use_tls": true,
+                    "smtp_username": "monitor@example.com",
+                    "subject_prefix": "[Proxy Monitor Alert]",
+                    "to_emails": [
+                        "admin@example.com",
+                        "ops@example.com"
+                    ]
+                },
+                "expected_status": 200,
+                "monitoring": {
+                    "logging": {
+                        "log_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs",
+                        "log_file": "proxy_monitor.log",
+                        "log_format": "detailed",
+                        "log_level": "INFO"
+                    },
+                    "schedule": {
+                        "check_interval": 300,
+                        "report_interval": 3600
+                    },
+                    "test_config": {
+                        "parallel_tests": true,
+                        "retry_count": 3,
+                        "retry_delay": 2
+                    },
+                    "thresholds": {
+                        "max_failure_rate": 30,
+                        "max_response_time": 5000,
+                        "min_success_rate": 70
+                    }
+                },
+                "report_config": {
+                    "generate_html_report": true,
+                    "include_charts": false,
+                    "report_retention_days": 30
+                },
+                "test_url": "https://github.com",
+                "timeout": 15
+            },
+            "google": {
+                "email_config": {
+                    "enabled": true,
+                    "from_email": "monitor@example.com",
+                    "smtp_password": "your_email_password",
+                    "smtp_port": 587,
+                    "smtp_server": "smtp.gmail.com",
+                    "smtp_use_tls": true,
+                    "smtp_username": "monitor@example.com",
+                    "subject_prefix": "[Proxy Monitor Alert]",
+                    "to_emails": [
+                        "admin@example.com",
+                        "ops@example.com"
+                    ]
+                },
+                "expected_status": 200,
+                "monitoring": {
+                    "logging": {
+                        "log_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs",
+                        "log_file": "proxy_monitor.log",
+                        "log_format": "detailed",
+                        "log_level": "INFO"
+                    },
+                    "schedule": {
+                        "check_interval": 300,
+                        "report_interval": 3600
+                    },
+                    "test_config": {
+                        "parallel_tests": true,
+                        "retry_count": 3,
+                        "retry_delay": 2
+                    },
+                    "thresholds": {
+                        "max_failure_rate": 30,
+                        "max_response_time": 5000,
+                        "min_success_rate": 70
+                    }
+                },
+                "report_config": {
+                    "generate_html_report": true,
+                    "include_charts": false,
+                    "report_retention_days": 30
+                },
+                "test_url": "https://www.google.com",
+                "timeout": 10
+            },
+            "httpbin": {
+                "email_config": {
+                    "enabled": true,
+                    "from_email": "monitor@example.com",
+                    "smtp_password": "your_email_password",
+                    "smtp_port": 587,
+                    "smtp_server": "smtp.gmail.com",
+                    "smtp_use_tls": true,
+                    "smtp_username": "monitor@example.com",
+                    "subject_prefix": "[Proxy Monitor Alert]",
+                    "to_emails": [
+                        "admin@example.com",
+                        "ops@example.com"
+                    ]
+                },
+                "expected_status": 200,
+                "monitoring": {
+                    "logging": {
+                        "log_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs",
+                        "log_file": "proxy_monitor.log",
+                        "log_format": "detailed",
+                        "log_level": "INFO"
+                    },
+                    "schedule": {
+                        "check_interval": 300,
+                        "report_interval": 3600
+                    },
+                    "test_config": {
+                        "parallel_tests": true,
+                        "retry_count": 3,
+                        "retry_delay": 2
+                    },
+                    "thresholds": {
+                        "max_failure_rate": 30,
+                        "max_response_time": 5000,
+                        "min_success_rate": 70
+                    }
+                },
+                "report_config": {
+                    "generate_html_report": true,
+                    "include_charts": false,
+                    "report_retention_days": 30
+                },
+                "test_url": "https://httpbin.org/status/200",
+                "timeout": 5
+            },
+            "proxy1": {
+                "ansible_host": "localhost",
+                "email_config": {
+                    "enabled": true,
+                    "from_email": "monitor@example.com",
+                    "smtp_password": "your_email_password",
+                    "smtp_port": 587,
+                    "smtp_server": "smtp.gmail.com",
+                    "smtp_use_tls": true,
+                    "smtp_username": "monitor@example.com",
+                    "subject_prefix": "[Proxy Monitor Alert]",
+                    "to_emails": [
+                        "admin@example.com",
+                        "ops@example.com"
+                    ]
+                },
+                "enabled": true,
+                "monitoring": {
+                    "logging": {
+                        "log_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs",
+                        "log_file": "proxy_monitor.log",
+                        "log_format": "detailed",
+                        "log_level": "INFO"
+                    },
+                    "schedule": {
+                        "check_interval": 300,
+                        "report_interval": 3600
+                    },
+                    "test_config": {
+                        "parallel_tests": true,
+                        "retry_count": 3,
+                        "retry_delay": 2
+                    },
+                    "thresholds": {
+                        "max_failure_rate": 30,
+                        "max_response_time": 5000,
+                        "min_success_rate": 70
+                    }
+                },
+                "proxy_password": "pass1",
+                "proxy_url": "http://proxy1.example.com:8080",
+                "proxy_username": "user1",
+                "report_config": {
+                    "generate_html_report": true,
+                    "include_charts": false,
+                    "report_retention_days": 30
+                }
+            },
+            "proxy2": {
+                "ansible_host": "localhost",
+                "email_config": {
+                    "enabled": true,
+                    "from_email": "monitor@example.com",
+                    "smtp_password": "your_email_password",
+                    "smtp_port": 587,
+                    "smtp_server": "smtp.gmail.com",
+                    "smtp_use_tls": true,
+                    "smtp_username": "monitor@example.com",
+                    "subject_prefix": "[Proxy Monitor Alert]",
+                    "to_emails": [
+                        "admin@example.com",
+                        "ops@example.com"
+                    ]
+                },
+                "enabled": true,
+                "monitoring": {
+                    "logging": {
+                        "log_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs",
+                        "log_file": "proxy_monitor.log",
+                        "log_format": "detailed",
+                        "log_level": "INFO"
+                    },
+                    "schedule": {
+                        "check_interval": 300,
+                        "report_interval": 3600
+                    },
+                    "test_config": {
+                        "parallel_tests": true,
+                        "retry_count": 3,
+                        "retry_delay": 2
+                    },
+                    "thresholds": {
+                        "max_failure_rate": 30,
+                        "max_response_time": 5000,
+                        "min_success_rate": 70
+                    }
+                },
+                "proxy_password": "pass2",
+                "proxy_url": "http://proxy2.example.com:8080",
+                "proxy_username": "user2",
+                "report_config": {
+                    "generate_html_report": true,
+                    "include_charts": false,
+                    "report_retention_days": 30
+                }
+            },
+            "proxy3": {
+                "ansible_host": "localhost",
+                "email_config": {
+                    "enabled": true,
+                    "from_email": "monitor@example.com",
+                    "smtp_password": "your_email_password",
+                    "smtp_port": 587,
+                    "smtp_server": "smtp.gmail.com",
+                    "smtp_use_tls": true,
+                    "smtp_username": "monitor@example.com",
+                    "subject_prefix": "[Proxy Monitor Alert]",
+                    "to_emails": [
+                        "admin@example.com",
+                        "ops@example.com"
+                    ]
+                },
+                "enabled": false,
+                "monitoring": {
+                    "logging": {
+                        "log_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs",
+                        "log_file": "proxy_monitor.log",
+                        "log_format": "detailed",
+                        "log_level": "INFO"
+                    },
+                    "schedule": {
+                        "check_interval": 300,
+                        "report_interval": 3600
+                    },
+                    "test_config": {
+                        "parallel_tests": true,
+                        "retry_count": 3,
+                        "retry_delay": 2
+                    },
+                    "thresholds": {
+                        "max_failure_rate": 30,
+                        "max_response_time": 5000,
+                        "min_success_rate": 70
+                    }
+                },
+                "proxy_password": "",
+                "proxy_url": "http://proxy3.example.com:3128",
+                "proxy_username": "",
+                "report_config": {
+                    "generate_html_report": true,
+                    "include_charts": false,
+                    "report_retention_days": 30
+                }
+            }
+        }
+    },
+    "all": {
+        "children": [
+            "ungrouped",
+            "proxy_servers",
+            "test_websites"
+        ]
+    },
+    "proxy_servers": {
+        "hosts": [
+            "proxy1",
+            "proxy2",
+            "proxy3"
+        ]
+    },
+    "test_websites": {
+        "hosts": [
+            "google",
+            "github",
+            "baidu",
+            "httpbin"
+        ]
+    }
+}
+2025-08-13 14:24:21,732 p=3448 u=runner n=ansible INFO| playbook: playbooks/monitor-proxies.yml
+2025-08-13 14:24:31,867 p=3453 u=runner n=ansible INFO| Using /home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg as config file
+2025-08-13 14:24:32,077 p=3453 u=runner n=ansible INFO| PLAY [Monitor Proxy Status and Website Connectivity] *******************************************************************
+2025-08-13 14:24:32,259 p=3453 u=runner n=ansible INFO| TASK [Gathering Facts] *************************************************************************************************
+2025-08-13 14:24:33,983 p=3453 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 14:24:34,025 p=3453 u=runner n=ansible INFO| TASK [Display monitoring start information] ****************************************************************************
+2025-08-13 14:24:34,034 p=3453 u=runner n=ansible INFO| fatal: [localhost]: FAILED! => {"msg": "The task includes an option with an undefined variable.. 'monitoring' is undefined\n\nThe error appears to be in '/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks/monitor-proxies.yml': line 10, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n  tasks:\n    - name: Display monitoring start information\n      ^ here\n"}
+2025-08-13 14:24:34,035 p=3453 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
+2025-08-13 14:24:34,035 p=3453 u=runner n=ansible INFO| localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2025-08-13 14:24:54,116 p=3563 u=runner n=ansible INFO| Using /home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg as config file
+2025-08-13 14:24:54,261 p=3563 u=runner n=ansible INFO| PLAY [Monitor Proxy Status and Website Connectivity] *******************************************************************
+2025-08-13 14:24:54,266 p=3563 u=runner n=ansible INFO| TASK [Gathering Facts] *************************************************************************************************
+2025-08-13 14:24:55,126 p=3563 u=runner n=ansible INFO| ok: [localhost]
+2025-08-13 14:24:55,131 p=3563 u=runner n=ansible INFO| TASK [Display monitoring start information] ****************************************************************************
+2025-08-13 14:24:55,142 p=3563 u=runner n=ansible INFO| ok: [localhost] => {
+    "msg": [
+        "Starting proxy monitoring at 2025-08-13T14:24:55Z",
+        "Log directory: /home/runner/work/monitor-webhtml/monitor-webhtml/logs",
+        "Alert thresholds: Response time < 5000ms, Success rate > 70%"
+    ]
+}
+2025-08-13 14:24:55,147 p=3563 u=runner n=ansible INFO| TASK [Ensure log directory exists] *************************************************************************************
+2025-08-13 14:24:55,434 p=3563 u=runner n=ansible INFO| ok: [localhost] => {"changed": false, "gid": 118, "group": "docker", "mode": "0755", "owner": "runner", "path": "/home/runner/work/monitor-webhtml/monitor-webhtml/logs", "size": 4096, "state": "directory", "uid": 1001}
+2025-08-13 14:24:55,453 p=3563 u=runner n=ansible INFO| TASK [Initialize monitoring results] ***********************************************************************************
+2025-08-13 14:24:55,460 p=3563 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"failed_proxies": [], "monitoring_results": [], "successful_tests": 0, "total_tests": 0}, "changed": false}
+2025-08-13 14:24:55,465 p=3563 u=runner n=ansible INFO| TASK [Execute proxy monitoring role] ***********************************************************************************
+2025-08-13 14:24:55,484 p=3563 u=runner n=ansible INFO| included: proxy-monitor for localhost
+2025-08-13 14:24:55,489 p=3563 u=runner n=ansible INFO| TASK [proxy-monitor : Get list of enabled proxy servers] ***************************************************************
+2025-08-13 14:24:55,635 p=3563 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"enabled_proxies": [{"ansible_check_mode": true, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_host": "localhost", "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "enabled": true, "group_names": ["proxy_servers"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "proxy1", "inventory_hostname_short": "proxy1", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "proxy_password": "pass1", "proxy_url": "http://proxy1.example.com:8080", "proxy_username": "user1"}, {"ansible_check_mode": true, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_host": "localhost", "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "enabled": true, "group_names": ["proxy_servers"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "proxy2", "inventory_hostname_short": "proxy2", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "proxy_password": "pass2", "proxy_url": "http://proxy2.example.com:8080", "proxy_username": "user2"}]}, "changed": false}
+2025-08-13 14:24:55,641 p=3563 u=runner n=ansible INFO| TASK [proxy-monitor : Get list of test websites] ***********************************************************************
+2025-08-13 14:24:55,662 p=3563 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"test_websites": [{"ansible_check_mode": true, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "google", "inventory_hostname_short": "google", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 10, "test_url": "https://www.google.com"}, {"ansible_check_mode": true, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "github", "inventory_hostname_short": "github", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 15, "test_url": "https://github.com"}, {"ansible_check_mode": true, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "baidu", "inventory_hostname_short": "baidu", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 10, "test_url": "https://www.baidu.com"}, {"ansible_check_mode": true, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "httpbin", "inventory_hostname_short": "httpbin", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 5, "test_url": "https://httpbin.org/status/200"}]}, "changed": false}
+2025-08-13 14:24:55,667 p=3563 u=runner n=ansible INFO| TASK [proxy-monitor : Initialize test results] *************************************************************************
+2025-08-13 14:24:55,677 p=3563 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"current_timestamp": "2025-08-13T14:24:55Z", "proxy_test_results": {}}, "changed": false}
+2025-08-13 14:24:55,683 p=3563 u=runner n=ansible INFO| TASK [proxy-monitor : Test each proxy against all websites] ************************************************************
+2025-08-13 14:24:55,702 p=3563 u=runner n=ansible INFO| included: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml for localhost => (item=proxy1)
+2025-08-13 14:24:55,705 p=3563 u=runner n=ansible INFO| included: /home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml for localhost => (item=proxy2)
+2025-08-13 14:24:55,711 p=3563 u=runner n=ansible INFO| TASK [proxy-monitor : Initialize proxy test results] *******************************************************************
+2025-08-13 14:24:55,720 p=3563 u=runner n=ansible INFO| ok: [localhost] => {"ansible_facts": {"failed_count": 0, "proxy_name": "proxy1", "proxy_tests": [], "successful_count": 0}, "changed": false}
+2025-08-13 14:24:55,726 p=3563 u=runner n=ansible INFO| TASK [proxy-monitor : Test proxy connectivity for each website] ********************************************************
+2025-08-13 14:24:55,749 p=3563 u=runner n=ansible INFO| skipping: [localhost] => (item=google)  => {"ansible_loop_var": "website_item", "msg": "This action (uri) does not support check mode.", "website_item": {"ansible_check_mode": true, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "google", "inventory_hostname_short": "google", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 10, "test_url": "https://www.google.com"}}
+2025-08-13 14:24:55,756 p=3563 u=runner n=ansible INFO| skipping: [localhost] => (item=github)  => {"ansible_loop_var": "website_item", "msg": "This action (uri) does not support check mode.", "website_item": {"ansible_check_mode": true, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "github", "inventory_hostname_short": "github", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 15, "test_url": "https://github.com"}}
+2025-08-13 14:24:55,764 p=3563 u=runner n=ansible INFO| skipping: [localhost] => (item=baidu)  => {"ansible_loop_var": "website_item", "msg": "This action (uri) does not support check mode.", "website_item": {"ansible_check_mode": true, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "baidu", "inventory_hostname_short": "baidu", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 10, "test_url": "https://www.baidu.com"}}
+2025-08-13 14:24:55,772 p=3563 u=runner n=ansible INFO| skipping: [localhost] => (item=httpbin)  => {"ansible_loop_var": "website_item", "msg": "This action (uri) does not support check mode.", "website_item": {"ansible_check_mode": true, "ansible_config_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/ansible.cfg", "ansible_diff_mode": false, "ansible_facts": {}, "ansible_forks": 5, "ansible_inventory_sources": ["/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml"], "ansible_playbook_python": "/opt/pipx/venvs/ansible-core/bin/python", "ansible_run_tags": ["all"], "ansible_skip_tags": [], "ansible_verbosity": 1, "ansible_version": {"full": "2.18.7", "major": 2, "minor": 18, "revision": 7, "string": "2.18.7"}, "expected_status": 200, "group_names": ["test_websites"], "groups": {"all": ["proxy1", "proxy2", "proxy3", "google", "github", "baidu", "httpbin"], "proxy_servers": ["proxy1", "proxy2", "proxy3"], "test_websites": ["google", "github", "baidu", "httpbin"], "ungrouped": []}, "inventory_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory", "inventory_file": "/home/runner/work/monitor-webhtml/monitor-webhtml/inventory/hosts.yml", "inventory_hostname": "httpbin", "inventory_hostname_short": "httpbin", "playbook_dir": "/home/runner/work/monitor-webhtml/monitor-webhtml/playbooks", "request_timeout": 5, "test_url": "https://httpbin.org/status/200"}}
+2025-08-13 14:24:55,773 p=3563 u=runner n=ansible INFO| skipping: [localhost] => {"changed": false, "msg": "All items skipped"}
+2025-08-13 14:24:55,778 p=3563 u=runner n=ansible INFO| TASK [proxy-monitor : Process test results for each website] ***********************************************************
+2025-08-13 14:24:55,798 p=3563 u=runner n=ansible INFO| fatal: [localhost]: FAILED! => {"msg": "The task includes an option with an undefined variable.. {'website': '{{ website_test_result.results[item_index].website_item.inventory_hostname }}', 'url': '{{ website_test_result.results[item_index].website_item.test_url }}', 'status': \"{{ 'SUCCESS' if website_test_result.results[item_index].status in status_codes.success else 'FAILED' }}\", 'status_code': '{{ website_test_result.results[item_index].status | default(-1) }}', 'response_time': '{{ (website_test_result.results[item_index].elapsed * 1000) | round(2) if website_test_result.results[item_index].elapsed is defined else -1 }}', 'error_msg': \"{{ website_test_result.results[item_index].msg | default('') }}\", 'timestamp': '{{ current_timestamp }}'}: 'dict object' has no attribute 'status'\n\nThe error appears to be in '/home/runner/work/monitor-webhtml/monitor-webhtml/roles/proxy-monitor/tasks/test_proxy.yml': line 31, column 3, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n- name: Process test results for each website\n  ^ here\n"}
+2025-08-13 14:24:55,798 p=3563 u=runner n=ansible INFO| PLAY RECAP *************************************************************************************************************
+2025-08-13 14:24:55,799 p=3563 u=runner n=ansible INFO| localhost                  : ok=11   changed=0    unreachable=0    failed=1    skipped=1    rescued=0    ignored=0   
+2025-08-13 14:26:28,150 p=3740 u=runner n=ansible INFO| playbook: playbooks/monitor-proxies.yml
+2025-08-13 14:26:28,150 p=3740 u=runner n=ansible INFO|   play #1 (localhost): Monitor Proxy Status and Website Connectivity	TAGS: []
+2025-08-13 14:26:28,152 p=3740 u=runner n=ansible INFO|     tasks:
+      Display monitoring start information	TAGS: []
+      Ensure log directory exists	TAGS: []
+      Initialize monitoring results	TAGS: []
+      Execute proxy monitoring role	TAGS: []
+      Calculate overall statistics	TAGS: []
+      Display monitoring summary	TAGS: []
+      Send alert email if failures detected	TAGS: []
+      Final monitoring status	TAGS: []
+
